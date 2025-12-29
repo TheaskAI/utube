@@ -1,0 +1,279 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>SSC CGL Marathon</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        * { -webkit-tap-highlight-color: transparent; }
+        .scrollbar-hide::-webkit-scrollbar { display: none; }
+        .scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        .video-item.active { background-color: #eff6ff; border-left: 4px solid #2563eb; }
+        .dark .video-item.active { background-color: #1e293b; border-left: 4px solid #60a5fa; }
+        
+        /* Thumbnail Container */
+        .player-wrapper {
+            position: relative;
+            padding-bottom: 56.25%; /* 16:9 */
+            height: 0;
+            background-color: #000;
+            overflow: hidden;
+        }
+        
+        /* The Image or Iframe fills the container */
+        .player-content {
+            position: absolute;
+            top: 0; left: 0; width: 100%; height: 100%;
+            object-fit: cover;
+            cursor: pointer;
+        }
+
+        /* Big Play Button Overlay */
+        .play-overlay {
+            position: absolute;
+            top: 50%; left: 50%;
+            transform: translate(-50%, -50%);
+            width: 60px; height: 60px;
+            background: rgba(0,0,0,0.7);
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: transform 0.2s;
+            pointer-events: none; /* Let clicks pass to container */
+        }
+        .player-wrapper:active .play-overlay { transform: translate(-50%, -50%) scale(0.9); }
+
+        /* Desktop Fix */
+        @media (min-width: 768px) {
+            .player-wrapper { padding-bottom: 0; height: 100%; }
+        }
+
+        body { background-color: #f8fafc; }
+        @media (prefers-color-scheme: dark) {
+            body { background-color: #0f172a; color: #e2e8f0; }
+        }
+    </style>
+</head>
+<body class="h-screen flex flex-col md:flex-row overflow-hidden text-slate-800 dark:text-slate-100 select-none">
+
+    <!-- Main Content -->
+    <main class="flex-1 flex flex-col h-full relative z-10">
+        <!-- Header -->
+        <header class="p-3 bg-white dark:bg-slate-900 border-b border-slate-200 dark:border-slate-800 flex justify-between items-center md:hidden shadow-sm z-20">
+            <h1 class="font-bold text-sm truncate pr-2">SSC CGL Marathon</h1>
+            <button id="menu-btn" class="p-2 rounded-full active:bg-slate-100 dark:active:bg-slate-800">
+                <i data-lucide="list-video" class="w-6 h-6 text-blue-600 dark:text-blue-400"></i>
+            </button>
+        </header>
+
+        <!-- Player Area -->
+        <div class="w-full bg-black relative md:h-full flex flex-col justify-center">
+            <div id="player-container" class="w-full player-wrapper md:h-full" onclick="loadIframe()">
+                <!-- Default State: Shows Image + Play Button -->
+                <img id="thumbnail" class="player-content opacity-90" src="" alt="Video Thumbnail">
+                <div id="play-btn" class="play-overlay">
+                    <svg class="w-8 h-8 text-white fill-current" viewBox="0 0 24 24">
+                        <path d="M8 5v14l11-7z"/>
+                    </svg>
+                </div>
+                <!-- Iframe will be injected here ONLY after click -->
+            </div>
+        </div>
+
+        <!-- Details -->
+        <div class="p-4 bg-white dark:bg-slate-900 md:hidden flex-1 overflow-y-auto">
+            <h2 id="video-title" class="text-base font-bold leading-snug mb-1">Loading...</h2>
+            <p id="video-date" class="text-xs text-slate-500 dark:text-slate-400">--</p>
+            
+            <div class="mt-6 pt-4 border-t border-slate-100 dark:border-slate-800">
+                <p class="text-xs font-semibold mb-2 text-slate-400">Resources</p>
+                <a href="#" class="flex items-center p-3 bg-slate-50 dark:bg-slate-800 rounded-lg text-sm text-blue-600 dark:text-blue-400 hover:bg-slate-100">
+                    <i data-lucide="file-down" class="w-4 h-4 mr-2"></i>
+                    Download PDF Notes
+                </a>
+            </div>
+        </div>
+    </main>
+
+    <!-- Sidebar -->
+    <aside id="drawer" class="fixed inset-y-0 right-0 w-80 bg-white dark:bg-slate-900 border-l border-slate-200 dark:border-slate-800 transform translate-x-full md:translate-x-0 transition-transform duration-300 z-30 flex flex-col shadow-2xl md:shadow-none md:relative">
+        <div class="p-4 border-b border-slate-200 dark:border-slate-800 bg-white dark:bg-slate-900 z-10 flex justify-between items-center">
+            <div>
+                <h2 class="font-bold text-lg">Course Index</h2>
+                <p class="text-xs text-slate-500 dark:text-slate-400" id="playlist-count">45 Videos</p>
+            </div>
+            <button id="close-btn" class="md:hidden p-2 rounded-full active:bg-slate-100 dark:active:bg-slate-800">
+                <i data-lucide="x" class="w-6 h-6"></i>
+            </button>
+        </div>
+
+        <div id="playlist-container" class="flex-1 overflow-y-auto scrollbar-hide pb-20 md:pb-0"></div>
+    </aside>
+
+    <div id="backdrop" class="fixed inset-0 bg-black/50 z-20 hidden md:hidden transition-opacity opacity-0"></div>
+
+    <script>
+        const playlistData = [
+            { id: "1", title: "🔥Day 01 | Percentage | Maths | 45 Din 45 Marathon", videoId: "ERoNJ1uQ4gE", date: "2025-05-13" },
+            { id: "2", title: "🔥Day 02 | Percentage | Maths | 45 Din 45 Marathon", videoId: "Vm4jkAtxSRg", date: "2025-05-14" },
+            { id: "3", title: "🔥Day 03 | Percentage | Maths | 45 Din 45 Marathon", videoId: "CYKFSBv6mJQ", date: "2025-05-16" },
+            { id: "4", title: "🔥Day 04 | Profit and Loss | Maths | 45 Din 45 Marathon", videoId: "93bELA7a2eU", date: "2025-05-19" },
+            { id: "5", title: "🔥Day 05 | Profit and Loss | Maths | 45 Din 45 Marathon", videoId: "hmdjCwWxSJc", date: "2025-05-22" },
+            { id: "6", title: "🔥Day 06 | Profit and Loss | Maths | 45 Din 45 Marathon", videoId: "ht5_qgX9HLc", date: "2025-05-23" },
+            { id: "7", title: "🔥Day 07 | Profit and Loss | Maths | 45 Din 45 Marathon", videoId: "oBAqVVtrPWY", date: "2025-05-26" },
+            { id: "8", title: "🔥Day 08 | Discount | Maths | 45 Din 45 Marathon", videoId: "rrhzySAH2UM", date: "2025-05-29" },
+            { id: "9", title: "🔥Day 09 | Discount 02 | Maths | 45 Din 45 Marathon", videoId: "ur0_vOsPHvk", date: "2025-05-30" },
+            { id: "10", title: "🔥Day 10 | Algebra | Maths | 45 Din 45 Marathon", videoId: "mbLicsmFI_0", date: "2025-06-04" },
+            { id: "11", title: "🔥Day 11 | Algebra | Maths | 45 Din 45 Marathon", videoId: "sYi-jxa2p_s", date: "2025-06-05" },
+            { id: "12", title: "🔥Day 12 | Algebra | Part 03 | Maths | 45 Din 45 Marathon", videoId: "dKMdK-7xBi0", date: "2025-06-06" },
+            { id: "13", title: "🔥MATHS MOCK TEST 01 | CGL/CPO/CHSL | तैयारी जीत की", videoId: "r7QmKUV3VeE", date: "2025-06-08" },
+            { id: "14", title: "🔥Day 14 | Algebra | Part 04 | Maths | 45 Din 45 Marathon", videoId: "sNAcGtbAMIc", date: "2025-06-11" },
+            { id: "15", title: "🔥Day 15 | Simple Interest | Maths | 45 Din 45 Marathon", videoId: "2YiXAmfwyog", date: "2025-06-12" },
+            { id: "16", title: "🔥Day 16 | Simple Interest | Maths | 45 Din 45 Marathon", videoId: "T1bLl2IU5WY", date: "2025-06-13" },
+            { id: "17", title: "🔥Day 17 | Compound Interest | Maths | 45 Din 45 Marathon", videoId: "QOWj11S-tgE", date: "2025-06-17" },
+            { id: "18", title: "🔥Day 18 | Compound Interest 02| Maths| 45 Din 45 Marathon", videoId: "HiJilIiose4", date: "2025-06-18" },
+            { id: "19", title: "🔥Day 19 | Installments - S.I & C.I | Maths | 45 Din 45 Marathon", videoId: "JBYdZYvEc5A", date: "2025-06-19" },
+            { id: "20", title: "🔥MATHS MOCK TEST 2 | CGL/CPO/CHSL | तैयारी जीत की", videoId: "ni783vdlcG8", date: "2025-06-24" },
+            { id: "21", title: "🔥Day 21 | Simplification | Maths | 45 Din 45 Marathon", videoId: "avxRdUFjqN8", date: "2025-06-25" },
+            { id: "22", title: "🔥Day 22 | Simplification 02 | Maths| 45 Din 45 Marathon", videoId: "lmRdrqm2fP8", date: "2025-06-26" },
+            { id: "23", title: "🔥Day 23 | Number System | Maths | 45 Din 45 Marathon", videoId: "HzELscp3eK0", date: "2025-06-27" },
+            { id: "24", title: "🔥Day 24 | Number System | Maths | 45 Din 45 Marathon", videoId: "3Bgpi3AFmE4", date: "2025-07-01" },
+            { id: "25", title: "🔥Day 25| Number System 03 | Maths | 45 Din 45 Marathon", videoId: "beeS78CTKjU", date: "2025-07-02" },
+            { id: "26", title: "🔥Day 26 | Number System | Maths | 45 Din 45 Marathon", videoId: "duUJVmBDM5k", date: "2025-07-03" },
+            { id: "27", title: "🔥Day 27 | Trigonometry | Maths | 45 Din 45 Marathon", videoId: "Ynr24M8dShA", date: "2025-07-04" },
+            { id: "28", title: "🔥Day 28 | Trigonometry-02 | Maths | 45 Din 45 Marathon", videoId: "mvWANskkaao", date: "2025-07-08" },
+            { id: "29", title: "🔥Day 29 | Trigonometry-03 | Maths | 45 Din 45 Marathon", videoId: "Ovoo3SoNQ9U", date: "2025-07-09" },
+            { id: "30", title: "🔥Day 30 | Trigonometry-04 | Maths | 45 Din 45 Marathon", videoId: "f_k3IYFH8fk", date: "2025-07-10" },
+            { id: "31", title: "🔥MATHS MOCK TEST 3 | CGL/CPO/CHSL | तैयारी जीत की", videoId: "CnX6sikxD50", date: "2025-07-11" },
+            { id: "32", title: "🔥Day 32 | Complete Ratio | Maths | 45 Din 45 Marathon", videoId: "goD7jwJbosw", date: "2025-07-14" },
+            { id: "33", title: "🔥Day 33| Proportion, Ages, Partnership |Maths 45 Din 45 Marathon", videoId: "4G39zf9KY7U", date: "2025-07-16" },
+            { id: "34", title: "🔥Day 34 | Mixture & Alligation | Maths | 45 Din 45 Marathon", videoId: "c2ULnLjXztQ", date: "2025-07-18" },
+            { id: "35", title: "🔥Day 35 | Average (औसत) | Maths | 45 Din 45 Marathon", videoId: "z1c0YlmFyFI", date: "2025-07-21" },
+            { id: "36", title: "🔥Day 36 | Complete Time & Work | Maths | 45 Din 45 Marathon", videoId: "dShCSiEVBlI", date: "2025-07-23" },
+            { id: "37", title: "Day 37 |🔥COMPLETE COORDINATE GEOMETRY | SSC 2025 NEW PATTERN", videoId: "cH5U1_uGFqs", date: "2025-07-26" },
+            { id: "38", title: "🔥Day 38 | Complete Pipe and Cistern (नल और टंकी) | Maths", videoId: "vO_0Rm4Qd3w", date: "2025-07-30" },
+            { id: "39", title: "🔥Day 39 | Simplification | Maths | 45 Din 45 Marathon", videoId: "Xn3ZKtaW2Vc", date: "2025-08-13" },
+            { id: "40", title: "🚨Day 40 | SSC CGL 2025 Mock Test 02: नए Pattern पर आधारित", videoId: "S3oOxzM3B1g", date: "2025-08-21" },
+            { id: "41", title: "Day 41 |🔥COMPLETE STATISTICS (सांख्यिकी)| SSC 2025 NEW PATTERN", videoId: "t6S2z_B2kxM", date: "2025-08-29" },
+            { id: "42", title: "🔥Day 42 | Time, Speed & Distance | Maths | 45 Din 45 Marathon", videoId: "Jc0lY4Cr9Pg", date: "2025-09-01" },
+            { id: "43", title: "🔥Day 43 | TRAIN, BOAT & STREAM | Maths | 45 Din 45 Marathon", videoId: "iU8M9vy6SGw", date: "2025-09-03" },
+            { id: "44", title: "🔥Day 44 | GEOMETRY (ज्यामिति) | Maths | 45 Din 45 Marathon", videoId: "az_FEbPlOVA", date: "2025-09-09" },
+            { id: "45", title: "🔥Day 45 | Complete Mensuration 2D & 3D | Maths | 45 Din 45 Marathon", videoId: "9FK4uk3qux8", date: "2025-09-11" }
+        ];
+
+        // State
+        let currentIndex = -1;
+        let isPlaying = false;
+
+        const container = document.getElementById('player-container');
+        const thumbnail = document.getElementById('thumbnail');
+        const playBtn = document.getElementById('play-btn');
+        const drawer = document.getElementById('drawer');
+        const backdrop = document.getElementById('backdrop');
+
+        function playVideoSetup(index) {
+            if (index < 0 || index >= playlistData.length) return;
+            currentIndex = index;
+            const video = playlistData[index];
+
+            // 1. Reset to Thumbnail Mode
+            isPlaying = false;
+            container.innerHTML = ''; // Clear iframe if exists
+            
+            // Re-inject Thumbnail and Play Btn
+            // Using standard YouTube Thumbnail
+            const thumbUrl = `https://img.youtube.com/vi/${video.videoId}/hqdefault.jpg`;
+            
+            container.innerHTML = `
+                <img id="thumbnail" class="player-content" src="${thumbUrl}" alt="Thumbnail">
+                <div class="play-overlay">
+                    <svg class="w-12 h-12 text-white fill-current drop-shadow-lg" viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg>
+                </div>
+            `;
+
+            // 2. Update Text
+            document.getElementById('video-title').textContent = video.title;
+            const d = new Date(video.date);
+            document.getElementById('video-date').textContent = !isNaN(d) ? d.toLocaleDateString() : video.date;
+
+            // 3. Update List UI
+            renderList();
+
+            // 4. Close drawer on mobile
+            if (window.innerWidth < 768) toggleDrawer(false);
+        }
+
+        // The Magic Function: Only injects iframe on USER CLICK
+        window.loadIframe = function() {
+            if (isPlaying || currentIndex === -1) return;
+            isPlaying = true;
+
+            const video = playlistData[currentIndex];
+            
+            // Create Iframe Programmatically
+            // 'autoplay=1' is allowed now because it's a user gesture
+            const iframe = document.createElement('iframe');
+            iframe.className = 'player-content';
+            iframe.src = `https://www.youtube.com/embed/${video.videoId}?autoplay=1&rel=0&modestbranding=1`;
+            iframe.frameBorder = "0";
+            iframe.allow = "accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture";
+            iframe.allowFullscreen = true;
+
+            // Clear container and append iframe
+            container.innerHTML = '';
+            container.appendChild(iframe);
+        };
+
+        function renderList() {
+            const list = document.getElementById('playlist-container');
+            list.innerHTML = '';
+            playlistData.forEach((v, i) => {
+                const isActive = i === currentIndex;
+                const div = document.createElement('div');
+                div.className = `video-item p-4 border-b border-slate-100 dark:border-slate-800 cursor-pointer flex gap-3 ${isActive ? 'active' : ''}`;
+                div.innerHTML = `
+                    <div class="text-slate-400 font-mono text-sm pt-1 min-w-[1.5rem] text-right">${i + 1}</div>
+                    <div class="flex-1 pointer-events-none">
+                        <h3 class="text-sm font-medium line-clamp-2 ${isActive ? 'text-blue-600 dark:text-blue-400' : ''}">${v.title}</h3>
+                    </div>
+                `;
+                div.onclick = () => playVideoSetup(i);
+                list.appendChild(div);
+            });
+            lucide.createIcons();
+        }
+
+        function toggleDrawer(open) {
+            const el = document.getElementById('drawer');
+            const bg = document.getElementById('backdrop');
+            const isOpen = !el.classList.contains('translate-x-full');
+            const toOpen = open !== undefined ? open : !isOpen;
+
+            if (toOpen) {
+                bg.classList.remove('hidden');
+                setTimeout(() => {
+                    bg.classList.add('opacity-100');
+                    el.classList.remove('translate-x-full');
+                }, 10);
+            } else {
+                el.classList.add('translate-x-full');
+                bg.classList.remove('opacity-100');
+                setTimeout(() => bg.classList.add('hidden'), 250);
+            }
+        }
+
+        // Event Listeners
+        document.getElementById('menu-btn').onclick = () => toggleDrawer(true);
+        document.getElementById('close-btn').onclick = () => toggleDrawer(false);
+        document.getElementById('backdrop').onclick = () => toggleDrawer(false);
+
+        // Init
+        playVideoSetup(0);
+
+    </script>
+</body>
+</html>
