@@ -10,6 +10,26 @@
         body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* FORCE LANDSCAPE ROTATION ON PORTRAIT SCREEN 
+           This forces the video container to become 100vh wide and 100vw tall,
+           then rotates it 90 degrees to fit the portrait phone screen exactly.
+        */
+        .rotate-90-fullscreen {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            width: 100vh;  /* Width becomes the viewport height */
+            height: 100vw; /* Height becomes the viewport width */
+            transform: translate(-50%, -50%) rotate(90deg);
+            z-index: 40;
+            background: black;
+        }
+
+        iframe {
+            width: 100%;
+            height: 100%;
+        }
     </style>
 </head>
 <body class="bg-slate-50 text-slate-800 h-screen flex flex-col overflow-hidden select-none">
@@ -27,7 +47,7 @@
     </header>
 
     <main class="flex-1 overflow-y-auto no-scrollbar p-4 pb-24 space-y-4" id="course-container">
-        </main>
+    </main>
 
     <div id="add-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
         <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
@@ -50,7 +70,7 @@
                 <div>
                     <label class="block text-xs font-bold text-slate-500 mb-1">CATEGORY</label>
                     <select id="new-video-category" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 transition-colors appearance-none">
-                        </select>
+                    </select>
                 </div>
 
                 <button onclick="saveNewVideo()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-200 transition-all active:scale-95">
@@ -60,24 +80,13 @@
         </div>
     </div>
 
-    <div id="video-modal" class="fixed inset-0 z-50 hidden flex flex-col bg-black">
-        <div class="flex-none p-4 flex justify-between items-center bg-black/50 absolute top-0 w-full z-10">
-            <button onclick="closePlayer()" class="p-2 bg-white/10 rounded-full backdrop-blur-md text-white">
-                <i data-lucide="chevron-down" class="w-6 h-6"></i>
-            </button>
-        </div>
+    <div id="video-modal" class="fixed inset-0 z-50 hidden bg-black">
+        <button onclick="closePlayer()" class="absolute top-5 right-5 z-50 p-3 bg-white/10 text-white rounded-full backdrop-blur-md border border-white/10 hover:bg-white/20 transition-all active:scale-95 shadow-lg">
+            <i data-lucide="x" class="w-6 h-6"></i>
+        </button>
         
-        <div class="flex-1 flex items-center justify-center bg-black">
-            <div id="player-wrapper" class="w-full aspect-video bg-black"></div>
-        </div>
-        
-        <div class="bg-white p-5 rounded-t-3xl flex-none pb-safe">
-            <h2 id="modal-title" class="font-bold text-lg mb-1 line-clamp-2">Video Title</h2>
-            <p class="text-xs text-slate-500 mb-4">Playing from Maths Marathon</p>
-            <button onclick="markCurrentAsDone()" class="w-full py-3 bg-blue-600 text-white rounded-xl font-bold active:scale-95 transition-transform">
-                Mark as Completed
-            </button>
-        </div>
+        <div id="player-wrapper" class="rotate-90-fullscreen">
+            </div>
     </div>
 
     <nav class="fixed bottom-0 w-full bg-white border-t border-slate-200 pb-safe z-30">
@@ -109,7 +118,6 @@
     <script>
         // --- DATA SECTION ---
         
-        // 1. Static Videos (Your Base Course)
         const staticVideos = [
             { id: "1", title: "Day 01 | Percentage | Maths", videoId: "ERoNJ1uQ4gE" },
             { id: "2", title: "Day 02 | Percentage | Maths", videoId: "Vm4jkAtxSRg" },
@@ -171,7 +179,7 @@
             { title: "Average & Mixtures", keywords: ["Average", "Mixture"] },
             { title: "Statistics", keywords: ["Statistics"] },
             { title: "Mock Tests", keywords: ["Mock Test"] },
-            { title: "Custom Classes", keywords: ["Custom"] } // Fallback category
+            { title: "Custom Classes", keywords: ["Custom"] } 
         ];
 
         // --- STATE MANAGEMENT ---
@@ -184,25 +192,18 @@
             const container = document.getElementById('course-container');
             container.innerHTML = '';
             
-            // Combine Static + Custom Videos
             const combinedVideos = [...staticVideos, ...customVideos];
 
             syllabusConfig.forEach((chapter) => {
-                // Find matching videos
                 let chapterVideos;
                 
                 if (chapter.title === "Custom Classes") {
-                    // Show custom videos that didn't match other categories
                     chapterVideos = customVideos.filter(v => v.category === "Custom");
                 } else {
-                    // 1. Keyword match
                     const keywordMatches = combinedVideos.filter(v => 
                         chapter.keywords.some(k => v.title.toLowerCase().includes(k.toLowerCase()))
                     );
-                    // 2. Explicit Category match (for custom added videos)
                     const explicitMatches = customVideos.filter(v => v.category === chapter.title);
-                    
-                    // Merge and deduplicate
                     chapterVideos = [...new Set([...keywordMatches, ...explicitMatches])];
                 }
 
@@ -239,7 +240,7 @@
                     <div class="video-list hidden border-t border-slate-50 bg-slate-50/50">
                         ${chapterVideos.map(video => `
                             <div class="p-4 flex gap-4 hover:bg-white transition-colors cursor-pointer border-b border-slate-100 last:border-0 group" 
-                                 onclick="playVideo('${video.videoId}', '${video.title.replace(/'/g, "\\'")}')">
+                                 onclick="playVideo('${video.videoId}')">
                                 <div class="w-20 h-12 bg-slate-200 rounded overflow-hidden shrink-0 relative">
                                     <img src="https://img.youtube.com/vi/${video.videoId}/mqdefault.jpg" class="w-full h-full object-cover">
                                     ${userProgress[video.videoId] ? 
@@ -264,13 +265,9 @@
             lucide.createIcons();
         }
 
-        // --- NEW: ADD VIDEO LOGIC ---
-
         function openAddModal() {
-            // Populate Category Select
             const select = document.getElementById('new-video-category');
             select.innerHTML = syllabusConfig.map(c => `<option value="${c.title}">${c.title}</option>`).join('');
-            
             document.getElementById('add-modal').classList.remove('hidden');
         }
 
@@ -279,10 +276,9 @@
         }
 
         function extractYouTubeID(url) {
-            // Handle various YT formats (youtu.be, youtube.com/watch?v=, etc)
             const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
             const match = url.match(regExp);
-            return (match && match[2].length === 11) ? match[2] : url; // Return input if no match (maybe they pasted ID directly)
+            return (match && match[2].length === 11) ? match[2] : url; 
         }
 
         function saveNewVideo() {
@@ -305,18 +301,14 @@
                 isCustom: true
             };
 
-            // Save
             customVideos.push(newVideo);
             localStorage.setItem('ssc_custom_videos', JSON.stringify(customVideos));
             
-            // Clean up
             document.getElementById('new-video-url').value = '';
             document.getElementById('new-video-title').value = '';
             closeAddModal();
-            organizeData(); // Refresh list
+            organizeData(); 
         }
-
-        // --- EXISTING INTERACTION FUNCTIONS ---
 
         function toggleChapter(header) {
             const list = header.nextElementSibling;
@@ -332,15 +324,16 @@
 
         let currentVideoId = null;
 
-        function playVideo(id, title) {
+        function playVideo(id) {
             currentVideoId = id;
             const modal = document.getElementById('video-modal');
             const wrapper = document.getElementById('player-wrapper');
-            document.getElementById('modal-title').textContent = title;
+            
+            // Clean embed for fullscreen
             wrapper.innerHTML = `
-                <iframe class="w-full h-full" 
-                    src="https://www.youtube.com/embed/${id}?autoplay=1&modestbranding=1&rel=0" 
-                    frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
+                <iframe 
+                    src="https://www.youtube.com/embed/${id}?autoplay=1&modestbranding=1&rel=0&playsinline=0&controls=1" 
+                    frameborder="0" allow="autoplay; encrypted-media; fullscreen" allowfullscreen>
                 </iframe>
             `;
             modal.classList.remove('hidden');
@@ -353,23 +346,12 @@
             currentVideoId = null;
         }
 
-        function markCurrentAsDone() {
-            if (currentVideoId) {
-                userProgress[currentVideoId] = true;
-                localStorage.setItem('ssc_math_progress', JSON.stringify(userProgress));
-                closePlayer();
-                organizeData();
-            }
-        }
-        
         function downloadNotes(title) {
             alert(`Downloading PDF notes for: ${title}`);
         }
 
-        // Init
         organizeData();
 
-        // Guardian Script
         document.addEventListener('click', function(e) {
             const anchor = e.target.closest('a');
             if (anchor) {
