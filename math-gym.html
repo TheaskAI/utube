@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Math Gym - Brain Rush</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        input[type=number]::-webkit-inner-spin-button,
+        input[type=number]::-webkit-outer-spin-button { -webkit-appearance: none; margin: 0; }
+        
+        /* Falling Item Animation */
+        .falling-item {
+            position: absolute;
+            top: -80px;
+            font-size: 2rem; /* Larger for full screen */
+            font-weight: 800;
+            padding: 0.75rem 1.5rem;
+            background-color: rgba(30, 41, 59, 0.95);
+            color: #fff;
+            border-radius: 1rem;
+            border: 2px solid rgba(255, 255, 255, 0.2);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.3);
+            animation: fall linear forwards; 
+            z-index: 50;
+            user-select: none;
+            backdrop-filter: blur(4px);
+        }
+
+        @keyframes fall {
+            from { transform: translateY(0); }
+            to { transform: translateY(110vh); opacity: 0; } /* Falls beyond viewport */
+        }
+        
+        .pulse-text { animation: pulse-animation 0.2s ease-out; }
+        @keyframes pulse-animation {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.5); color: #4ade80; text-shadow: 0 0 20px #4ade80; }
+            100% { transform: scale(1); }
+        }
+
+        .shake { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake {
+            10%, 90% { transform: translate3d(-2px, 0, 0); }
+            20%, 80% { transform: translate3d(4px, 0, 0); }
+            30%, 50%, 70% { transform: translate3d(-6px, 0, 0); }
+            40%, 60% { transform: translate3d(6px, 0, 0); }
+        }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 h-screen flex flex-col overflow-hidden select-none">
+
+    <header class="bg-[#0f172a] text-white px-5 py-4 flex justify-between items-center shadow-md z-30 flex-none">
+        <h1 class="font-bold text-lg tracking-wide">Inspector Math Gym</h1>
+        <div class="flex items-center gap-2 bg-slate-800/50 px-3 py-1 rounded-full border border-slate-700">
+             <i data-lucide="gamepad-2" class="w-3 h-3 text-cyan-400 fill-current"></i>
+             <span class="text-[10px] font-bold tracking-wider text-slate-300">GAME MODE</span>
+        </div>
+    </header>
+
+    <main class="flex-1 overflow-y-auto no-scrollbar pb-24 relative bg-slate-100">
+        
+        <div class="sticky top-0 z-20 bg-slate-100 p-4 pb-2">
+            <div class="flex p-1 bg-white border border-slate-200 rounded-xl shadow-sm">
+                <button onclick="switchTab('learn')" id="btn-learn" class="flex-1 py-2 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-md transition-all">
+                    📖 Learn Charts
+                </button>
+                <button onclick="switchTab('game')" id="btn-game" class="flex-1 py-2 rounded-lg text-xs font-bold text-slate-500 hover:text-slate-700 transition-all">
+                    🎮 Brain Rush
+                </button>
+            </div>
+        </div>
+
+        <div id="view-learn" class="p-4 space-y-6">
+            <div class="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+                <button onclick="renderCharts('tables')" class="px-4 py-2 bg-white border border-slate-200 rounded-full text-xs font-bold whitespace-nowrap active:bg-slate-100">Tables (2-20)</button>
+                <button onclick="renderCharts('squares')" class="px-4 py-2 bg-white border border-slate-200 rounded-full text-xs font-bold whitespace-nowrap active:bg-slate-100">Squares (1-50)</button>
+                <button onclick="renderCharts('cubes')" class="px-4 py-2 bg-white border border-slate-200 rounded-full text-xs font-bold whitespace-nowrap active:bg-slate-100">Cubes (1-30)</button>
+            </div>
+            <div id="charts-container" class="grid grid-cols-2 gap-3"></div>
+        </div>
+
+        <div id="view-game" class="hidden h-full flex flex-col">
+            
+            <div id="game-menu" class="p-4 flex-1 flex flex-col items-center justify-center space-y-6 animate-in fade-in">
+                <div class="text-center">
+                    <h2 class="text-3xl font-black text-slate-800">Brain <span class="text-cyan-600">Rush</span></h2>
+                    <p class="text-xs text-slate-500 mt-1">Select a challenge to begin</p>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 w-full max-w-sm">
+                    <button onclick="setupGame('tables')" class="p-4 bg-violet-100 text-violet-700 rounded-xl font-bold text-sm shadow-sm border border-violet-200 hover:scale-105 transition-transform flex flex-col items-center gap-2 col-span-2">
+                        <i data-lucide="x" class="w-6 h-6"></i> Multiplication Tables
+                    </button>
+                    
+                    <button onclick="setupGame('addition')" class="p-4 bg-amber-100 text-amber-700 rounded-xl font-bold text-sm shadow-sm border border-amber-200 hover:scale-105 transition-transform flex flex-col items-center gap-2">
+                        <i data-lucide="plus" class="w-6 h-6"></i> Addition
+                    </button>
+                    <button onclick="setupGame('subtraction')" class="p-4 bg-indigo-100 text-indigo-700 rounded-xl font-bold text-sm shadow-sm border border-indigo-200 hover:scale-105 transition-transform flex flex-col items-center gap-2">
+                        <i data-lucide="minus" class="w-6 h-6"></i> Subtract
+                    </button>
+                    <button onclick="setupGame('squares')" class="p-4 bg-sky-100 text-sky-700 rounded-xl font-bold text-sm shadow-sm border border-sky-200 hover:scale-105 transition-transform flex flex-col items-center gap-2">
+                        <span class="text-xl">x²</span> Squares
+                    </button>
+                    <button onclick="setupGame('percentage')" class="p-4 bg-orange-100 text-orange-700 rounded-xl font-bold text-sm shadow-sm border border-orange-200 hover:scale-105 transition-transform flex flex-col items-center gap-2">
+                        <i data-lucide="percent" class="w-6 h-6"></i> Percent
+                    </button>
+                </div>
+            </div>
+
+            <div id="game-settings" class="hidden p-4 flex-1 flex flex-col items-center justify-center max-w-sm mx-auto w-full">
+                <h2 id="settings-title" class="text-xl font-bold text-slate-800 mb-6">Settings</h2>
+                
+                <div id="tables-config" class="hidden w-full space-y-4 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 mb-6">
+                    <div class="flex bg-slate-100 p-1 rounded-lg mb-4">
+                        <button onclick="toggleTableMode('single')" id="mode-single" class="flex-1 py-1.5 text-xs font-bold rounded-md bg-white shadow text-blue-600">Single Table</button>
+                        <button onclick="toggleTableMode('range')" id="mode-range" class="flex-1 py-1.5 text-xs font-bold rounded-md text-slate-500">Range</button>
+                    </div>
+
+                    <div id="input-single">
+                        <label class="text-[10px] font-bold text-slate-400 uppercase">Table Number</label>
+                        <input type="number" id="table-single-val" value="19" class="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-center font-black text-xl">
+                    </div>
+
+                    <div id="input-range" class="hidden grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">From Table</label>
+                            <input type="number" id="table-from-val" value="12" class="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-center font-black text-xl">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">To Table</label>
+                            <input type="number" id="table-to-val" value="20" class="w-full mt-1 p-3 bg-slate-50 border border-slate-200 rounded-xl text-center font-black text-xl">
+                        </div>
+                    </div>
+                </div>
+
+                <div id="generic-config" class="w-full space-y-4 bg-white p-5 rounded-2xl shadow-sm border border-slate-200 mb-6">
+                    <div class="grid grid-cols-2 gap-4">
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">Start Range</label>
+                            <input type="number" id="start-range" value="1" class="w-full mt-1 p-2 bg-slate-50 border border-slate-200 rounded-lg text-center font-bold">
+                        </div>
+                        <div>
+                            <label class="text-[10px] font-bold text-slate-400 uppercase">End Range</label>
+                            <input type="number" id="end-range" value="20" class="w-full mt-1 p-2 bg-slate-50 border border-slate-200 rounded-lg text-center font-bold">
+                        </div>
+                    </div>
+                </div>
+
+                <div class="w-full mb-6">
+                    <label class="text-[10px] font-bold text-slate-400 uppercase mb-2 block">Difficulty</label>
+                    <div class="grid grid-cols-3 gap-2 bg-slate-200 p-1 rounded-xl">
+                        <button onclick="setDifficulty('easy')" id="diff-easy" class="py-2 rounded-lg text-xs font-bold text-slate-600">Easy</button>
+                        <button onclick="setDifficulty('medium')" id="diff-medium" class="py-2 rounded-lg text-xs font-bold bg-white shadow text-blue-600">Normal</button>
+                        <button onclick="setDifficulty('hard')" id="diff-hard" class="py-2 rounded-lg text-xs font-bold text-slate-600">Hard</button>
+                    </div>
+                </div>
+
+                <button onclick="startGame()" class="w-full py-4 bg-cyan-600 hover:bg-cyan-700 text-white font-bold rounded-xl shadow-lg shadow-cyan-200 active:scale-95 transition-transform">
+                    START FULLSCREEN
+                </button>
+                <button onclick="showScreen('menu')" class="mt-4 text-xs font-bold text-slate-400">Cancel</button>
+            </div>
+
+            <div id="game-board" class="hidden fixed inset-0 z-[100] bg-slate-900 w-screen h-screen overflow-hidden touch-none">
+                
+                <div class="absolute top-0 left-0 w-full p-6 pt-8 flex justify-between items-start z-20 bg-gradient-to-b from-slate-900 via-slate-900/80 to-transparent">
+                    <div>
+                        <p class="text-[10px] font-bold text-slate-400 tracking-widest">SCORE</p>
+                        <p id="score-display" class="text-4xl font-black text-white drop-shadow-lg">0</p>
+                    </div>
+                    <div class="flex flex-col items-end gap-2">
+                        <button onclick="quitGame()" class="bg-white/10 p-2 rounded-full text-white/50 hover:bg-red-500 hover:text-white transition-colors">
+                            <i data-lucide="x" class="w-5 h-5"></i>
+                        </button>
+                        <div id="lives-display" class="flex gap-1 text-xl">❤️❤️❤️</div>
+                    </div>
+                </div>
+
+                <div id="game-area" class="relative w-full h-full"></div>
+
+                <div class="absolute bottom-0 w-full p-6 pb-8 bg-gradient-to-t from-slate-900 via-slate-900/95 to-transparent z-30 flex flex-col items-center">
+                     <p id="feedback-msg" class="h-6 mb-2 text-sm font-bold tracking-wide"></p>
+                    <input type="number" id="game-input" placeholder="Type Answer" class="w-full max-w-sm p-4 bg-slate-800/80 backdrop-blur text-white text-center text-3xl font-bold rounded-2xl border-2 border-slate-600 focus:border-cyan-400 focus:bg-slate-800 focus:outline-none placeholder-slate-600 shadow-2xl transition-all">
+                </div>
+            </div>
+
+            <div id="game-over" class="hidden fixed inset-0 z-[100] bg-slate-900/95 backdrop-blur-md p-4 flex flex-col items-center justify-center animate-in zoom-in duration-300">
+                <h2 class="text-5xl font-black text-white mb-2 tracking-tight">Game Over!</h2>
+                
+                <div class="bg-white p-8 rounded-3xl shadow-2xl border-4 border-cyan-500 text-center w-full max-w-sm mb-8 transform rotate-1">
+                    <p class="text-xs font-bold text-slate-400 uppercase tracking-widest">Final Score</p>
+                    <p id="final-score" class="text-7xl font-black text-slate-900 my-4">0</p>
+                    <div class="flex justify-center gap-2 text-sm font-bold text-slate-500 border-t pt-4">
+                        <span>Best:</span>
+                        <span id="best-score" class="text-cyan-600">0</span>
+                    </div>
+                </div>
+
+                <div class="flex flex-col gap-3 w-full max-w-xs">
+                    <button onclick="startGame()" class="w-full py-4 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-black text-lg rounded-xl shadow-lg shadow-cyan-500/30 active:scale-95 transition-transform">
+                        PLAY AGAIN
+                    </button>
+                    <button onclick="quitGame()" class="w-full py-4 bg-slate-800 text-slate-400 font-bold rounded-xl active:scale-95 transition-transform">
+                        EXIT TO MENU
+                    </button>
+                </div>
+            </div>
+
+        </div>
+
+    </main>
+
+    <nav class="fixed bottom-0 w-full bg-white border-t border-slate-200 pb-safe z-40">
+        <div class="flex justify-around items-center px-2 py-3">
+            <a href="index.html" class="flex flex-col items-center gap-1 min-w-[60px] text-slate-400 hover:text-slate-600">
+                <i data-lucide="home" class="w-6 h-6"></i>
+                <span class="text-[10px] font-medium">Home</span>
+            </a>
+            <a href="course.html" class="flex flex-col items-center gap-1 min-w-[60px] text-slate-400 hover:text-slate-600">
+                <i data-lucide="layers" class="w-6 h-6"></i>
+                <span class="text-[10px] font-medium">Course</span>
+            </a>
+            <a href="#" class="flex flex-col items-center gap-1 min-w-[60px] text-blue-600">
+                <i data-lucide="zap" class="w-6 h-6 fill-current"></i>
+                <span class="text-[10px] font-bold">Math</span>
+                <span class="w-1 h-1 bg-blue-600 rounded-full mt-0.5"></span>
+            </a>
+            <a href="hindi-arcade.html" class="flex flex-col items-center gap-1 min-w-[60px] text-slate-400 hover:text-slate-600">
+                <div class="w-6 h-6 flex items-center justify-center font-bold text-lg leading-none border-2 border-current rounded-md">अ</div>
+                <span class="text-[10px] font-medium">Hindi</span>
+            </a>
+            <a href="reasoning.html" class="flex flex-col items-center gap-1 min-w-[60px] text-slate-400 hover:text-slate-600">
+                <i data-lucide="puzzle" class="w-6 h-6"></i>
+                <span class="text-[10px] font-medium">Reason</span>
+            </a>
+        </div>
+    </nav>
+
+    <script>
+        lucide.createIcons();
+        
+        // --- 1. LEARN MODE LOGIC ---
+        function renderCharts(type) {
+            const container = document.getElementById('charts-container');
+            container.innerHTML = '';
+            
+            if(type === 'tables') {
+                for(let i=2; i<=30; i++) {
+                    let html = `<div class="bg-white p-3 rounded-xl shadow-sm border border-slate-100"><h3 class="font-bold text-blue-600 border-b pb-1 mb-1 text-center">Table ${i}</h3>`;
+                    for(let j=1; j<=10; j++) html += `<div class="flex justify-between text-xs py-0.5"><span class="text-slate-400">${i}x${j}</span><span class="font-bold">${i*j}</span></div>`;
+                    html += `</div>`;
+                    container.innerHTML += html;
+                }
+            } else if (type === 'squares') {
+                let html = `<div class="bg-white p-3 rounded-xl shadow-sm border border-slate-100 col-span-2"><h3 class="font-bold text-purple-600 border-b pb-1 mb-1 text-center">Squares</h3><div class="grid grid-cols-2 gap-2">`;
+                for(let i=1; i<=50; i++) html += `<div class="flex justify-between text-xs"><span class="text-slate-400">${i}²</span><span class="font-bold">${i*i}</span></div>`;
+                html += `</div></div>`;
+                container.innerHTML = html;
+            } else {
+                 let html = `<div class="bg-white p-3 rounded-xl shadow-sm border border-slate-100 col-span-2"><h3 class="font-bold text-orange-600 border-b pb-1 mb-1 text-center">Cubes</h3><div class="grid grid-cols-2 gap-2">`;
+                for(let i=1; i<=30; i++) html += `<div class="flex justify-between text-xs"><span class="text-slate-400">${i}³</span><span class="font-bold">${i*i*i}</span></div>`;
+                html += `</div></div>`;
+                container.innerHTML = html;
+            }
+        }
+
+        // --- 2. GAME MODE LOGIC ---
+        
+        const difficulties = {
+            easy: { lives: 5, speed: 7000 },
+            medium: { lives: 3, speed: 5000 },
+            hard: { lives: 1, speed: 3000 }
+        };
+
+        let state = {
+            type: null,
+            difficulty: 'medium',
+            score: 0,
+            lives: 3,
+            speed: 5000,
+            activeItem: null,
+            gameOver: false,
+            lastQuestion: null,
+            tableMode: 'single' // 'single' or 'range'
+        };
+
+        const screens = {
+            menu: document.getElementById('game-menu'),
+            settings: document.getElementById('game-settings'),
+            board: document.getElementById('game-board'),
+            over: document.getElementById('game-over')
+        };
+        const gameArea = document.getElementById('game-area');
+        const input = document.getElementById('game-input');
+
+        // Navigation & State Management
+        function switchTab(tab) {
+            document.getElementById('view-learn').classList.add('hidden');
+            document.getElementById('view-game').classList.add('hidden');
+            document.getElementById('btn-learn').className = "flex-1 py-2 rounded-lg text-xs font-bold text-slate-500 hover:text-slate-700 transition-all";
+            document.getElementById('btn-game').className = "flex-1 py-2 rounded-lg text-xs font-bold text-slate-500 hover:text-slate-700 transition-all";
+
+            if (tab === 'learn') {
+                document.getElementById('view-learn').classList.remove('hidden');
+                document.getElementById('btn-learn').className = "flex-1 py-2 rounded-lg text-xs font-bold bg-blue-600 text-white shadow-md transition-all";
+                renderCharts('tables');
+            } else {
+                document.getElementById('view-game').classList.remove('hidden');
+                document.getElementById('btn-game').className = "flex-1 py-2 rounded-lg text-xs font-bold bg-cyan-600 text-white shadow-md transition-all";
+                showScreen('menu');
+            }
+        }
+
+        function showScreen(name) {
+            Object.values(screens).forEach(el => el.classList.add('hidden'));
+            screens[name].classList.remove('hidden');
+        }
+
+        function setupGame(type) {
+            state.type = type;
+            document.getElementById('settings-title').textContent = type.toUpperCase() + " SETUP";
+            
+            // Toggle Logic for "Tables" vs Others
+            if (type === 'tables') {
+                document.getElementById('tables-config').style.display = 'block';
+                document.getElementById('generic-config').style.display = 'none';
+            } else {
+                document.getElementById('tables-config').style.display = 'none';
+                
+                // Show range for add/sub/percent, hide for squares (fixed range logic simplified)
+                const useRange = ['addition', 'subtraction', 'percentage'].includes(type);
+                document.getElementById('generic-config').style.display = useRange ? 'block' : 'none';
+            }
+            
+            showScreen('settings');
+        }
+
+        function toggleTableMode(mode) {
+            state.tableMode = mode;
+            if (mode === 'single') {
+                document.getElementById('mode-single').className = "flex-1 py-1.5 text-xs font-bold rounded-md bg-white shadow text-blue-600 transition-all";
+                document.getElementById('mode-range').className = "flex-1 py-1.5 text-xs font-bold rounded-md text-slate-500 transition-all";
+                document.getElementById('input-single').classList.remove('hidden');
+                document.getElementById('input-range').classList.add('hidden');
+            } else {
+                document.getElementById('mode-range').className = "flex-1 py-1.5 text-xs font-bold rounded-md bg-white shadow text-blue-600 transition-all";
+                document.getElementById('mode-single').className = "flex-1 py-1.5 text-xs font-bold rounded-md text-slate-500 transition-all";
+                document.getElementById('input-range').classList.remove('hidden');
+                document.getElementById('input-single').classList.add('hidden');
+            }
+        }
+
+        function setDifficulty(diff) {
+            state.difficulty = diff;
+            ['easy', 'medium', 'hard'].forEach(d => {
+                document.getElementById('diff-'+d).className = "py-2 rounded-lg text-xs font-bold text-slate-600";
+            });
+            document.getElementById('diff-'+diff).className = "py-2 rounded-lg text-xs font-bold bg-white shadow text-blue-600";
+        }
+
+        function quitGame() {
+            state.gameOver = true;
+            if(state.activeItem) state.activeItem.remove();
+            showScreen('menu');
+        }
+
+        // --- AUDIO ENGINE ---
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+        function playSound(type) {
+            if(audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            if (type === 'good') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(600, audioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(1200, audioCtx.currentTime + 0.1);
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.1);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.1);
+            } else {
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(150, audioCtx.currentTime);
+                osc.frequency.linearRampToValueAtTime(100, audioCtx.currentTime + 0.2);
+                gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+                gain.gain.linearRampToValueAtTime(0.01, audioCtx.currentTime + 0.2);
+                osc.start(); osc.stop(audioCtx.currentTime + 0.2);
+            }
+        }
+
+        // --- GAME LOOP ---
+        function startGame() {
+            const conf = difficulties[state.difficulty];
+            state.lives = conf.lives;
+            state.speed = conf.speed;
+            state.score = 0;
+            state.gameOver = false;
+            state.lastQuestion = null;
+            state.activeItem = null;
+
+            gameArea.innerHTML = '';
+            input.value = '';
+            document.getElementById('feedback-msg').textContent = '';
+            updateHUD();
+            showScreen('board');
+            
+            // Hack to keep keyboard open on mobile often requires user gesture
+            input.focus();
+            
+            spawnItem();
+        }
+
+        function spawnItem() {
+            if (state.gameOver) return;
+
+            let qData;
+            do {
+                qData = generateQuestion();
+            } while (qData.q === state.lastQuestion);
+            state.lastQuestion = qData.q;
+
+            const item = document.createElement('div');
+            item.className = 'falling-item';
+            item.textContent = qData.q;
+            item.dataset.answer = qData.a;
+            
+            const maxLeft = window.innerWidth - 120; // safe padding
+            item.style.left = Math.max(20, Math.floor(Math.random() * maxLeft)) + 'px';
+            item.style.animationDuration = state.speed + 'ms';
+            
+            item.addEventListener('animationend', () => handleMiss(item));
+            gameArea.appendChild(item);
+            state.activeItem = item;
+        }
+
+        function generateQuestion() {
+            const r = (mn, mx) => Math.floor(Math.random() * (mx - mn + 1)) + mn;
+            
+            if (state.type === 'tables') {
+                let tableNum;
+                if (state.tableMode === 'single') {
+                    tableNum = parseInt(document.getElementById('table-single-val').value) || 2;
+                } else {
+                    const minT = parseInt(document.getElementById('table-from-val').value) || 2;
+                    const maxT = parseInt(document.getElementById('table-to-val').value) || 10;
+                    tableNum = r(minT, maxT);
+                }
+                const b = r(2, 9);
+                return { q: `${tableNum} × ${b}`, a: tableNum*b };
+            }
+
+            // Generic logic for other games
+            const min = parseInt(document.getElementById('start-range').value) || 1;
+            const max = parseInt(document.getElementById('end-range').value) || 20;
+
+            if (state.type === 'addition') {
+                const a = r(min, max), b = r(min, max);
+                return { q: `${a} + ${b}`, a: a+b };
+            }
+            if (state.type === 'subtraction') {
+                const a = r(min, max*2), b = r(min, a);
+                return { q: `${a} - ${b}`, a: a-b };
+            }
+            if (state.type === 'squares') {
+                const a = r(min, max);
+                return { q: `${a}²`, a: a*a };
+            }
+            if (state.type === 'percentage') {
+                const p = [10, 20, 25, 50][Math.floor(Math.random()*4)];
+                const base = r(min, max) * (100/p);
+                return { q: `${p}% of ${base}`, a: (p/100)*base };
+            }
+            return { q: '1+1', a: 2 };
+        }
+
+        function checkAnswer() {
+            if (!state.activeItem || state.gameOver) return;
+            const val = parseFloat(input.value);
+            const ans = parseFloat(state.activeItem.dataset.answer);
+
+            if (val === ans) {
+                playSound('good');
+                state.score++;
+                if (state.score % 5 === 0 && state.speed > 1500) state.speed -= 250;
+                
+                const scoreEl = document.getElementById('score-display');
+                scoreEl.classList.add('pulse-text');
+                setTimeout(()=>scoreEl.classList.remove('pulse-text'), 200);
+                
+                state.activeItem.style.backgroundColor = '#4ade80';
+                state.activeItem.style.transform = 'scale(1.5)';
+                state.activeItem.style.opacity = '0';
+                state.activeItem.style.transition = 'all 0.2s';
+                
+                setTimeout(() => {
+                    if(state.activeItem) state.activeItem.remove();
+                    input.value = '';
+                    updateHUD();
+                    spawnItem();
+                }, 200);
+            }
+        }
+
+        function handleMiss(item) {
+            if (item !== state.activeItem || state.gameOver) return;
+            playSound('bad');
+            state.lives--;
+            updateHUD();
+            
+            const feedback = document.getElementById('feedback-msg');
+            feedback.textContent = `Missed! Answer was ${item.dataset.answer}`;
+            feedback.className = "h-6 mb-2 text-sm font-bold tracking-wide text-red-400 shake";
+            setTimeout(()=> feedback.classList.remove('shake'), 500);
+
+            item.remove();
+            
+            if (state.lives <= 0) endGame();
+            else {
+                input.value = '';
+                spawnItem();
+            }
+        }
+
+        function updateHUD() {
+            document.getElementById('score-display').textContent = state.score;
+            document.getElementById('lives-display').textContent = '❤️'.repeat(state.lives);
+        }
+
+        function endGame() {
+            state.gameOver = true;
+            if(state.activeItem) state.activeItem.remove();
+            
+            const storageKey = `rush_hs_${state.type}`;
+            const currentBest = parseInt(localStorage.getItem(storageKey)) || 0;
+            if (state.score > currentBest) localStorage.setItem(storageKey, state.score);
+            
+            document.getElementById('final-score').textContent = state.score;
+            document.getElementById('best-score').textContent = Math.max(state.score, currentBest);
+            
+            showScreen('over');
+        }
+
+        input.addEventListener('input', checkAnswer);
+        renderCharts('tables'); // Init
+        
+        // Guardian Script
+        document.addEventListener('click', function(e) {
+            const anchor = e.target.closest('a');
+            if (anchor && (anchor.getAttribute('href').startsWith('http') || anchor.getAttribute('href').startsWith('www'))) {
+                e.preventDefault();
+                alert("🚫 FOCUS MODE: External link blocked.");
+            }
+        });
+    </script>
+</body>
+</html>

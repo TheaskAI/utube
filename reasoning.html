@@ -1,0 +1,441 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, interactive-widget=resizes-content">
+    <title>Reasoning Lab</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=JetBrains+Mono:wght@500&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; overscroll-behavior: none; }
+        .mono-font { font-family: 'JetBrains Mono', monospace; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Mirror Effect */
+        .mirror-text { transform: scaleX(-1); display: inline-block; }
+        
+        /* Falling Animation */
+        .falling-item {
+            position: absolute;
+            top: -100px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 70px; height: 70px;
+            background: rgba(15, 23, 42, 0.9);
+            border: 2px solid #22d3ee;
+            color: #fff;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 2rem;
+            font-weight: 900;
+            box-shadow: 0 0 20px rgba(34, 211, 238, 0.3);
+            animation: fall linear forwards;
+            z-index: 10;
+            backdrop-filter: blur(4px);
+            pointer-events: none;
+        }
+
+        @keyframes fall {
+            to { top: 110vh; opacity: 1; } 
+        }
+
+        /* Stronger Flash Effects for Visibility */
+        .flash-green { 
+            background-color: #22c55e !important; /* Green-500 */
+            border-color: #4ade80 !important; 
+            color: white !important;
+            box-shadow: 0 0 15px #4ade80 !important;
+            transition: all 0.2s;
+        }
+        .flash-red { 
+            background-color: #ef4444 !important; /* Red-500 */
+            border-color: #f87171 !important; 
+            color: white !important;
+            box-shadow: 0 0 15px #f87171 !important;
+            transition: all 0.2s;
+        }
+        
+        .text-glow { text-shadow: 0 0 15px rgba(34, 211, 238, 0.6); }
+    </style>
+</head>
+<body class="bg-slate-900 text-slate-100 h-screen flex flex-col overflow-hidden select-none">
+
+    <main class="flex-1 relative w-full h-full overflow-hidden">
+        
+        <div id="screen-menu" class="absolute inset-0 z-20 flex flex-col items-center justify-center p-6 space-y-6 animate-in fade-in bg-slate-900">
+            <div class="text-center mb-2">
+                <div class="w-20 h-20 bg-slate-800/50 rounded-3xl border border-slate-700 shadow-2xl flex items-center justify-center mx-auto mb-6 text-cyan-400">
+                    <i data-lucide="brain-circuit" class="w-10 h-10"></i>
+                </div>
+                <h1 class="text-5xl font-black text-white tracking-tighter">Reasoning <span class="text-cyan-400">Lab</span></h1>
+            </div>
+
+            <div class="bg-slate-800 p-1 rounded-xl flex w-full max-w-sm border border-slate-700">
+                <button onclick="setDifficulty('easy')" id="diff-easy" class="flex-1 py-2 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all">Easy</button>
+                <button onclick="setDifficulty('medium')" id="diff-medium" class="flex-1 py-2 rounded-lg text-xs font-bold bg-cyan-600 text-white shadow-md transition-all">Medium</button>
+                <button onclick="setDifficulty('hard')" id="diff-hard" class="flex-1 py-2 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all">Hard</button>
+            </div>
+
+            <div class="grid grid-cols-2 gap-3 w-full max-w-sm">
+                <button onclick="startGame('alpha')" class="col-span-2 p-6 bg-slate-800/40 border border-slate-700 rounded-3xl hover:border-cyan-500/50 hover:bg-slate-800 transition-all group active:scale-95 flex items-center justify-between px-8 relative overflow-hidden">
+                    <div class="text-left relative z-10">
+                        <div class="font-black text-white text-xl group-hover:text-cyan-400 transition-colors">Alpha Strike</div>
+                        <div class="text-[10px] text-slate-500 font-bold uppercase tracking-wide mt-1">Type Serial (A=1)</div>
+                    </div>
+                    <div class="text-5xl group-hover:scale-110 transition-transform relative z-10">🔠</div>
+                </button>
+
+                <button onclick="startGame('mirror')" class="p-5 bg-slate-800/40 border border-slate-700 rounded-3xl hover:border-cyan-500/50 hover:bg-slate-800 transition-all group active:scale-95 flex flex-col items-center gap-2">
+                    <div class="text-4xl group-hover:scale-110 transition-transform mb-2">🪞</div>
+                    <div class="font-bold text-slate-300 group-hover:text-cyan-400">Mirror</div>
+                </button>
+                
+                <button onclick="startGame('calendar')" class="p-5 bg-slate-800/40 border border-slate-700 rounded-3xl hover:border-cyan-500/50 hover:bg-slate-800 transition-all group active:scale-95 flex flex-col items-center gap-2">
+                    <div class="text-4xl group-hover:scale-110 transition-transform mb-2">📅</div>
+                    <div class="font-bold text-slate-300 group-hover:text-cyan-400">Calendar</div>
+                </button>
+            </div>
+
+            <button onclick="showScreen('study')" class="mt-2 flex items-center gap-2 text-xs font-bold text-slate-500 hover:text-white transition-colors px-4 py-2">
+                <i data-lucide="book-open" class="w-4 h-4"></i> Reference Charts
+            </button>
+        </div>
+
+        <div id="screen-study" class="hidden absolute inset-0 z-50 bg-slate-900 overflow-y-auto pb-24 animate-in slide-in-from-right">
+            <div class="sticky top-0 bg-slate-900/95 backdrop-blur-md p-4 flex items-center gap-3 border-b border-slate-800 z-10">
+                <button onclick="showScreen('menu')" class="p-2 hover:bg-slate-800 rounded-full text-slate-400 hover:text-white">
+                    <i data-lucide="arrow-left" class="w-6 h-6"></i>
+                </button>
+                <h2 class="font-bold text-lg text-white">Reference Charts</h2>
+            </div>
+            <div class="p-4 space-y-4">
+                <div class="bg-slate-800/50 p-5 rounded-2xl border border-slate-700">
+                    <h3 class="font-bold text-cyan-400 mb-4 text-sm uppercase tracking-wide">Alphabet Series</h3>
+                    <div class="grid grid-cols-6 gap-2 text-center text-xs font-bold text-slate-300">
+                        <script>
+                            for(let i=1; i<=26; i++) {
+                                document.write(`<div class="p-2 bg-slate-800 rounded border border-slate-700">${String.fromCharCode(64+i)}<br><span class="text-cyan-500">${i}</span></div>`);
+                            }
+                        </script>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div id="screen-game" class="hidden absolute inset-0 z-30 flex flex-col bg-slate-900 overflow-hidden">
+            
+            <div id="game-content" class="absolute inset-0 z-0 w-full h-full pointer-events-none"></div>
+
+            <div class="relative z-20 flex justify-between items-start p-6 bg-gradient-to-b from-slate-900 to-transparent h-32">
+                <button onclick="quitGame()" class="p-3 -ml-2 bg-slate-800/50 backdrop-blur rounded-full text-slate-400 hover:text-white border border-slate-700">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+                <div class="flex flex-col items-end">
+                    <div class="text-[10px] font-bold text-slate-500 uppercase tracking-widest mb-1">Score</div>
+                    <div id="score-val" class="text-4xl font-black text-cyan-400 leading-none text-glow">0</div>
+                    <div id="lives-display" class="flex gap-1 mt-2 text-sm">❤️❤️❤️</div>
+                </div>
+            </div>
+
+            <div class="flex-1"></div>
+
+            <div id="game-controls" class="relative z-30 bg-slate-800/90 backdrop-blur-xl border-t border-slate-700 p-6 pb-8 rounded-t-[2.5rem] shadow-2xl transition-all duration-300 flex flex-col items-center">
+                <div id="feedback-area" class="h-6 mb-2 text-sm font-bold text-center w-full uppercase tracking-widest text-cyan-400"></div>
+                </div>
+        </div>
+
+        <div id="screen-over" class="hidden absolute inset-0 z-50 bg-slate-900/95 backdrop-blur-xl flex flex-col items-center justify-center p-6 animate-in zoom-in">
+            <div class="text-8xl mb-6">🏆</div>
+            <h2 class="text-5xl font-black text-white mb-2 tracking-tight">Game Over!</h2>
+            <div class="bg-slate-800 p-8 rounded-3xl border border-slate-700 text-center w-full max-w-xs mb-8 shadow-2xl relative overflow-hidden">
+                <div class="absolute inset-0 bg-gradient-to-br from-cyan-500/10 to-purple-500/10"></div>
+                <p class="text-xs font-bold text-slate-500 uppercase tracking-widest relative z-10">Final Score</p>
+                <p id="final-score" class="text-7xl font-black text-cyan-400 my-4 text-glow relative z-10">0</p>
+            </div>
+            <div class="flex flex-col w-full max-w-xs gap-3">
+                <button onclick="startGame(state.mode)" class="w-full py-4 bg-cyan-500 hover:bg-cyan-400 text-slate-900 font-black text-lg rounded-2xl shadow-lg shadow-cyan-500/20 active:scale-95 transition-transform">
+                    PLAY AGAIN
+                </button>
+                <button onclick="showScreen('menu')" class="w-full py-4 bg-slate-800 text-slate-400 font-bold rounded-2xl border border-slate-700 active:scale-95 transition-transform">
+                    MAIN MENU
+                </button>
+            </div>
+        </div>
+
+    </main>
+
+    <script>
+        lucide.createIcons();
+
+        let state = {
+            mode: null,
+            score: 0,
+            lives: 3,
+            difficulty: 'medium',
+            baseSpeed: 4000,
+            activeItem: null,
+            currentQuestion: null,
+            isOver: false
+        };
+
+        const screens = {
+            menu: document.getElementById('screen-menu'),
+            study: document.getElementById('screen-study'),
+            game: document.getElementById('screen-game'),
+            over: document.getElementById('screen-over')
+        };
+
+        function showScreen(name) {
+            Object.values(screens).forEach(el => el.classList.add('hidden'));
+            screens[name].classList.remove('hidden');
+        }
+
+        function setDifficulty(level) {
+            state.difficulty = level;
+            ['easy', 'medium', 'hard'].forEach(l => {
+                const btn = document.getElementById(`diff-${l}`);
+                btn.className = "flex-1 py-2 rounded-lg text-xs font-bold text-slate-400 hover:text-white transition-all";
+            });
+            const activeBtn = document.getElementById(`diff-${level}`);
+            activeBtn.className = "flex-1 py-2 rounded-lg text-xs font-bold bg-cyan-600 text-white shadow-md transition-all";
+        }
+
+        function getSpeed() {
+            switch(state.difficulty) {
+                case 'easy': return 6000;
+                case 'medium': return 4000;
+                case 'hard': return 2500;
+                default: return 4000;
+            }
+        }
+
+        function startGame(mode) {
+            state = { 
+                mode: mode, 
+                score: 0, 
+                lives: 3, 
+                baseSpeed: getSpeed(), 
+                activeItem: null, 
+                currentQuestion: null, 
+                isOver: false 
+            };
+            showScreen('game');
+            updateHUD();
+            document.getElementById('feedback-area').textContent = '';
+            setupControls(mode);
+            nextRound();
+        }
+
+        function setupControls(mode) {
+            const controls = document.getElementById('game-controls');
+            // Preserve feedback div
+            const feedbackHTML = `<div id="feedback-area" class="h-6 mb-2 text-sm font-bold text-center w-full uppercase tracking-widest text-cyan-400"></div>`;
+            
+            if (mode === 'alpha') {
+                // FIXED: Transparent background for input using bg-transparent and white border
+                controls.innerHTML = feedbackHTML + `
+                    <div class="flex flex-col items-center w-full">
+                         <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mb-3">Type Number (A=1)</p>
+                         <input type="number" id="alpha-input" class="w-32 p-4 text-center text-3xl font-black rounded-2xl border-2 border-white/20 bg-transparent text-white focus:border-cyan-500 outline-none transition-all placeholder-slate-600" placeholder="?">
+                    </div>
+                `;
+                setTimeout(() => document.getElementById('alpha-input').focus(), 100);
+                document.getElementById('alpha-input').addEventListener('input', checkAlphaInput);
+            } 
+            else {
+                controls.innerHTML = feedbackHTML + `
+                    <div class="w-full">
+                        <p class="text-[10px] text-slate-400 text-center font-bold mb-4 uppercase tracking-widest">Select Answer</p>
+                        <div class="grid grid-cols-2 gap-4 w-full">
+                            <button onclick="checkOption(0)" id="opt-0" class="p-5 bg-slate-700 border-2 border-slate-600 rounded-2xl font-bold text-xl text-white active:bg-cyan-900/50 active:border-cyan-500 transition-all shadow-lg">A</button>
+                            <button onclick="checkOption(1)" id="opt-1" class="p-5 bg-slate-700 border-2 border-slate-600 rounded-2xl font-bold text-xl text-white active:bg-cyan-900/50 active:border-cyan-500 transition-all shadow-lg">B</button>
+                            <button onclick="checkOption(2)" id="opt-2" class="p-5 bg-slate-700 border-2 border-slate-600 rounded-2xl font-bold text-xl text-white active:bg-cyan-900/50 active:border-cyan-500 transition-all shadow-lg">C</button>
+                            <button onclick="checkOption(3)" id="opt-3" class="p-5 bg-slate-700 border-2 border-slate-600 rounded-2xl font-bold text-xl text-white active:bg-cyan-900/50 active:border-cyan-500 transition-all shadow-lg">D</button>
+                        </div>
+                    </div>
+                `;
+            }
+        }
+
+        function nextRound() {
+            if (state.lives <= 0) return endGame();
+            const content = document.getElementById('game-content');
+            content.innerHTML = ''; 
+            document.getElementById('feedback-area').textContent = ''; // Clear feedback on new round
+
+            if (state.mode === 'alpha') {
+                const code = Math.floor(Math.random() * 26) + 65; 
+                const char = String.fromCharCode(code);
+                state.currentQuestion = { q: char, a: code - 64 };
+
+                const h = window.visualViewport ? window.visualViewport.height : window.innerHeight;
+                let speed = state.baseSpeed;
+                if (h < 500) speed = state.baseSpeed * 1.5;
+
+                const item = document.createElement('div');
+                item.className = 'falling-item';
+                item.textContent = char;
+                item.style.animationDuration = `${speed}ms`;
+                item.addEventListener('animationend', handleMiss);
+                content.appendChild(item);
+                state.activeItem = item;
+                
+                const inp = document.getElementById('alpha-input');
+                if(inp) { inp.value = ''; inp.focus(); }
+            } 
+            else if (state.mode === 'mirror') {
+                const words = ["AMBULANCE", "REASONING", "EXAM", "POLICE", "QUALITY", "LOGIC", "TEST"];
+                const word = words[Math.floor(Math.random() * words.length)];
+                
+                const qEl = document.createElement('div');
+                qEl.className = "absolute inset-0 flex items-center justify-center pointer-events-none mb-32"; 
+                qEl.innerHTML = `<div class="text-5xl font-black tracking-widest text-white text-glow scale-125">${word}</div>`;
+                content.appendChild(qEl);
+
+                const correctOpt = `<span class="mirror-text">${word}</span>`;
+                const wrong1 = `<span class="mirror-text">${word.split('').reverse().join('')}</span>`;
+                const wrong2 = `<span class="">${word.split('').reverse().join('')}</span>`;
+                const wrong3 = `<span class="mirror-text">${word.substring(1)}</span>`;
+
+                const opts = [correctOpt, wrong1, wrong2, wrong3].sort(() => Math.random() - 0.5);
+                state.currentQuestion = { correctIndex: opts.indexOf(correctOpt) };
+
+                opts.forEach((optHTML, i) => {
+                    document.getElementById(`opt-${i}`).innerHTML = optHTML;
+                    document.getElementById(`opt-${i}`).className = "p-5 bg-slate-700 border-2 border-slate-600 rounded-2xl font-bold text-lg overflow-hidden active:bg-cyan-900/50 active:border-cyan-500 transition-colors text-white shadow-lg";
+                });
+            }
+            else if (state.mode === 'calendar') {
+                const days = ['Sun', 'Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat'];
+                const year = 1950 + Math.floor(Math.random() * 75);
+                const month = Math.floor(Math.random() * 12);
+                const date = Math.floor(Math.random() * 28) + 1;
+                
+                const dObj = new Date(year, month, date);
+                const dateStr = dObj.toLocaleDateString('en-GB', { day: 'numeric', month: 'short', year: 'numeric' });
+                const correctDay = days[dObj.getDay()];
+
+                const qEl = document.createElement('div');
+                qEl.className = "absolute inset-0 flex flex-col items-center justify-center pointer-events-none mb-32";
+                qEl.innerHTML = `
+                    <p class="text-xs text-slate-400 uppercase font-bold tracking-widest mb-3">What day was it?</p>
+                    <p class="text-4xl font-black text-white border-2 border-slate-700 px-8 py-4 rounded-3xl bg-slate-800 shadow-2xl">${dateStr}</p>
+                `;
+                content.appendChild(qEl);
+
+                const opts = [correctDay];
+                while(opts.length < 4) {
+                    const rDay = days[Math.floor(Math.random() * 7)];
+                    if(!opts.includes(rDay)) opts.push(rDay);
+                }
+                const shuffled = opts.sort(() => Math.random() - 0.5);
+                state.currentQuestion = { correctIndex: shuffled.indexOf(correctDay) };
+
+                shuffled.forEach((txt, i) => {
+                    const btn = document.getElementById(`opt-${i}`);
+                    btn.textContent = txt;
+                    btn.className = "p-5 bg-slate-700 border-2 border-slate-600 rounded-2xl font-bold text-xl text-white active:bg-cyan-900/50 active:border-cyan-500 transition-colors shadow-lg";
+                });
+            }
+        }
+
+        // --- CHECKERS ---
+
+        function checkAlphaInput(e) {
+            if (state.isOver) return;
+            const val = parseInt(e.target.value);
+            if (!val) return;
+
+            if (val === state.currentQuestion.a) {
+                // Correct
+                state.score += 10;
+                updateHUD();
+                state.activeItem.style.transform = 'scale(1.5)';
+                state.activeItem.style.opacity = '0';
+                setTimeout(nextRound, 100);
+            } else if (String(val).length >= String(state.currentQuestion.a).length) {
+                // Wrong length, just clear, don't punish yet? or shake?
+                e.target.value = '';
+            }
+        }
+
+        function checkOption(idx) {
+            if (state.isOver) return;
+            const btn = document.getElementById(`opt-${idx}`);
+            const correctBtn = document.getElementById(`opt-${state.currentQuestion.correctIndex}`);
+            
+            if (idx === state.currentQuestion.correctIndex) {
+                // Correct
+                btn.classList.add('flash-green');
+                state.score += 10;
+                updateHUD();
+                setTimeout(() => {
+                    btn.classList.remove('flash-green');
+                    nextRound();
+                }, 200);
+            } else {
+                // Wrong
+                btn.classList.add('flash-red');
+                correctBtn.classList.add('flash-green'); // SHOW CORRECT ANSWER
+                state.lives--;
+                updateHUD();
+                
+                if(state.lives <= 0) endGame();
+                else setTimeout(() => {
+                    btn.classList.remove('flash-red');
+                    correctBtn.classList.remove('flash-green');
+                    nextRound(); 
+                }, 1000); // 1s delay to see correct answer
+            }
+        }
+
+        function handleMiss() {
+            if (state.isOver) return;
+            
+            if (state.mode === 'alpha' && state.activeItem) {
+                // Show missed answer logic for Alpha
+                const fb = document.getElementById('feedback-area');
+                fb.textContent = `Missed! ${state.currentQuestion.q} = ${state.currentQuestion.a}`;
+                fb.style.color = '#ef4444'; // red
+                state.activeItem.remove();
+            } else {
+                if(state.activeItem) state.activeItem.remove();
+            }
+
+            state.lives--;
+            updateHUD();
+            if (state.lives > 0) nextRound();
+            else endGame();
+        }
+
+        function updateHUD() {
+            document.getElementById('score-val').textContent = state.score;
+            document.getElementById('lives-display').textContent = '❤️'.repeat(state.lives);
+        }
+
+        function quitGame() {
+            state.isOver = true;
+            if (state.activeItem) state.activeItem.remove();
+            showScreen('menu');
+        }
+
+        function endGame() {
+            state.isOver = true;
+            document.getElementById('final-score').textContent = state.score;
+            showScreen('over');
+        }
+
+        document.addEventListener('click', function(e) {
+            const anchor = e.target.closest('a');
+            if (anchor && (anchor.getAttribute('href').startsWith('http') || anchor.getAttribute('href').startsWith('www'))) {
+                e.preventDefault();
+                alert("🚫 FOCUS MODE: External link blocked.");
+            }
+        });
+    </script>
+</body>
+</html>

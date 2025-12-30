@@ -1,0 +1,385 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Complete Maths Course</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+    </style>
+</head>
+<body class="bg-slate-50 text-slate-800 h-screen flex flex-col overflow-hidden select-none">
+
+    <header class="bg-[#0f172a] text-white px-5 py-4 flex justify-between items-center shadow-md z-20 flex-none">
+        <h1 class="font-bold text-lg tracking-wide">Course Syllabus</h1>
+        <div class="flex gap-3">
+            <button onclick="openAddModal()" class="flex items-center gap-1 bg-blue-600 hover:bg-blue-500 px-3 py-1.5 rounded-full text-xs font-bold transition-colors">
+                <i data-lucide="plus" class="w-4 h-4"></i> Add Class
+            </button>
+            <div class="flex items-center gap-2 bg-slate-800/50 px-3 py-1 rounded-full border border-slate-700">
+                <span class="text-[10px] font-bold tracking-wider text-slate-300">SSC 2025</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 overflow-y-auto no-scrollbar p-4 pb-24 space-y-4" id="course-container">
+        </main>
+
+    <div id="add-modal" class="fixed inset-0 z-50 hidden flex items-center justify-center bg-black/80 backdrop-blur-sm p-4">
+        <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl animate-in fade-in zoom-in duration-200">
+            <div class="p-5 border-b border-slate-100 flex justify-between items-center">
+                <h3 class="font-bold text-lg">Add New Class</h3>
+                <button onclick="closeAddModal()" class="p-1 hover:bg-slate-100 rounded-full"><i data-lucide="x" class="w-5 h-5 text-slate-400"></i></button>
+            </div>
+            
+            <div class="p-5 space-y-4">
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">YOUTUBE LINK OR ID</label>
+                    <input type="text" id="new-video-url" placeholder="Paste link here..." class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 transition-colors">
+                </div>
+                
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">CLASS TITLE</label>
+                    <input type="text" id="new-video-title" placeholder="e.g., Algebra Short Tricks" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 transition-colors">
+                </div>
+
+                <div>
+                    <label class="block text-xs font-bold text-slate-500 mb-1">CATEGORY</label>
+                    <select id="new-video-category" class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-sm focus:outline-none focus:border-blue-500 transition-colors appearance-none">
+                        </select>
+                </div>
+
+                <button onclick="saveNewVideo()" class="w-full py-3 bg-blue-600 hover:bg-blue-700 text-white font-bold rounded-xl shadow-lg shadow-blue-200 transition-all active:scale-95">
+                    Add to Syllabus
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <div id="video-modal" class="fixed inset-0 z-50 hidden flex flex-col bg-black">
+        <div class="flex-none p-4 flex justify-between items-center bg-black/50 absolute top-0 w-full z-10">
+            <button onclick="closePlayer()" class="p-2 bg-white/10 rounded-full backdrop-blur-md text-white">
+                <i data-lucide="chevron-down" class="w-6 h-6"></i>
+            </button>
+        </div>
+        
+        <div class="flex-1 flex items-center justify-center bg-black">
+            <div id="player-wrapper" class="w-full aspect-video bg-black"></div>
+        </div>
+        
+        <div class="bg-white p-5 rounded-t-3xl flex-none pb-safe">
+            <h2 id="modal-title" class="font-bold text-lg mb-1 line-clamp-2">Video Title</h2>
+            <p class="text-xs text-slate-500 mb-4">Playing from Maths Marathon</p>
+            <button onclick="markCurrentAsDone()" class="w-full py-3 bg-blue-600 text-white rounded-xl font-bold active:scale-95 transition-transform">
+                Mark as Completed
+            </button>
+        </div>
+    </div>
+
+    <nav class="fixed bottom-0 w-full bg-white border-t border-slate-200 pb-safe z-30">
+        <div class="flex justify-around items-center px-2 py-3">
+            <a href="index.html" class="flex flex-col items-center gap-1 min-w-[60px] text-slate-400 hover:text-slate-600">
+                <i data-lucide="home" class="w-6 h-6"></i>
+                <span class="text-[10px] font-medium">Home</span>
+            </a>
+            <a href="course.html" class="flex flex-col items-center gap-1 min-w-[60px] text-blue-600">
+                <i data-lucide="layers" class="w-6 h-6 fill-current opacity-20"></i>
+                <span class="text-[10px] font-bold">Course</span>
+                <span class="w-1 h-1 bg-blue-600 rounded-full mt-0.5"></span>
+            </a>
+            <a href="math-gym.html" class="flex flex-col items-center gap-1 min-w-[60px] text-slate-400 hover:text-slate-600">
+                <i data-lucide="zap" class="w-6 h-6"></i>
+                <span class="text-[10px] font-medium">Math</span>
+            </a>
+            <a href="hindi-arcade.html" class="flex flex-col items-center gap-1 min-w-[60px] text-slate-400 hover:text-slate-600">
+                <div class="w-6 h-6 flex items-center justify-center font-bold text-lg leading-none border-2 border-current rounded-md">अ</div>
+                <span class="text-[10px] font-medium">Hindi</span>
+            </a>
+            <a href="reasoning.html" class="flex flex-col items-center gap-1 min-w-[60px] text-slate-400 hover:text-slate-600">
+                <i data-lucide="puzzle" class="w-6 h-6"></i>
+                <span class="text-[10px] font-medium">Reason</span>
+            </a>
+        </div>
+    </nav>
+
+    <script>
+        // --- DATA SECTION ---
+        
+        // 1. Static Videos (Your Base Course)
+        const staticVideos = [
+            { id: "1", title: "Day 01 | Percentage | Maths", videoId: "ERoNJ1uQ4gE" },
+            { id: "2", title: "Day 02 | Percentage | Maths", videoId: "Vm4jkAtxSRg" },
+            { id: "3", title: "Day 03 | Percentage | Maths", videoId: "CYKFSBv6mJQ" },
+            { id: "4", title: "Day 04 | Profit and Loss | Maths", videoId: "93bELA7a2eU" },
+            { id: "5", title: "Day 05 | Profit and Loss | Maths", videoId: "hmdjCwWxSJc" },
+            { id: "6", title: "Day 06 | Profit and Loss | Maths", videoId: "ht5_qgX9HLc" },
+            { id: "7", title: "Day 07 | Profit and Loss | Maths", videoId: "oBAqVVtrPWY" },
+            { id: "8", title: "Day 08 | Discount | Maths", videoId: "rrhzySAH2UM" },
+            { id: "9", title: "Day 09 | Discount 02 | Maths", videoId: "ur0_vOsPHvk" },
+            { id: "10", title: "Day 10 | Algebra | Maths", videoId: "mbLicsmFI_0" },
+            { id: "11", title: "Day 11 | Algebra | Maths", videoId: "sYi-jxa2p_s" },
+            { id: "12", title: "Day 12 | Algebra | Part 03", videoId: "dKMdK-7xBi0" },
+            { id: "13", title: "MATHS MOCK TEST 01", videoId: "r7QmKUV3VeE" },
+            { id: "14", title: "Day 14 | Algebra | Part 04", videoId: "sNAcGtbAMIc" },
+            { id: "15", title: "Day 15 | Simple Interest | Maths", videoId: "2YiXAmfwyog" },
+            { id: "16", title: "Day 16 | Simple Interest | Maths", videoId: "T1bLl2IU5WY" },
+            { id: "17", title: "Day 17 | Compound Interest | Maths", videoId: "QOWj11S-tgE" },
+            { id: "18", title: "Day 18 | Compound Interest 02", videoId: "HiJilIiose4" },
+            { id: "19", title: "Day 19 | Installments - S.I & C.I", videoId: "JBYdZYvEc5A" },
+            { id: "20", title: "MATHS MOCK TEST 2", videoId: "ni783vdlcG8" },
+            { id: "21", title: "Day 21 | Simplification | Maths", videoId: "avxRdUFjqN8" },
+            { id: "22", title: "Day 22 | Simplification 02", videoId: "lmRdrqm2fP8" },
+            { id: "23", title: "Day 23 | Number System | Maths", videoId: "HzELscp3eK0" },
+            { id: "24", title: "Day 24 | Number System | Maths", videoId: "3Bgpi3AFmE4" },
+            { id: "25", title: "Day 25| Number System 03", videoId: "beeS78CTKjU" },
+            { id: "26", title: "Day 26 | Number System | Maths", videoId: "duUJVmBDM5k" },
+            { id: "27", title: "Day 27 | Trigonometry | Maths", videoId: "Ynr24M8dShA" },
+            { id: "28", title: "Day 28 | Trigonometry-02", videoId: "mvWANskkaao" },
+            { id: "29", title: "Day 29 | Trigonometry-03", videoId: "Ovoo3SoNQ9U" },
+            { id: "30", title: "Day 30 | Trigonometry-04", videoId: "f_k3IYFH8fk" },
+            { id: "32", title: "Day 32 | Complete Ratio", videoId: "goD7jwJbosw" },
+            { id: "33", title: "Day 33| Proportion, Ages", videoId: "4G39zf9KY7U" },
+            { id: "34", title: "Day 34 | Mixture & Alligation", videoId: "c2ULnLjXztQ" },
+            { id: "35", title: "Day 35 | Average (औसत)", videoId: "z1c0YlmFyFI" },
+            { id: "36", title: "Day 36 | Complete Time & Work", videoId: "dShCSiEVBlI" },
+            { id: "37", title: "Day 37 | COORDINATE GEOMETRY", videoId: "cH5U1_uGFqs" },
+            { id: "38", title: "Day 38 | Pipe and Cistern", videoId: "vO_0Rm4Qd3w" },
+            { id: "39", title: "Day 39 | Simplification", videoId: "Xn3ZKtaW2Vc" },
+            { id: "41", title: "Day 41 | STATISTICS", videoId: "t6S2z_B2kxM" },
+            { id: "42", title: "Day 42 | Time, Speed & Distance", videoId: "Jc0lY4Cr9Pg" },
+            { id: "43", title: "Day 43 | TRAIN, BOAT & STREAM", videoId: "iU8M9vy6SGw" },
+            { id: "44", title: "Day 44 | GEOMETRY", videoId: "az_FEbPlOVA" },
+            { id: "45", title: "Day 45 | Mensuration 2D & 3D", videoId: "9FK4uk3qux8" }
+        ];
+
+        const syllabusConfig = [
+            { title: "Percentage", keywords: ["Percentage"] },
+            { title: "Profit & Loss", keywords: ["Profit", "Discount"] }, 
+            { title: "Algebra", keywords: ["Algebra"] },
+            { title: "Simple & Compound Interest", keywords: ["Simple Interest", "Compound", "Installments"] },
+            { title: "Number System", keywords: ["Number System"] },
+            { title: "Trigonometry", keywords: ["Trigonometry"] },
+            { title: "Simplification", keywords: ["Simplification"] },
+            { title: "Ratio & Proportion", keywords: ["Ratio", "Proportion"] },
+            { title: "Time & Work", keywords: ["Time & Work", "Pipe"] },
+            { title: "Time, Speed & Distance", keywords: ["Time, Speed", "Train", "Boat"] },
+            { title: "Geometry & Mensuration", keywords: ["Geometry", "Mensuration", "COORDINATE"] },
+            { title: "Average & Mixtures", keywords: ["Average", "Mixture"] },
+            { title: "Statistics", keywords: ["Statistics"] },
+            { title: "Mock Tests", keywords: ["Mock Test"] },
+            { title: "Custom Classes", keywords: ["Custom"] } // Fallback category
+        ];
+
+        // --- STATE MANAGEMENT ---
+        let userProgress = JSON.parse(localStorage.getItem('ssc_math_progress')) || {};
+        let customVideos = JSON.parse(localStorage.getItem('ssc_custom_videos')) || [];
+
+        // --- APP LOGIC ---
+
+        function organizeData() {
+            const container = document.getElementById('course-container');
+            container.innerHTML = '';
+            
+            // Combine Static + Custom Videos
+            const combinedVideos = [...staticVideos, ...customVideos];
+
+            syllabusConfig.forEach((chapter) => {
+                // Find matching videos
+                let chapterVideos;
+                
+                if (chapter.title === "Custom Classes") {
+                    // Show custom videos that didn't match other categories
+                    chapterVideos = customVideos.filter(v => v.category === "Custom");
+                } else {
+                    // 1. Keyword match
+                    const keywordMatches = combinedVideos.filter(v => 
+                        chapter.keywords.some(k => v.title.toLowerCase().includes(k.toLowerCase()))
+                    );
+                    // 2. Explicit Category match (for custom added videos)
+                    const explicitMatches = customVideos.filter(v => v.category === chapter.title);
+                    
+                    // Merge and deduplicate
+                    chapterVideos = [...new Set([...keywordMatches, ...explicitMatches])];
+                }
+
+                if (chapterVideos.length === 0) return;
+
+                const watchedCount = chapterVideos.filter(v => userProgress[v.videoId]).length;
+                const totalCount = chapterVideos.length;
+                const progressPercent = (watchedCount / totalCount) * 100;
+                
+                const card = document.createElement('div');
+                card.className = "bg-white rounded-2xl border border-slate-100 shadow-sm overflow-hidden mb-4 transition-all";
+                
+                card.innerHTML = `
+                    <div class="p-5 cursor-pointer" onclick="toggleChapter(this)">
+                        <div class="flex justify-between items-center mb-3">
+                            <div class="flex items-center gap-3">
+                                <div class="p-2 ${progressPercent === 100 ? 'bg-green-100 text-green-600' : 'bg-blue-50 text-blue-600'} rounded-lg">
+                                    <i data-lucide="${progressPercent === 100 ? 'check-circle' : 'book-open'}" class="w-5 h-5"></i>
+                                </div>
+                                <h3 class="font-bold text-slate-800">${chapter.title}</h3>
+                            </div>
+                            <i data-lucide="chevron-down" class="w-5 h-5 text-slate-400 transition-transform duration-300 chevron"></i>
+                        </div>
+                        
+                        <div class="flex justify-between text-xs text-slate-500 mb-1">
+                            <span>${watchedCount}/${totalCount} Completed</span>
+                            <span>${Math.round(progressPercent)}%</span>
+                        </div>
+                        <div class="w-full h-1.5 bg-slate-100 rounded-full overflow-hidden">
+                            <div class="h-full ${progressPercent === 100 ? 'bg-green-500' : 'bg-blue-600'} rounded-full transition-all duration-500" style="width: ${progressPercent}%"></div>
+                        </div>
+                    </div>
+
+                    <div class="video-list hidden border-t border-slate-50 bg-slate-50/50">
+                        ${chapterVideos.map(video => `
+                            <div class="p-4 flex gap-4 hover:bg-white transition-colors cursor-pointer border-b border-slate-100 last:border-0 group" 
+                                 onclick="playVideo('${video.videoId}', '${video.title.replace(/'/g, "\\'")}')">
+                                <div class="w-20 h-12 bg-slate-200 rounded overflow-hidden shrink-0 relative">
+                                    <img src="https://img.youtube.com/vi/${video.videoId}/mqdefault.jpg" class="w-full h-full object-cover">
+                                    ${userProgress[video.videoId] ? 
+                                      '<div class="absolute inset-0 bg-green-500/80 flex items-center justify-center"><i data-lucide="check" class="w-4 h-4 text-white"></i></div>' : 
+                                      '<div class="absolute inset-0 bg-black/30 group-hover:bg-black/10 flex items-center justify-center"><i data-lucide="play" class="w-4 h-4 text-white"></i></div>'}
+                                </div>
+                                <div class="flex-1 min-w-0">
+                                    <h4 class="text-sm font-medium text-slate-800 truncate group-hover:text-blue-600">${video.title}</h4>
+                                    <p class="text-[10px] text-slate-500 mt-1">
+                                        ${video.isCustom ? 'Custom Class' : 'Maths Marathon'} • Notes Available
+                                    </p>
+                                </div>
+                                <button class="p-2 text-slate-300 hover:text-blue-600" onclick="event.stopPropagation(); downloadNotes('${video.title.replace(/'/g, "\\'")}')">
+                                    <i data-lucide="file-text" class="w-4 h-4"></i>
+                                </button>
+                            </div>
+                        `).join('')}
+                    </div>
+                `;
+                container.appendChild(card);
+            });
+            lucide.createIcons();
+        }
+
+        // --- NEW: ADD VIDEO LOGIC ---
+
+        function openAddModal() {
+            // Populate Category Select
+            const select = document.getElementById('new-video-category');
+            select.innerHTML = syllabusConfig.map(c => `<option value="${c.title}">${c.title}</option>`).join('');
+            
+            document.getElementById('add-modal').classList.remove('hidden');
+        }
+
+        function closeAddModal() {
+            document.getElementById('add-modal').classList.add('hidden');
+        }
+
+        function extractYouTubeID(url) {
+            // Handle various YT formats (youtu.be, youtube.com/watch?v=, etc)
+            const regExp = /^.*(youtu.be\/|v\/|u\/\w\/|embed\/|watch\?v=|&v=)([^#&?]*).*/;
+            const match = url.match(regExp);
+            return (match && match[2].length === 11) ? match[2] : url; // Return input if no match (maybe they pasted ID directly)
+        }
+
+        function saveNewVideo() {
+            const urlInput = document.getElementById('new-video-url').value;
+            const titleInput = document.getElementById('new-video-title').value;
+            const categoryInput = document.getElementById('new-video-category').value;
+
+            if (!urlInput || !titleInput) {
+                alert("Please enter both a valid URL and a Title.");
+                return;
+            }
+
+            const videoId = extractYouTubeID(urlInput);
+            
+            const newVideo = {
+                id: "custom-" + Date.now(),
+                title: titleInput,
+                videoId: videoId,
+                category: categoryInput,
+                isCustom: true
+            };
+
+            // Save
+            customVideos.push(newVideo);
+            localStorage.setItem('ssc_custom_videos', JSON.stringify(customVideos));
+            
+            // Clean up
+            document.getElementById('new-video-url').value = '';
+            document.getElementById('new-video-title').value = '';
+            closeAddModal();
+            organizeData(); // Refresh list
+        }
+
+        // --- EXISTING INTERACTION FUNCTIONS ---
+
+        function toggleChapter(header) {
+            const list = header.nextElementSibling;
+            const chevron = header.querySelector('.chevron');
+            if (list.classList.contains('hidden')) {
+                list.classList.remove('hidden');
+                chevron.style.transform = 'rotate(180deg)';
+            } else {
+                list.classList.add('hidden');
+                chevron.style.transform = 'rotate(0deg)';
+            }
+        }
+
+        let currentVideoId = null;
+
+        function playVideo(id, title) {
+            currentVideoId = id;
+            const modal = document.getElementById('video-modal');
+            const wrapper = document.getElementById('player-wrapper');
+            document.getElementById('modal-title').textContent = title;
+            wrapper.innerHTML = `
+                <iframe class="w-full h-full" 
+                    src="https://www.youtube.com/embed/${id}?autoplay=1&modestbranding=1&rel=0" 
+                    frameborder="0" allow="autoplay; encrypted-media" allowfullscreen>
+                </iframe>
+            `;
+            modal.classList.remove('hidden');
+        }
+
+        function closePlayer() {
+            const modal = document.getElementById('video-modal');
+            document.getElementById('player-wrapper').innerHTML = '';
+            modal.classList.add('hidden');
+            currentVideoId = null;
+        }
+
+        function markCurrentAsDone() {
+            if (currentVideoId) {
+                userProgress[currentVideoId] = true;
+                localStorage.setItem('ssc_math_progress', JSON.stringify(userProgress));
+                closePlayer();
+                organizeData();
+            }
+        }
+        
+        function downloadNotes(title) {
+            alert(`Downloading PDF notes for: ${title}`);
+        }
+
+        // Init
+        organizeData();
+
+        // Guardian Script
+        document.addEventListener('click', function(e) {
+            const anchor = e.target.closest('a');
+            if (anchor) {
+                const href = anchor.getAttribute('href');
+                if (href && (href.startsWith('http') || href.startsWith('www'))) {
+                    e.preventDefault();
+                    alert("🚫 FOCUS MODE: External link blocked.");
+                }
+            }
+        });
+    </script>
+</body>
+</html>

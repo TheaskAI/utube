@@ -1,0 +1,468 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>Hindi Arcade</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        .hindi-font { font-family: 'Tiro Devanagari Hindi', serif; }
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+        
+        /* Falling Animation */
+        .falling-word {
+            position: absolute;
+            top: -60px;
+            left: 50%;
+            transform: translateX(-50%);
+            padding: 0.75rem 1.5rem;
+            background-color: white;
+            border: 2px solid #f97316;
+            color: #ea580c;
+            border-radius: 1rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            font-family: 'Tiro Devanagari Hindi', serif;
+            font-size: 1.5rem;
+            font-weight: bold;
+            z-index: 10;
+            white-space: nowrap;
+            animation: fall linear forwards;
+        }
+
+        @keyframes fall {
+            from { top: -60px; }
+            to { top: 85%; opacity: 0; }
+        }
+
+        .btn-press { transition: transform 0.1s; }
+        .btn-press:active { transform: scale(0.95); }
+
+        .correct-flash { animation: flash-green 0.3s ease-in-out forwards; }
+        @keyframes flash-green { 0%, 100% { background-color: white; } 50% { background-color: #86efac; } }
+        
+        .wrong-flash { animation: flash-red 0.3s ease-in-out forwards; }
+        @keyframes flash-red { 0%, 100% { background-color: white; } 50% { background-color: #fca5a5; } }
+    </style>
+</head>
+<body class="bg-orange-50 text-slate-800 h-screen flex flex-col overflow-hidden select-none">
+
+    <header class="bg-[#0f172a] text-white px-5 py-4 flex justify-between items-center shadow-md z-30 flex-none">
+        <div class="flex items-center gap-3">
+             <div class="w-8 h-8 rounded bg-orange-500 flex items-center justify-center font-bold text-white hindi-font text-lg shadow-sm shadow-orange-900/50">अ</div>
+             <h1 class="font-bold text-lg tracking-wide">Hindi Arcade</h1>
+        </div>
+        <div class="flex gap-2">
+            <button onclick="openImportModal()" class="flex items-center gap-1 bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-full text-xs font-bold transition-colors border border-slate-600">
+                <i data-lucide="download" class="w-3 h-3"></i> Import
+            </button>
+            <div class="flex items-center gap-2 bg-slate-800/50 px-3 py-1 rounded-full border border-slate-700">
+                <span class="text-[10px] font-bold tracking-wider text-slate-300">SHABD VARSHA</span>
+            </div>
+        </div>
+    </header>
+
+    <main class="flex-1 overflow-y-auto no-scrollbar relative bg-orange-50/50">
+        
+        <div class="sticky top-0 z-20 bg-orange-50 p-4 pb-2">
+            <div class="flex p-1 bg-white border border-orange-200 rounded-xl shadow-sm">
+                <button onclick="switchTab('learn')" id="btn-learn" class="flex-1 py-2 rounded-lg text-xs font-bold bg-orange-600 text-white shadow-md transition-all">
+                    📖 Study
+                </button>
+                <button onclick="switchTab('game')" id="btn-game" class="flex-1 py-2 rounded-lg text-xs font-bold text-slate-500 hover:text-orange-700 transition-all">
+                    🎮 Play
+                </button>
+            </div>
+        </div>
+
+        <div id="view-learn" class="p-4 pb-24 space-y-6">
+            <div class="flex gap-2 overflow-x-auto no-scrollbar pb-2">
+                <button onclick="renderStudy('vilom')" class="px-4 py-2 bg-white border border-orange-200 text-orange-700 rounded-full text-xs font-bold whitespace-nowrap active:bg-orange-100 shadow-sm">Vilom</button>
+                <button onclick="renderStudy('samas')" class="px-4 py-2 bg-white border border-orange-200 text-orange-700 rounded-full text-xs font-bold whitespace-nowrap active:bg-orange-100 shadow-sm">Samas</button>
+                <button onclick="renderStudy('muhavre')" class="px-4 py-2 bg-white border border-orange-200 text-orange-700 rounded-full text-xs font-bold whitespace-nowrap active:bg-orange-100 shadow-sm">Muhavre</button>
+                <button onclick="renderStudy('sandhi')" class="px-4 py-2 bg-white border border-orange-200 text-orange-700 rounded-full text-xs font-bold whitespace-nowrap active:bg-orange-100 shadow-sm">Sandhi</button>
+                <button onclick="renderStudy('custom')" class="px-4 py-2 bg-white border border-orange-200 text-purple-700 rounded-full text-xs font-bold whitespace-nowrap active:bg-purple-100 shadow-sm">Custom</button>
+            </div>
+            <div id="study-container" class="space-y-3"></div>
+        </div>
+
+        <div id="view-game" class="hidden h-full flex flex-col absolute inset-0 top-[70px] bg-orange-50">
+            
+            <div id="game-menu" class="absolute inset-0 z-20 bg-orange-50 flex flex-col items-center justify-center p-6 space-y-6">
+                <div class="text-center">
+                    <h2 class="text-4xl font-black text-slate-800 mb-1 hindi-font">शब्द वर्षा</h2>
+                    <p class="text-sm text-slate-500">Select speed & topic</p>
+                </div>
+
+                <div class="bg-white p-1.5 rounded-xl border border-orange-100 shadow-sm flex w-full max-w-sm">
+                    <button onclick="setSpeed('easy')" id="spd-easy" class="flex-1 py-2 rounded-lg text-xs font-bold text-slate-500 hover:bg-orange-50 transition-all">Easy</button>
+                    <button onclick="setSpeed('medium')" id="spd-medium" class="flex-1 py-2 rounded-lg text-xs font-bold bg-orange-500 text-white shadow-md transition-all">Normal</button>
+                    <button onclick="setSpeed('hard')" id="spd-hard" class="flex-1 py-2 rounded-lg text-xs font-bold text-slate-500 hover:bg-orange-50 transition-all">Hard</button>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 w-full max-w-sm">
+                    <button onclick="startGame('vilom')" class="p-5 bg-white border-2 border-orange-100 rounded-2xl shadow-sm hover:border-orange-500 hover:shadow-md transition-all group active:scale-95">
+                        <div class="text-2xl mb-1 group-hover:scale-110 transition-transform">↔️</div>
+                        <div class="font-bold text-slate-700">Vilom</div>
+                    </button>
+                    <button onclick="startGame('samas')" class="p-5 bg-white border-2 border-purple-100 rounded-2xl shadow-sm hover:border-purple-500 hover:shadow-md transition-all group active:scale-95">
+                        <div class="text-2xl mb-1 group-hover:scale-110 transition-transform">🔗</div>
+                        <div class="font-bold text-slate-700">Samas</div>
+                    </button>
+                    <button onclick="startGame('muhavre')" class="p-5 bg-white border-2 border-green-100 rounded-2xl shadow-sm hover:border-green-500 hover:shadow-md transition-all group active:scale-95">
+                        <div class="text-2xl mb-1 group-hover:scale-110 transition-transform">🦁</div>
+                        <div class="font-bold text-slate-700">Muhavre</div>
+                    </button>
+                    <button onclick="startGame('custom')" class="p-5 bg-white border-2 border-slate-100 rounded-2xl shadow-sm hover:border-slate-500 hover:shadow-md transition-all group active:scale-95">
+                        <div class="text-2xl mb-1 group-hover:scale-110 transition-transform">📂</div>
+                        <div class="font-bold text-slate-700">Custom</div>
+                    </button>
+                </div>
+            </div>
+
+            <div id="game-board" class="hidden relative w-full h-full flex flex-col overflow-hidden">
+                <div class="flex justify-between items-center p-4 z-10">
+                    <div class="bg-white/80 backdrop-blur px-3 py-1 rounded-full border border-slate-200 text-xs font-bold text-slate-600 shadow-sm">
+                        SCORE: <span id="score-val" class="text-orange-600 text-lg">0</span>
+                    </div>
+                    <div class="flex gap-1 text-xl" id="lives-display">❤️❤️❤️</div>
+                </div>
+
+                <div id="drop-zone" class="flex-1 relative border-b-2 border-dashed border-orange-200/50 mx-4 mb-2"></div>
+
+                <div class="h-64 bg-white rounded-t-3xl shadow-[0_-5px_20px_rgba(0,0,0,0.05)] p-4 pb-24 z-20">
+                    <div class="text-center mb-2">
+                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest" id="question-type-label">SELECT ANSWER</p>
+                    </div>
+                    <div class="grid grid-cols-2 gap-3 h-full pb-4">
+                        <button onclick="checkAnswer(0)" id="opt-0" class="btn-press bg-slate-50 border-2 border-slate-100 rounded-xl font-bold text-slate-700 hindi-font text-xl shadow-sm active:bg-orange-100 active:border-orange-300 transition-colors">A</button>
+                        <button onclick="checkAnswer(1)" id="opt-1" class="btn-press bg-slate-50 border-2 border-slate-100 rounded-xl font-bold text-slate-700 hindi-font text-xl shadow-sm active:bg-orange-100 active:border-orange-300 transition-colors">B</button>
+                        <button onclick="checkAnswer(2)" id="opt-2" class="btn-press bg-slate-50 border-2 border-slate-100 rounded-xl font-bold text-slate-700 hindi-font text-xl shadow-sm active:bg-orange-100 active:border-orange-300 transition-colors">C</button>
+                        <button onclick="checkAnswer(3)" id="opt-3" class="btn-press bg-slate-50 border-2 border-slate-100 rounded-xl font-bold text-slate-700 hindi-font text-xl shadow-sm active:bg-orange-100 active:border-orange-300 transition-colors">D</button>
+                    </div>
+                </div>
+            </div>
+
+            <div id="game-over" class="hidden absolute inset-0 z-50 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center p-6 animate-in zoom-in">
+                <div class="text-6xl mb-4">🏆</div>
+                <h2 class="text-3xl font-black text-slate-800 mb-2">Game Over!</h2>
+                <div class="bg-orange-50 p-6 rounded-2xl border border-orange-100 text-center w-full max-w-xs mb-6">
+                    <p class="text-xs font-bold text-orange-400 uppercase">Final Score</p>
+                    <p id="final-score" class="text-5xl font-black text-orange-600 my-2">0</p>
+                </div>
+                <button onclick="showMenu()" class="w-full max-w-xs py-4 bg-[#0f172a] text-white font-bold rounded-xl shadow-lg active:scale-95 transition-transform">
+                    MAIN MENU
+                </button>
+            </div>
+        </div>
+    </main>
+
+    <div id="import-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
+        <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl">
+            <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+                <h3 class="font-bold text-lg">Import Custom Data</h3>
+                <button onclick="closeImportModal()" class="p-1 hover:bg-slate-200 rounded-full"><i data-lucide="x" class="w-5 h-5 text-slate-400"></i></button>
+            </div>
+            <div class="p-5 space-y-4">
+                <p class="text-xs text-slate-500">Paste JSON data below. Format: <code>[{"q":"Question", "a":"Answer"}]</code></p>
+                <div class="bg-slate-50 border border-slate-200 p-3 rounded-lg">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">SAMPLE FORMAT</p>
+                    <code class="text-xs text-blue-600 block whitespace-pre-wrap font-mono select-all">
+[
+  {"q": "Surya", "a": "Ravi"},
+  {"q": "Jal", "a": "Neer"}
+]</code>
+                </div>
+                <textarea id="import-area" rows="6" placeholder="Paste your JSON here..." class="w-full p-3 bg-white border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:border-orange-500"></textarea>
+                <button onclick="saveImportData()" class="w-full py-3 bg-orange-600 text-white font-bold rounded-xl active:scale-95 transition-transform shadow-lg shadow-orange-200">
+                    Save & Import
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <nav class="fixed bottom-0 w-full bg-white border-t border-slate-200 pb-safe z-40">
+        <div class="flex justify-around items-center px-2 py-3">
+            <a href="index.html" class="flex flex-col items-center gap-1 min-w-[60px] text-slate-400 hover:text-slate-600">
+                <i data-lucide="home" class="w-6 h-6"></i>
+                <span class="text-[10px] font-medium">Home</span>
+            </a>
+            <a href="course.html" class="flex flex-col items-center gap-1 min-w-[60px] text-slate-400 hover:text-slate-600">
+                <i data-lucide="layers" class="w-6 h-6"></i>
+                <span class="text-[10px] font-medium">Course</span>
+            </a>
+            <a href="math-gym.html" class="flex flex-col items-center gap-1 min-w-[60px] text-slate-400 hover:text-slate-600">
+                <i data-lucide="zap" class="w-6 h-6"></i>
+                <span class="text-[10px] font-medium">Math</span>
+            </a>
+            <a href="#" class="flex flex-col items-center gap-1 min-w-[60px] text-orange-600">
+                <div class="w-6 h-6 flex items-center justify-center font-bold text-lg leading-none border-2 border-current rounded-md bg-orange-50">अ</div>
+                <span class="text-[10px] font-bold">Hindi</span>
+                 <span class="w-1 h-1 bg-orange-600 rounded-full mt-0.5"></span>
+            </a>
+            <a href="reasoning.html" class="flex flex-col items-center gap-1 min-w-[60px] text-slate-400 hover:text-slate-600">
+                <i data-lucide="puzzle" class="w-6 h-6"></i>
+                <span class="text-[10px] font-medium">Reason</span>
+            </a>
+        </div>
+    </nav>
+
+    <script>
+        lucide.createIcons();
+
+        // --- DATA ---
+        let vocabData = {
+            vilom: [
+                { q: "अवनि", a: "अम्बर" }, { q: "अनल", a: "हवा" }, { q: "अनुराग", a: "विराग" },
+                { q: "अल्पायु", a: "दीर्घायु" }, { q: "आकाश", a: "पाताल" }, { q: "आयात", a: "निर्यात" },
+                { q: "उदय", a: "अस्त" }, { q: "उत्थान", a: "पतन" }, { q: "उर्वर", a: "ऊसर" },
+                { q: "एकता", a: "अनेकता" }, { q: "कीर्ति", a: "अपकीर्ति" }, { q: "क्रूर", a: "दयालु" },
+                { q: "जड़", a: "चेतन" }, { q: "जंगम", a: "स्थावर" }, { q: "तिमिर", a: "प्रकाश" },
+                { q: "दीर्घ", a: "ह्रस्व" }, { q: "निंदा", a: "स्तुति" }, { q: "निर्मल", a: "मलिन" },
+                { q: "प्रत्यक्ष", a: "परोक्ष" }, { q: "बंधन", a: "मुक्ति" }
+            ],
+            samas: [
+                { q: "राजपुत्र", a: "तत्पुरुष" }, { q: "यथाशक्ति", a: "अव्ययीभाव" },
+                { q: "नीलकंठ", a: "बहुव्रीहि" }, { q: "चौराहा", a: "द्विगु" },
+                { q: "माता-पिता", a: "द्वन्द्व" }, { q: "महात्मा", a: "कर्मधारय" },
+                { q: "आजन्म", a: "अव्ययीभाव" }, { q: "दशानन", a: "बहुव्रीहि" },
+                { q: "रसोईघर", a: "तत्पुरुष" }, { q: "नवरत्न", a: "द्विगु" }
+            ],
+            muhavre: [
+                { q: "आँख का तारा", a: "बहुत प्यारा" }, { q: "नौ दो ग्यारह होना", a: "भाग जाना" },
+                { q: "ईद का चाँद", a: "बहुत दिनों बाद दिखना" }, { q: "घी के दिए जलाना", a: "खुशी मनाना" },
+                { q: "दाँत खट्टे करना", a: "हरा देना" }, { q: "लोहे के चने चबाना", a: "कठिन संघर्ष" },
+                { q: "श्री गणेश करना", a: "शुरू करना" }, { q: "हाथ मलना", a: "पछताना" }
+            ],
+            sandhi: [
+                { q: "विद्या + आलय", a: "विद्यालय" }, { q: "रवि + इंद्र", a: "रवींद्र" },
+                { q: "भानु + उदय", a: "भानूदय" }, { q: "नर + ईश", a: "नरेश" },
+                { q: "सदा + एव", a: "सदैव" }, { q: "सु + आगत", a: "स्वागत" },
+                { q: "पो + अन", a: "पवन" }, { q: "जगत + ईश", a: "जगदीश" }
+            ],
+            custom: []
+        };
+        
+        const savedCustom = localStorage.getItem('hindi_arcade_custom');
+        if (savedCustom) vocabData.custom = JSON.parse(savedCustom);
+
+        // --- STATE ---
+        let state = {
+            mode: 'vilom',
+            score: 0,
+            lives: 3,
+            selectedSpeed: 'medium', // Default speed setting
+            speed: 4000,             // Actual ms
+            activeWord: null,
+            correctIndex: 0,
+            isOver: false
+        };
+
+        const speeds = {
+            easy: 6000,
+            medium: 4000,
+            hard: 2500
+        };
+
+        // --- UI LOGIC ---
+        function switchTab(tab) {
+            document.getElementById('view-learn').style.display = tab === 'learn' ? 'block' : 'none';
+            document.getElementById('view-game').style.display = tab === 'game' ? 'flex' : 'none';
+            
+            if (tab === 'learn') {
+                document.getElementById('btn-learn').className = "flex-1 py-2 rounded-lg text-xs font-bold bg-orange-600 text-white shadow-md transition-all";
+                document.getElementById('btn-game').className = "flex-1 py-2 rounded-lg text-xs font-bold text-slate-500 hover:text-orange-700 transition-all";
+                renderStudy('vilom');
+            } else {
+                document.getElementById('btn-game').className = "flex-1 py-2 rounded-lg text-xs font-bold bg-[#0f172a] text-white shadow-md transition-all";
+                document.getElementById('btn-learn').className = "flex-1 py-2 rounded-lg text-xs font-bold text-slate-500 hover:text-orange-700 transition-all";
+                showMenu();
+            }
+        }
+
+        function setSpeed(lvl) {
+            state.selectedSpeed = lvl;
+            
+            // Reset styles
+            ['easy', 'medium', 'hard'].forEach(l => {
+                document.getElementById('spd-'+l).className = "flex-1 py-2 rounded-lg text-xs font-bold text-slate-500 hover:bg-orange-50 transition-all";
+            });
+            // Highlight active
+            document.getElementById('spd-'+lvl).className = "flex-1 py-2 rounded-lg text-xs font-bold bg-orange-500 text-white shadow-md transition-all";
+        }
+
+        // --- STUDY ---
+        function renderStudy(topic) {
+            const container = document.getElementById('study-container');
+            container.innerHTML = '';
+            const list = vocabData[topic];
+            
+            if (!list || list.length === 0) {
+                container.innerHTML = `<div class="text-center p-8 text-slate-400"><p class="text-sm">No data found.</p><button onclick="openImportModal()" class="text-xs text-blue-600 underline mt-2">Import Data</button></div>`;
+                return;
+            }
+
+            list.forEach(item => {
+                const card = document.createElement('div');
+                card.className = "bg-white p-4 rounded-xl shadow-sm border border-orange-100 flex justify-between items-center";
+                card.innerHTML = `<div class="font-bold text-lg text-slate-700 hindi-font">${item.q}</div><div class="text-orange-300">➜</div><div class="font-bold text-lg text-orange-600 hindi-font">${item.a}</div>`;
+                container.appendChild(card);
+            });
+        }
+
+        // --- IMPORT ---
+        function openImportModal() { document.getElementById('import-modal').classList.remove('hidden'); }
+        function closeImportModal() { document.getElementById('import-modal').classList.add('hidden'); }
+        function saveImportData() {
+            try {
+                const parsed = JSON.parse(document.getElementById('import-area').value);
+                if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].q && parsed[0].a) {
+                    vocabData.custom = [...vocabData.custom, ...parsed];
+                    localStorage.setItem('hindi_arcade_custom', JSON.stringify(vocabData.custom));
+                    alert(`Imported ${parsed.length} items!`);
+                    closeImportModal();
+                    if(document.getElementById('view-learn').style.display !== 'none') renderStudy('custom');
+                } else alert("Invalid format!");
+            } catch (e) { alert("JSON Error"); }
+        }
+
+        // --- GAME ---
+        function showMenu() {
+            document.getElementById('game-menu').style.display = 'flex';
+            document.getElementById('game-board').style.display = 'none';
+            document.getElementById('game-over').style.display = 'none';
+        }
+
+        function startGame(topic) {
+            if (!vocabData[topic] || vocabData[topic].length < 4) {
+                alert("Need at least 4 items to play!");
+                return;
+            }
+            state.mode = topic;
+            state.score = 0;
+            state.lives = 3;
+            state.speed = speeds[state.selectedSpeed]; // Set speed from selection
+            state.activeWord = null;
+            state.isOver = false;
+            
+            document.getElementById('game-menu').style.display = 'none';
+            document.getElementById('game-board').style.display = 'flex';
+            
+            const labels = { vilom: "SELECT ANTONYM", samas: "IDENTIFY SAMAS", muhavre: "COMPLETE IDIOM", sandhi: "JOIN WORDS", custom: "SELECT ANSWER" };
+            document.getElementById('question-type-label').textContent = labels[topic];
+
+            updateHUD();
+            nextRound();
+        }
+
+        function nextRound() {
+            if (state.lives <= 0) return endGame();
+            if (state.activeWord) state.activeWord.remove();
+
+            const dataset = vocabData[state.mode];
+            const item = dataset[Math.floor(Math.random() * dataset.length)];
+            
+            // Options
+            const options = [item.a];
+            while (options.length < 4) {
+                const randomItem = dataset[Math.floor(Math.random() * dataset.length)];
+                if (!options.includes(randomItem.a)) options.push(randomItem.a);
+            }
+            const shuffled = options.sort(() => Math.random() - 0.5);
+            state.correctIndex = shuffled.indexOf(item.a);
+
+            // Buttons
+            for(let i=0; i<4; i++) {
+                const btn = document.getElementById(`opt-${i}`);
+                btn.textContent = shuffled[i];
+                btn.className = "btn-press bg-slate-50 border-2 border-slate-100 rounded-xl font-bold text-slate-700 hindi-font text-lg shadow-sm active:bg-orange-100 active:border-orange-300 transition-colors";
+                btn.style = ''; 
+                btn.disabled = false;
+            }
+
+            // Falling Word
+            const wordEl = document.createElement('div');
+            wordEl.className = 'falling-word';
+            wordEl.textContent = item.q;
+            wordEl.style.animationDuration = `${state.speed}ms`;
+            wordEl.addEventListener('animationend', () => handleMiss());
+
+            document.getElementById('drop-zone').appendChild(wordEl);
+            state.activeWord = wordEl;
+        }
+
+        function checkAnswer(idx) {
+            if (state.isOver) return;
+            const correctBtn = document.getElementById(`opt-${state.correctIndex}`);
+            const selectedBtn = document.getElementById(`opt-${idx}`);
+
+            if (idx === state.correctIndex) {
+                state.score += 10;
+                // Speed up slightly if not already super fast
+                if(state.score % 50 === 0 && state.speed > 1500) state.speed -= 200;
+                
+                selectedBtn.classList.add('correct-flash');
+                
+                state.activeWord.style.animation = 'none';
+                state.activeWord.style.transform = 'scale(1.5)';
+                state.activeWord.style.opacity = '0';
+                state.activeWord.style.transition = 'all 0.2s';
+
+                setTimeout(() => {
+                    selectedBtn.classList.remove('correct-flash');
+                    updateHUD();
+                    nextRound();
+                }, 300);
+            } else {
+                state.lives--;
+                selectedBtn.classList.add('wrong-flash');
+                correctBtn.style.backgroundColor = '#86efac';
+                
+                state.activeWord.style.backgroundColor = '#fca5a5';
+                state.activeWord.style.borderColor = '#ef4444';
+
+                setTimeout(() => {
+                    selectedBtn.classList.remove('wrong-flash');
+                    updateHUD();
+                    nextRound();
+                }, 600);
+            }
+        }
+
+        function handleMiss() {
+            if (state.isOver || !state.activeWord) return;
+            state.lives--;
+            updateHUD();
+            state.activeWord.remove();
+            state.activeWord = null;
+            if (state.lives > 0) nextRound();
+            else endGame();
+        }
+
+        function updateHUD() {
+            document.getElementById('score-val').textContent = state.score;
+            document.getElementById('lives-display').textContent = '❤️'.repeat(state.lives);
+        }
+
+        function endGame() {
+            state.isOver = true;
+            if (state.activeWord) state.activeWord.remove();
+            document.getElementById('final-score').textContent = state.score;
+            document.getElementById('game-over').style.display = 'flex';
+        }
+
+        renderStudy('vilom');
+        
+        document.addEventListener('click', function(e) {
+            const anchor = e.target.closest('a');
+            if (anchor && (anchor.getAttribute('href').startsWith('http') || anchor.getAttribute('href').startsWith('www'))) {
+                e.preventDefault();
+                alert("🚫 FOCUS MODE: External link blocked.");
+            }
+        });
+    </script>
+</body>
+</html>
