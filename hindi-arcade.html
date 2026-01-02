@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Hindi Arcade</title>
+    <title>Hindi Arcade - Ultimate</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet">
@@ -46,13 +46,20 @@
         
         .wrong-flash { animation: flash-red 0.3s ease-in-out forwards; }
         @keyframes flash-red { 0%, 100% { background-color: white; } 50% { background-color: #fca5a5; } }
+
+        /* Animation for Popup */
+        .pop-in { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
+        @keyframes popIn {
+            0% { transform: scale(0.8); opacity: 0; }
+            100% { transform: scale(1); opacity: 1; }
+        }
     </style>
 </head>
 <body class="bg-orange-50 text-slate-800 h-screen flex flex-col overflow-hidden select-none">
 
     <header class="bg-[#0f172a] text-white px-5 py-4 flex justify-between items-center shadow-md z-30 flex-none">
         <div class="flex items-center gap-3">
-             <div class="w-8 h-8 rounded bg-orange-500 flex items-center justify-center font-bold text-white hindi-font text-lg shadow-sm shadow-orange-900/50">अ</div>
+             <div class="w-8 h-8 rounded bg-orange-500 flex items-center justify-center font-bold text-white hindi-font text-lg shadow-sm shadow-orange-900/50"></div>
              <h1 class="font-bold text-lg tracking-wide">Hindi Arcade</h1>
         </div>
         <div class="flex gap-2">
@@ -70,10 +77,10 @@
         <div class="sticky top-0 z-20 bg-orange-50 p-4 pb-2">
             <div class="flex p-1 bg-white border border-orange-200 rounded-xl shadow-sm">
                 <button onclick="switchTab('learn')" id="btn-learn" class="flex-1 py-2 rounded-lg text-xs font-bold bg-orange-600 text-white shadow-md transition-all">
-                    📖 Study
+                     Study
                 </button>
                 <button onclick="switchTab('game')" id="btn-game" class="flex-1 py-2 rounded-lg text-xs font-bold text-slate-500 hover:text-orange-700 transition-all">
-                    🎮 Play
+                     Play
                 </button>
             </div>
         </div>
@@ -93,7 +100,7 @@
             
             <div id="game-menu" class="absolute inset-0 z-20 bg-orange-50 flex flex-col items-center justify-center p-6 space-y-6">
                 <div class="text-center">
-                    <h2 class="text-4xl font-black text-slate-800 mb-1 hindi-font">शब्द वर्षा</h2>
+                    <h2 class="text-4xl font-black text-slate-800 mb-1 hindi-font"> </h2>
                     <p class="text-sm text-slate-500">Select speed & topic</p>
                 </div>
 
@@ -105,19 +112,19 @@
 
                 <div class="grid grid-cols-2 gap-3 w-full max-w-sm">
                     <button onclick="startGame('vilom')" class="p-5 bg-white border-2 border-orange-100 rounded-2xl shadow-sm hover:border-orange-500 hover:shadow-md transition-all group active:scale-95">
-                        <div class="text-2xl mb-1 group-hover:scale-110 transition-transform">↔️</div>
+                        <div class="text-2xl mb-1 group-hover:scale-110 transition-transform"></div>
                         <div class="font-bold text-slate-700">Vilom</div>
                     </button>
                     <button onclick="startGame('samas')" class="p-5 bg-white border-2 border-purple-100 rounded-2xl shadow-sm hover:border-purple-500 hover:shadow-md transition-all group active:scale-95">
-                        <div class="text-2xl mb-1 group-hover:scale-110 transition-transform">🔗</div>
+                        <div class="text-2xl mb-1 group-hover:scale-110 transition-transform"></div>
                         <div class="font-bold text-slate-700">Samas</div>
                     </button>
                     <button onclick="startGame('muhavre')" class="p-5 bg-white border-2 border-green-100 rounded-2xl shadow-sm hover:border-green-500 hover:shadow-md transition-all group active:scale-95">
-                        <div class="text-2xl mb-1 group-hover:scale-110 transition-transform">🦁</div>
+                        <div class="text-2xl mb-1 group-hover:scale-110 transition-transform"></div>
                         <div class="font-bold text-slate-700">Muhavre</div>
                     </button>
                     <button onclick="startGame('custom')" class="p-5 bg-white border-2 border-slate-100 rounded-2xl shadow-sm hover:border-slate-500 hover:shadow-md transition-all group active:scale-95">
-                        <div class="text-2xl mb-1 group-hover:scale-110 transition-transform">📂</div>
+                        <div class="text-2xl mb-1 group-hover:scale-110 transition-transform"></div>
                         <div class="font-bold text-slate-700">Custom</div>
                     </button>
                 </div>
@@ -128,7 +135,7 @@
                     <div class="bg-white/80 backdrop-blur px-3 py-1 rounded-full border border-slate-200 text-xs font-bold text-slate-600 shadow-sm">
                         SCORE: <span id="score-val" class="text-orange-600 text-lg">0</span>
                     </div>
-                    <div class="flex gap-1 text-xl" id="lives-display">❤️❤️❤️</div>
+                    <div class="flex gap-1 text-xl" id="lives-display"></div>
                 </div>
 
                 <div id="drop-zone" class="flex-1 relative border-b-2 border-dashed border-orange-200/50 mx-4 mb-2"></div>
@@ -147,7 +154,7 @@
             </div>
 
             <div id="game-over" class="hidden absolute inset-0 z-50 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center p-6 animate-in zoom-in">
-                <div class="text-6xl mb-4">🏆</div>
+                <div class="text-6xl mb-4"></div>
                 <h2 class="text-3xl font-black text-slate-800 mb-2">Game Over!</h2>
                 <div class="bg-orange-50 p-6 rounded-2xl border border-orange-100 text-center w-full max-w-xs mb-6">
                     <p class="text-xs font-bold text-orange-400 uppercase">Final Score</p>
@@ -157,6 +164,28 @@
                     MAIN MENU
                 </button>
             </div>
+            
+            <div id="wrong-modal" class="hidden absolute inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-6">
+                <div class="bg-white rounded-2xl w-full max-w-xs p-6 shadow-2xl text-center pop-in border-b-4 border-red-500">
+                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl"></div>
+                    <h3 class="text-xl font-black text-slate-800 mb-1">Wrong Answer</h3>
+                    <p class="text-xs text-slate-400 font-bold uppercase mb-4">CORRECT ANSWER:</p>
+                    
+                    <div class="bg-green-50 border border-green-200 p-3 rounded-xl mb-4">
+                        <p id="modal-correct-ans" class="text-2xl font-bold text-green-700 hindi-font"></p>
+                    </div>
+
+                    <div class="bg-slate-50 rounded-lg p-3 text-sm text-slate-600 mb-5 text-left leading-relaxed">
+                        <span class="text-xs font-bold text-slate-400 block mb-1 uppercase">Explanation:</span>
+                        <p id="modal-explanation" class="hindi-font"></p>
+                    </div>
+
+                    <button onclick="resumeGame()" class="w-full py-3 bg-slate-800 text-white font-bold rounded-xl shadow-lg active:scale-95 transition-transform">
+                        Got it!
+                    </button>
+                </div>
+            </div>
+
         </div>
     </main>
 
@@ -167,12 +196,12 @@
                 <button onclick="closeImportModal()" class="p-1 hover:bg-slate-200 rounded-full"><i data-lucide="x" class="w-5 h-5 text-slate-400"></i></button>
             </div>
             <div class="p-5 space-y-4">
-                <p class="text-xs text-slate-500">Paste JSON data below. Format: <code>[{"q":"Question", "a":"Answer"}]</code></p>
+                <p class="text-xs text-slate-500">Paste JSON data below. Format: <code>[{"q":"Q", "a":"A", "e":"Exp"}]</code></p>
                 <div class="bg-slate-50 border border-slate-200 p-3 rounded-lg">
                     <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">SAMPLE FORMAT</p>
                     <code class="text-xs text-blue-600 block whitespace-pre-wrap font-mono select-all">
 [
-  {"q": "Surya", "a": "Ravi"},
+  {"q": "", "a": "", "e": " vs "},
   {"q": "Jal", "a": "Neer"}
 ]</code>
                 </div>
@@ -199,7 +228,7 @@
                 <span class="text-[10px] font-medium">Math</span>
             </a>
             <a href="#" class="flex flex-col items-center gap-1 min-w-[60px] text-orange-600">
-                <div class="w-6 h-6 flex items-center justify-center font-bold text-lg leading-none border-2 border-current rounded-md bg-orange-50">अ</div>
+                <div class="w-6 h-6 flex items-center justify-center font-bold text-lg leading-none border-2 border-current rounded-md bg-orange-50"></div>
                 <span class="text-[10px] font-bold">Hindi</span>
                  <span class="w-1 h-1 bg-orange-600 rounded-full mt-0.5"></span>
             </a>
@@ -213,39 +242,129 @@
     <script>
         lucide.createIcons();
 
-        // --- DATA ---
-        let vocabData = {
-            vilom: [
-                { q: "अवनि", a: "अम्बर" }, { q: "अनल", a: "हवा" }, { q: "अनुराग", a: "विराग" },
-                { q: "अल्पायु", a: "दीर्घायु" }, { q: "आकाश", a: "पाताल" }, { q: "आयात", a: "निर्यात" },
-                { q: "उदय", a: "अस्त" }, { q: "उत्थान", a: "पतन" }, { q: "उर्वर", a: "ऊसर" },
-                { q: "एकता", a: "अनेकता" }, { q: "कीर्ति", a: "अपकीर्ति" }, { q: "क्रूर", a: "दयालु" },
-                { q: "जड़", a: "चेतन" }, { q: "जंगम", a: "स्थावर" }, { q: "तिमिर", a: "प्रकाश" },
-                { q: "दीर्घ", a: "ह्रस्व" }, { q: "निंदा", a: "स्तुति" }, { q: "निर्मल", a: "मलिन" },
-                { q: "प्रत्यक्ष", a: "परोक्ष" }, { q: "बंधन", a: "मुक्ति" }
-            ],
-            samas: [
-                { q: "राजपुत्र", a: "तत्पुरुष" }, { q: "यथाशक्ति", a: "अव्ययीभाव" },
-                { q: "नीलकंठ", a: "बहुव्रीहि" }, { q: "चौराहा", a: "द्विगु" },
-                { q: "माता-पिता", a: "द्वन्द्व" }, { q: "महात्मा", a: "कर्मधारय" },
-                { q: "आजन्म", a: "अव्ययीभाव" }, { q: "दशानन", a: "बहुव्रीहि" },
-                { q: "रसोईघर", a: "तत्पुरुष" }, { q: "नवरत्न", a: "द्विगु" }
-            ],
-            muhavre: [
-                { q: "आँख का तारा", a: "बहुत प्यारा" }, { q: "नौ दो ग्यारह होना", a: "भाग जाना" },
-                { q: "ईद का चाँद", a: "बहुत दिनों बाद दिखना" }, { q: "घी के दिए जलाना", a: "खुशी मनाना" },
-                { q: "दाँत खट्टे करना", a: "हरा देना" }, { q: "लोहे के चने चबाना", a: "कठिन संघर्ष" },
-                { q: "श्री गणेश करना", a: "शुरू करना" }, { q: "हाथ मलना", a: "पछताना" }
-            ],
-            sandhi: [
-                { q: "विद्या + आलय", a: "विद्यालय" }, { q: "रवि + इंद्र", a: "रवींद्र" },
-                { q: "भानु + उदय", a: "भानूदय" }, { q: "नर + ईश", a: "नरेश" },
-                { q: "सदा + एव", a: "सदैव" }, { q: "सु + आगत", a: "स्वागत" },
-                { q: "पो + अन", a: "पवन" }, { q: "जगत + ईश", a: "जगदीश" }
-            ],
-            custom: []
-        };
-        
+    let vocabData = {
+    "vilom": [
+        { "q": "वैभव", "a": "दारिद्र्य", "e": "वैभव = धन-संपदा, दारिद्र्य = गरीबी।" },
+        { "q": "विपत्ति", "a": "संपत्ति", "e": "विपत्ति = मुसीबत, संपत्ति = खुशहाली।" },
+        { "q": "गणतंत्र", "a": "राजतंत्र", "e": "गणतंत्र = जनता का शासन, राजतंत्र = राजा का शासन।" },
+        { "q": "प्राचीन", "a": "अर्वाचीन", "e": "प्राचीन = बहुत पुराना, अर्वाचीन = आधुनिक/नया।" },
+        { "q": "विकीर्ण", "a": "संकीर्ण", "e": "विकीर्ण = फैला हुआ, संकीर्ण = सिकुड़ा हुआ।" },
+        { "q": "आकीर्ण", "a": "संकीर्ण", "e": "आकीर्ण = भरा हुआ/व्याप्त, संकीर्ण = तंग।" },
+        { "q": "रूक्ष", "a": "मसृण", "e": "रूक्ष = रूखा/खुरदरा, मसृण = कोमल/चिकना।" },
+        { "q": "वक्र", "a": "ऋजु", "e": "वक्र = टेढ़ा, ऋजु = सीधा।" },
+        { "q": "उन्मूलन", "a": "रोपण", "e": "उन्मूलन = जड़ से उखाड़ना, रोपण = लगाना (पौधा)।" },
+        { "q": "उन्मीलन", "a": "निमीलन", "e": "उन्मीलन = आँखें खुलना, निमीलन = आँखें बंद होना।" },
+        { "q": "सूक्ष्म", "a": "स्थूल", "e": "सूक्ष्म = बहुत छोटा, स्थूल = बड़ा/मोटा।" },
+        { "q": "एकत्र", "a": "विकीर्ण", "e": "एकत्र = इकट्ठा, विकीर्ण = फैला हुआ।" },
+        { "q": "शाश्वत", "a": "क्षणिक", "e": "शाश्वत = हमेशा रहने वाला, क्षणिक = पल भर का।" },
+        { "q": "साहचर्य", "a": "अलगाव", "e": "साहचर्य = साथ रहना, अलगाव = अलग होना।" },
+        { "q": "अनुसूया", "a": "असूया", "e": "असूया = ईर्ष्या/जलन, अनुसूया = ईर्ष्या रहित।" },
+        { "q": "प्रारब्ध", "a": "अनारब्ध", "e": "प्रारब्ध = भाग्य/शुरू किया हुआ, अनारब्ध = जो शुरू न हुआ हो।" },
+        { "q": "सम्मुख", "a": "विमुख", "e": "सम्मुख = सामने, विमुख = मुँह फेरे हुए।" },
+        { "q": "भूगोल", "a": "खगोल", "e": "भूगोल = पृथ्वी का वर्णन, खगोल = ब्रह्मांड/आकाश।" },
+        { "q": "नश्वर", "a": "चिरंतन", "e": "नश्वर = नाशवान, चिरंतन = पुरातन/शाश्वत।" },
+        { "q": "भूत", "a": "भविष्य", "e": "भूत = बीता हुआ, भविष्य = आने वाला।" },
+        { "q": "समास", "a": "व्यास", "e": "समास = संक्षेप, व्यास = विस्तार।" },
+        { "q": "संधि", "a": "विग्रह", "e": "संधि = मेल, विग्रह = अलग करना।" },
+        { "q": "समष्टि", "a": "व्यष्टि", "e": "समष्टि = समूह, व्यष्टि = व्यक्ति/इकाई।" },
+        { "q": "ऋत", "a": "अनृत", "e": "ऋत = सत्य, अनृत = झूठ।" },
+        { "q": "गगनचुंबी", "a": "तलस्पर्शी", "e": "गगनचुंबी = आकाश चूमने वाला, तलस्पर्शी = जमीन छूने वाला।" },
+        { "q": "तांडव", "a": "लास्य", "e": "तांडव = शिव का रौद्र नृत्य, लास्य = पार्वती का कोमल नृत्य।" },
+        { "q": "संयुक्त", "a": "वियुक्त", "e": "संयुक्त = जुड़ा हुआ, वियुक्त = अलग।" },
+        { "q": "विभावना", "a": "विशेषोक्ति", "e": "अलंकार के भेद: कारण के बिना कार्य vs कारण होने पर भी कार्य न होना।" },
+        { "q": "संपन्नता", "a": "विपन्नता", "e": "संपन्नता = अमीरी, विपन्नता = गरीबी/कष्ट।" },
+        { "q": "सृजन", "a": "विनाश", "e": "सृजन = निर्माण करना, विनाश = नष्ट करना।" },
+        { "q": "अस्थावर", "a": "जंगम", "e": "अस्थावर/स्थावर = स्थिर, जंगम = जो चल सके।" },
+        { "q": "विराट", "a": "क्षुद्र", "e": "विराट = विशाल, क्षुद्र = छोटा/तुच्छ।" },
+        { "q": "अज्ञ", "a": "विज्ञ", "e": "अज्ञ = नासमझ, विज्ञ = जानकार।" },
+        { "q": "सर्वज्ञ", "a": "अल्पज्ञ", "e": "सर्वज्ञ = सब जानने वाला, अल्पज्ञ = कम जानने वाला।" },
+        { "q": "गौरव", "a": "लाघव", "e": "गौरव = बड़प्पन/भारीपन, लाघव = छोटापन/हल्कापन।" },
+        { "q": "वैमनस्य", "a": "सौमनस्य", "e": "वैमनस्य = शत्रुता/बैर, सौमनस्य = मित्रता/प्रेम।" },
+        { "q": "ग्राह्य", "a": "त्याज्य", "e": "ग्राह्य = लेने योग्य, त्याज्य = छोड़ने योग्य।" },
+        { "q": "आमिष", "a": "निरामिश", "e": "आमिष = मांसयुक्त भोजन, निरामिश = मांस रहित।" },
+        { "q": "अथ", "a": "इति", "e": "अथ = आरंभ, इति = समाप्ति।" },
+        { "q": "श्री गणेश", "a": "इति श्री", "e": "किसी कार्य को शुरू करना vs समाप्त करना।" },
+        { "q": "अवर", "a": "प्रवर", "e": "अवर = कनिष्ठ (Junior), प्रवर = वरिष्ठ (Senior/Superior)।" },
+        { "q": "कुटिल", "a": "सरल", "e": "कुटिल = टेढ़ा/चालबाज, सरल = सीधा।" },
+        { "q": "उक्त", "a": "अनुक्त", "e": "उक्त = कहा गया, अनुक्त = अनकहा।" },
+        { "q": "अतिवृष्टि", "a": "अनावृष्टि", "e": "अतिवृष्टि = भारी वर्षा, अनावृष्टि = सूखा।" },
+        { "q": "मूक", "a": "वाचाल", "e": "मूक = गूँगा, वाचाल = बहुत बोलने वाला।" },
+        { "q": "कृतज्ञ", "a": "कृतघ्न", "e": "कृतज्ञ = उपकार मानने वाला, कृतघ्न = उपकार न मानने वाला।" },
+        { "q": "अभिज्ञ", "a": "अनभिज्ञ", "e": "अभिज्ञ = जानकार, अनभिज्ञ = अनजान।" },
+        { "q": "जड़", "a": "चेतन", "e": "जड़ = निर्जीव/मूर्ख, चेतन = सजीव/जागृत।" },
+        { "q": "संक्षेप", "a": "विस्तार", "e": "छोटा रूप vs बड़ा रूप।" },
+        { "q": "आकृष्ट", "a": "विकृष्ट", "e": "आकृष्ट = आकर्षित, विकृष्ट = दूर धकेला हुआ।" },
+        { "q": "गृहीत", "a": "अर्पित", "e": "गृहीत = लिया हुआ, अर्पित = दिया हुआ/भेंट।" },
+        { "q": "कृत्रिम", "a": "नैसर्गिक", "e": "कृत्रिम = बनावटी, नैसर्गिक = प्राकृतिक।" },
+        { "q": "निंदा", "a": "स्तुति", "e": "निंदा = बुराई, स्तुति = प्रशंसा।" },
+        { "q": "उत्तम", "a": "अधम", "e": "उत्तम = श्रेष्ठ, अधम = नीच।" },
+        { "q": "अतिथि", "a": "आतिथेय", "e": "अतिथि = मेहमान, आतिथेय = मेज़बान (Host)।" },
+        { "q": "स्वस्थ", "a": "रुग्ण", "e": "रुग्ण = रोगी।" },
+        { "q": "अभ्यांतर", "a": "बाह्य", "e": "अभ्यांतर = अंदर का, बाह्य = बाहर का।" },
+        { "q": "अनिवार्य", "a": "ऐच्छिक", "e": "अनिवार्य = जो करना ही हो, ऐच्छिक = अपनी इच्छा पर।" },
+        { "q": "उदात्त", "a": "अनुदात्त", "e": "उदात्त = ऊँचा/श्रेष्ठ, अनुदात्त = नीचा।" },
+        { "q": "स्वकीया", "a": "परकीया", "e": "नायिका भेद: अपनी पत्नी vs दूसरे की पत्नी।" },
+        { "q": "आविर्भाव", "a": "तिरोभाव", "e": "आविर्भाव = प्रकट होना, तिरोभाव = लोप होना/गायब होना।" },
+        { "q": "पुरस्कार", "a": "तिरस्कार", "e": "सम्मान देना vs अपमान करना।" },
+        { "q": "नूतन", "a": "पुरातन", "e": "नूतन = नया, पुरातन = पुराना।" },
+        { "q": "उपचय", "a": "अपचय", "e": "उपचय = वृद्धि/इकट्ठा होना, अपचय = ह्रास/खर्च।" },
+        { "q": "प्रसारण", "a": "संकुचन", "e": "प्रसारण = फैलाव, संकुचन = सिकुड़ना।" },
+        { "q": "स्वार्थ", "a": "परमार्थ", "e": "खुद का भला vs दूसरों का भला।" },
+        { "q": "आगामी", "a": "विगत", "e": "आगामी = आने वाला, विगत = बीता हुआ।" },
+        { "q": "आध्यात्मिक", "a": "सांसारिक", "e": "आत्मा-परमात्मा संबंधी vs दुनियादारी।" },
+        { "q": "अपव्यय", "a": "मितव्यय", "e": "अपव्यय = फिजूलखर्ची, मितव्यय = कम खर्च करना।" },
+        { "q": "उद्धत", "a": "विनीत", "e": "उद्धत = उग्र/अक्खड़, विनीत = नम्र।" },
+        { "q": "आवर्तक", "a": "विवर्तक", "e": "आवर्तक = दोहराने वाला, विवर्तक = न दोहराने वाला।" },
+        { "q": "खंडन", "a": "मंडन", "e": "खंडन = काटना/विरोध, मंडन = समर्थन/सजाना।" },
+        { "q": "द्वंद्व", "a": "शांति", "e": "द्वंद्व = संघर्ष/दुविधा, शांति = सुकून।" },
+        { "q": "सत्याग्रह", "a": "दुराग्रह", "e": "सत्याग्रह = सत्य के लिए आग्रह, दुराग्रह = अनुचित हठ।" },
+        { "q": "संगठन", "a": "विघटन", "e": "संगठन = जुड़ना, विघटन = टूटकर अलग होना।" },
+        { "q": "संकल्प", "a": "विकल्प", "e": "संकल्प = दृढ़ निश्चय, विकल्प = दूसरा रास्ता (Option)।" },
+        { "q": "तेजस्वी", "a": "निस्तेज", "e": "तेजस्वी = कांतिवान, निस्तेज = चमकहीन।" },
+        { "q": "जारज", "a": "औरस", "e": "जारज = नाजायज संतान, औरस = वैध संतान।" },
+        { "q": "संश्लेषण", "a": "विश्लेषण", "e": "संश्लेषण = मिलाना, विश्लेषण = अलग-अलग करके समझना।" },
+        { "q": "आरोह", "a": "अवरोह", "e": "आरोह = चढ़ना, अवरोह = उतरना।" },
+        { "q": "उथला", "a": "गहरा", "e": "उथला = कम गहरा (Shallow)।" },
+        { "q": "उत्तरीय", "a": "अधोवस्त्र", "e": "उत्तरीय = कंधे पर रखने वाला वस्त्र, अधोवस्त्र = कमर से नीचे का वस्त्र।" },
+        { "q": "कृपण", "a": "दानी", "e": "कृपण = कंजूस।" },
+        { "q": "सदैव", "a": "विरद", "e": "सदैव = हमेशा, विरद = कभी-कभी।" },
+        { "q": "औदार्य", "a": "अनौदार्य", "e": "औदार्य = उदारता/दरियादिली।" },
+        { "q": "सहोदर", "a": "अन्योदर", "e": "सहोदर = सगा भाई, अन्योदर = सौतेला भाई।" },
+        { "q": "अधीन", "a": "स्वतंत्र", "e": "अधीन = गुलाम/दूसरे के वश में।" },
+        { "q": "अवलंब", "a": "निरावलंब", "e": "अवलंब = सहारा, निरावलंब = बेसहारा।" },
+        { "q": "अवरोध", "a": "अनवरोध", "e": "अवरोध = रुकावट।" },
+        { "q": "अभिमुख", "a": "प्रतिमुख", "e": "अभिमुख = सामने, प्रतिमुख = विपरीत।" },
+        { "q": "अतल", "a": "वितल", "e": "गहराई के माप (लोक)।" },
+        { "q": "आत्मोन्मुखी", "a": "परोन्मुखी", "e": "अपने में खोया हुआ vs दूसरों की ओर उन्मुख।" },
+        { "q": "आडंबर", "a": "सादगी", "e": "आडंबर = दिखावा।" },
+        { "q": "आलसी", "a": "कर्मठ", "e": "कर्मठ = काम में लगा रहने वाला।" },
+        { "q": "उद्यम", "a": "आलस्य", "e": "उद्यम = मेहनत/प्रयास।" },
+        { "q": "पतित", "a": "उत्थित", "e": "पतित = गिरा हुआ, उत्थित = उठा हुआ।" },
+        { "q": "उदीची", "a": "अवाची", "e": "उदीची = उत्तर दिशा, अवाची = दक्षिण दिशा।" }
+    ],
+    "samas": [
+        { "q": "राजपुत्र", "a": "तत्पुरुष" }, { "q": "यथाशक्ति", "a": "अव्ययीभाव" },
+        { "q": "नीलकंठ", "a": "बहुव्रीहि" }, { "q": "चौराहा", "a": "द्विगु" },
+        { "q": "माता-पिता", "a": "द्वन्द्व" }, { "q": "महात्मा", "a": "कर्मधारय" },
+        { "q": "आजन्म", "a": "अव्ययीभाव" }, { "q": "दशानन", "a": "बहुव्रीहि" },
+        { "q": "रसोईघर", "a": "तत्पुरुष" }, { "q": "नवरत्न", "a": "द्विगु" }
+    ],
+    "muhavre": [
+        { "q": "आँख का तारा", "a": "बहुत प्यारा" }, { "q": "नौ दो ग्यारह होना", "a": "भाग जाना" },
+        { "q": "ईद का चाँद", "a": "बहुत दिनों बाद दिखना" }, { "q": "घी के दिए जलाना", "a": "खुशी मनाना" },
+        { "q": "दाँत खट्टे करना", "a": "हरा देना" }, { "q": "लोहे के चने चबाना", "a": "कठिन संघर्ष" },
+        { "q": "श्री गणेश करना", "a": "शुरू करना" }, { "q": "हाथ मलना", "a": "पछताना" }
+    ],
+    "sandhi": [
+        { "q": "विद्या + आलय", "a": "विद्यालय" }, { "q": "रवि + इंद्र", "a": "रवींद्र" },
+        { "q": "भानु + उदय", "a": "भानूदय" }, { "q": "नर + ईश", "a": "नरेश" },
+        { "q": "सदा + एव", "a": "सदैव" }, { "q": "सु + आगत", "a": "स्वागत" },
+        { "q": "पो + अन", "a": "पवन" }, { "q": "जगत + ईश", "a": "जगदीश" }
+    ],
+    "custom": []
+};
+
+
         const savedCustom = localStorage.getItem('hindi_arcade_custom');
         if (savedCustom) vocabData.custom = JSON.parse(savedCustom);
 
@@ -257,8 +376,10 @@
             selectedSpeed: 'medium', // Default speed setting
             speed: 4000,             // Actual ms
             activeWord: null,
+            currentItem: null,       // Store current item for explanation
             correctIndex: 0,
-            isOver: false
+            isOver: false,
+            isPaused: false
         };
 
         const speeds = {
@@ -285,12 +406,9 @@
 
         function setSpeed(lvl) {
             state.selectedSpeed = lvl;
-            
-            // Reset styles
             ['easy', 'medium', 'hard'].forEach(l => {
                 document.getElementById('spd-'+l).className = "flex-1 py-2 rounded-lg text-xs font-bold text-slate-500 hover:bg-orange-50 transition-all";
             });
-            // Highlight active
             document.getElementById('spd-'+lvl).className = "flex-1 py-2 rounded-lg text-xs font-bold bg-orange-500 text-white shadow-md transition-all";
         }
 
@@ -307,8 +425,12 @@
 
             list.forEach(item => {
                 const card = document.createElement('div');
-                card.className = "bg-white p-4 rounded-xl shadow-sm border border-orange-100 flex justify-between items-center";
-                card.innerHTML = `<div class="font-bold text-lg text-slate-700 hindi-font">${item.q}</div><div class="text-orange-300">➜</div><div class="font-bold text-lg text-orange-600 hindi-font">${item.a}</div>`;
+                card.className = "bg-white p-4 rounded-xl shadow-sm border border-orange-100 flex flex-col gap-2";
+                let html = `<div class="flex justify-between items-center"><div class="font-bold text-lg text-slate-700 hindi-font">${item.q}</div><div class="text-orange-300"></div><div class="font-bold text-lg text-orange-600 hindi-font">${item.a}</div></div>`;
+                if(item.e) {
+                     html += `<div class="text-xs text-slate-500 bg-orange-50 p-2 rounded border border-orange-100 italic hindi-font">${item.e}</div>`;
+                }
+                card.innerHTML = html;
                 container.appendChild(card);
             });
         }
@@ -334,6 +456,7 @@
             document.getElementById('game-menu').style.display = 'flex';
             document.getElementById('game-board').style.display = 'none';
             document.getElementById('game-over').style.display = 'none';
+            document.getElementById('wrong-modal').classList.add('hidden');
         }
 
         function startGame(topic) {
@@ -344,9 +467,10 @@
             state.mode = topic;
             state.score = 0;
             state.lives = 3;
-            state.speed = speeds[state.selectedSpeed]; // Set speed from selection
+            state.speed = speeds[state.selectedSpeed]; 
             state.activeWord = null;
             state.isOver = false;
+            state.isPaused = false;
             
             document.getElementById('game-menu').style.display = 'none';
             document.getElementById('game-board').style.display = 'flex';
@@ -364,6 +488,7 @@
 
             const dataset = vocabData[state.mode];
             const item = dataset[Math.floor(Math.random() * dataset.length)];
+            state.currentItem = item; // Save for explanation
             
             // Options
             const options = [item.a];
@@ -395,17 +520,16 @@
         }
 
         function checkAnswer(idx) {
-            if (state.isOver) return;
-            const correctBtn = document.getElementById(`opt-${state.correctIndex}`);
+            if (state.isOver || state.isPaused) return;
             const selectedBtn = document.getElementById(`opt-${idx}`);
 
             if (idx === state.correctIndex) {
                 state.score += 10;
-                // Speed up slightly if not already super fast
                 if(state.score % 50 === 0 && state.speed > 1500) state.speed -= 200;
                 
                 selectedBtn.classList.add('correct-flash');
                 
+                // Pop effect for word
                 state.activeWord.style.animation = 'none';
                 state.activeWord.style.transform = 'scale(1.5)';
                 state.activeWord.style.opacity = '0';
@@ -417,23 +541,46 @@
                     nextRound();
                 }, 300);
             } else {
-                state.lives--;
-                selectedBtn.classList.add('wrong-flash');
-                correctBtn.style.backgroundColor = '#86efac';
-                
-                state.activeWord.style.backgroundColor = '#fca5a5';
-                state.activeWord.style.borderColor = '#ef4444';
-
-                setTimeout(() => {
-                    selectedBtn.classList.remove('wrong-flash');
-                    updateHUD();
-                    nextRound();
-                }, 600);
+                handleWrongAnswer(selectedBtn);
             }
         }
 
+        function handleWrongAnswer(btnElement) {
+            state.isPaused = true;
+            state.lives--;
+            updateHUD();
+
+            // Flash red
+            btnElement.classList.add('wrong-flash');
+            
+            // Stop animation immediately
+            if(state.activeWord) state.activeWord.style.animationPlayState = 'paused';
+
+            // Show popup
+            const expText = state.currentItem.e || "No explanation available for this word.";
+            document.getElementById('modal-correct-ans').textContent = state.currentItem.a;
+            document.getElementById('modal-explanation').textContent = expText;
+            
+            setTimeout(() => {
+                btnElement.classList.remove('wrong-flash');
+                document.getElementById('wrong-modal').classList.remove('hidden');
+            }, 400);
+        }
+
+        function resumeGame() {
+            document.getElementById('wrong-modal').classList.add('hidden');
+            state.isPaused = false;
+            
+            // Cleanup current round and start next
+            if(state.activeWord) state.activeWord.remove();
+            state.activeWord = null;
+            
+            if (state.lives > 0) nextRound();
+            else endGame();
+        }
+
         function handleMiss() {
-            if (state.isOver || !state.activeWord) return;
+            if (state.isOver || !state.activeWord || state.isPaused) return;
             state.lives--;
             updateHUD();
             state.activeWord.remove();
@@ -444,7 +591,7 @@
 
         function updateHUD() {
             document.getElementById('score-val').textContent = state.score;
-            document.getElementById('lives-display').textContent = '❤️'.repeat(state.lives);
+            document.getElementById('lives-display').textContent = ''.repeat(state.lives);
         }
 
         function endGame() {
@@ -460,7 +607,7 @@
             const anchor = e.target.closest('a');
             if (anchor && (anchor.getAttribute('href').startsWith('http') || anchor.getAttribute('href').startsWith('www'))) {
                 e.preventDefault();
-                alert("🚫 FOCUS MODE: External link blocked.");
+                alert(" FOCUS MODE: External link blocked.");
             }
         });
     </script>
