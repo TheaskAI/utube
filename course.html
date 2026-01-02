@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Complete Maths Course</title>
+    <title>Complete Course Bundle</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <style>
@@ -11,16 +11,13 @@
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* FORCE LANDSCAPE ROTATION ON PORTRAIT SCREEN 
-           This forces the video container to become 100vh wide and 100vw tall,
-           then rotates it 90 degrees to fit the portrait phone screen exactly.
-        */
+        /* FORCE LANDSCAPE ROTATION ON PORTRAIT SCREEN */
         .rotate-90-fullscreen {
             position: absolute;
             top: 50%;
             left: 50%;
-            width: 100vh;  /* Width becomes the viewport height */
-            height: 100vw; /* Height becomes the viewport width */
+            width: 100vh;
+            height: 100vw;
             transform: translate(-50%, -50%) rotate(90deg);
             z-index: 40;
             background: black;
@@ -41,7 +38,7 @@
                 <i data-lucide="plus" class="w-4 h-4"></i> Add Class
             </button>
             <div class="flex items-center gap-2 bg-slate-800/50 px-3 py-1 rounded-full border border-slate-700">
-                <span class="text-[10px] font-bold tracking-wider text-slate-300">SSC 2025</span>
+                <span class="text-[10px] font-bold tracking-wider text-slate-300">SSC/UP 2025</span>
             </div>
         </div>
     </header>
@@ -119,6 +116,7 @@
         // --- DATA SECTION ---
         
         const staticVideos = [
+            // Original Maths Videos
             { id: "1", title: "Day 01 | Percentage | Maths", videoId: "ERoNJ1uQ4gE" },
             { id: "2", title: "Day 02 | Percentage | Maths", videoId: "Vm4jkAtxSRg" },
             { id: "3", title: "Day 03 | Percentage | Maths", videoId: "CYKFSBv6mJQ" },
@@ -152,7 +150,7 @@
             { id: "32", title: "Day 32 | Complete Ratio", videoId: "goD7jwJbosw" },
             { id: "33", title: "Day 33| Proportion, Ages", videoId: "4G39zf9KY7U" },
             { id: "34", title: "Day 34 | Mixture & Alligation", videoId: "c2ULnLjXztQ" },
-            { id: "35", title: "Day 35 | Average (औसत)", videoId: "z1c0YlmFyFI" },
+            { id: "35", title: "Day 35 | Average (   )", videoId: "z1c0YlmFyFI" },
             { id: "36", title: "Day 36 | Complete Time & Work", videoId: "dShCSiEVBlI" },
             { id: "37", title: "Day 37 | COORDINATE GEOMETRY", videoId: "cH5U1_uGFqs" },
             { id: "38", title: "Day 38 | Pipe and Cistern", videoId: "vO_0Rm4Qd3w" },
@@ -161,10 +159,144 @@
             { id: "42", title: "Day 42 | Time, Speed & Distance", videoId: "Jc0lY4Cr9Pg" },
             { id: "43", title: "Day 43 | TRAIN, BOAT & STREAM", videoId: "iU8M9vy6SGw" },
             { id: "44", title: "Day 44 | GEOMETRY", videoId: "az_FEbPlOVA" },
-            { id: "45", title: "Day 45 | Mensuration 2D & 3D", videoId: "9FK4uk3qux8" }
+            { id: "45", title: "Day 45 | Mensuration 2D & 3D", videoId: "9FK4uk3qux8" },
+            
+            // New Hindi / UP Police Videos
+            { id: "46", title: "39. UPSI Hindi : देशज - विदेशज शब्द 02, Deshaj - Videshaj Shabd", videoId: "vd4iETfCZos" },
+            { id: "47", title: "38. UPSI Hindi : देशज - विदेशज शब्द | Deshaj - Videshaj Shabd", videoId: "tODtQYg1-w8" },
+            { id: "48", title: "40. UPSI Hindi पत्र-लेखन Master क्लास | Letter Writing in Hindi", videoId: "9PHVD5un-Jg" },
+            { id: "49", title: "37. UPSI Hindi : तत्सम-तद्भव कूट वाले प्रश्न 02, Tatsam - Tadbhav", videoId: "8SQGwjORHjQ" },
+            { id: "50", title: "36. UPSI Hindi : तत्सम-तद्भव कूट वाले प्रश्न 01, Tatsam -  Tadbhav", videoId: "bNbAkzdZBVs" },
+            { id: "51", title: "35. UPSI Hindi : विलोम शब्द कूट वाले प्रश्न 02 | Vilom Shabd Quiz", videoId: "mwf0QmI4syM" },
+            { id: "52", title: "34. UPSI Hindi : विलोम शब्द कूट स्पेशल 01 | Vilom Shabd in Hindi", videoId: "6SAfkM3964E" },
+            { id: "53", title: "33. UPSI Hindi : पर्यायवाची कूट वाले सवाल 02 | Paryayvachi Trick in Hindi", videoId: "rSrVDSF1BDg" },
+            { id: "54", title: "32. UPSI Hindi : पर्यायवाची कूट वाले सवाल 01 | Paryayvachi Trick in Hindi", videoId: "8uDH-EkP26I" },
+            { id: "55", title: "31. UPSI Hindi : पर्यायवाची की Digital Class | Paryayvachi Trick in Hindi", videoId: "i6Yi_6NBfUw" },
+            { id: "56", title: "28. UPSI Hindi : बहुब्रीहि समास एवं विग्रह, Bahuvrihi Samas & Vigrah", videoId: "PtkC7Gr41Hk" },
+            { id: "57", title: "30. UPSI Hindi : Complete समास एवं विग्रह, Samas Quiz in Hindi for Exam", videoId: "7gKWN1kXobY" },
+            { id: "58", title: "29. UPSI Hindi : Master Class समास एवं विग्रह, Samas Quiz Master Class", videoId: "Ebz5Kc6-EKc" },
+            { id: "59", title: "27. UPSI Hindi : द्वन्द्व समास एवं विग्रह, Dvandva Samas & Vigrah", videoId: "fE7dH_0qXno" },
+            { id: "60", title: "26. UPSI Hindi : अव्ययीभाव समास एवं विग्रह, Avyayibhav Samas & Vigrah", videoId: "6WzZQT3C4Eo" },
+            { id: "61", title: "25. UPSI Hindi : कर्मधारय & द्विगु समास, Karmdharay & Dvigu Samas & Vigrah", videoId: "vIGFJCuiTLM" },
+            { id: "62", title: "24. UPSI Hindi : Master Class तत्पुरुष समास एवं विग्रह, Tatpurush Samas & Vigrah", videoId: "OFf23nV35to" },
+            { id: "63", title: "23. UPSI Hindi : Master Class स्वर, व्यंजन, विसर्ग सन्धि | Swar, Vyanjan, Visarg Sandhi", videoId: "EaGzBftJCxM" },
+            { id: "64", title: "22. UPSI Hindi : स्वर, व्यंजन, विसर्ग सन्धि | Swar, Vyanjan, Visarg Sandhi", videoId: "141SX6gG-SU" },
+            { id: "65", title: "20. UPSI Hindi : 50+ व्यंजन सन्धि & सन्धि विच्छेद, Vyanjan Sandhi Vicched", videoId: "xtBu-VWkhKU" },
+            { id: "66", title: "19. UPSI Hindi : 50+ व्यंजन सन्धि & सन्धि विच्छेद, Vyanjan Sandhi Vicched", videoId: "Px1Cwmm9Y5s" },
+            { id: "67", title: "17. UPSI Hindi : 60+लोकोक्तियाँ स्पेशल क्लास, Lokoktiya Special Class", videoId: "s4tUiA39UsI" },
+            { id: "68", title: "18. UPSI Hindi : 100+स्वर सन्धि एवं सन्धि विच्छेद, Swar Sandhi Vicched", videoId: "nwyzErIIl8M" },
+            { id: "69", title: "16. UPSI Hindi : 60+मुहावरा  स्पेशल क्लास, Muhawara Special Class", videoId: "skTDm3uovNM" },
+            { id: "70", title: "15. UPSI Hindi : 100+ एकवचन & बहुवचन स्पेशल, Ekvachan, Bahuvachan", videoId: "VCp3R9reNoE" },
+            { id: "71", title: "14. UPSI Hindi : 100+ विशेष वर्तनी शुद्धि अशुद्धि, Vartani Shuddhi Ashuddhi", videoId: "HIPstBJp1So" },
+            { id: "72", title: "12. UPSI Hindi : 100+ लिंग - पुल्लिंग & स्त्रीलिंग, Ling Pullng, Strilng", videoId: "ZbhUNf_WLVk" },
+            { id: "73", title: "13. UPSI Hindi : 100+ समश्रुतभिन्नार्थक शब्द, Samshrutbhinnarthak Shabd", videoId: "LFHSQvBxhhA" },
+            { id: "74", title: "11. UPSI Hindi : 100+ प्रत्यय (शब्द निर्माण की विधि) | Pratyay UPSI Quiz", videoId: "EBJRQZCSjcw" },
+            { id: "75", title: "10. UPSI Hindi : 100+ उपसर्ग (शब्द निर्माण की विधि) | Upsarg UPSI Imp Quiz", videoId: "QNuTIEe2Bao" },
+            { id: "76", title: "09. UPSI Hindi :  पर्यायवाची शब्द | Paryayvachi Shabd UPSI Imp Quiz", videoId: "YzvspnXJPok" },
+            { id: "77", title: "08. UPSI Hindi :  अनेक शब्दों के लिए एक शब्द | UPSI Imp Quiz", videoId: "b3CHQUZ-9K8" },
+            { id: "78", title: "06. UPSI Hindi : विलोम शब्द | Vilom Shabd UPSI Most Imp Quiz", videoId: "MQLXJCKa6wA" },
+            { id: "79", title: "07. UPSI Hindi :  तत्सम-तद्भव | Tatsam Tadbhav UPSI Imp Quiz", videoId: "J0Ux5hDmOoU" },
+            { id: "80", title: "05. UPSI Hindi : वाक्य शुद्धि | Vakya Shuddhi & Ashuddhi", videoId: "OcVwZf8US50" },
+            { id: "81", title: "04. UPSI Hindi : वर्तनी शुद्धि | Vartani Shuddhi & Ashuddhi", videoId: "1QGccc8Z8fY" },
+            { id: "82", title: "03. UPSI Hindi साहित्य | प्रसिद्ध लेखक-लेखिकाएँ व रचनाएँ", videoId: "wqCeyz0aGDU" },
+            { id: "83", title: "02. UPSI Hindi : प्रसिद्ध लेखक, लेखिका & रचनाएँ, Hindi Sahitya", videoId: "_4VOdqCRieg" },
+            { id: "84", title: "01. UPSI Hindi : पारिभाषिक शब्दावली | Eng to Hindi | Hindi to Eng", videoId: "3zNKyxLb0C4" },
+            { id: "85", title: "31 Aug 2nd Shift हिन्दी UP Police Answer Key | UPP Paper Solution", videoId: "VTD7GQK-GEI" },
+            { id: "86", title: "31 Aug 1st Shift हिन्दी UP Police Answer Key | UPP Paper Solution", videoId: "-f23Rm9Hft4" },
+            { id: "87", title: "30 Aug 2nd Shift GS UP Police Answer Key | UPP Paper Solution", videoId: "LtKX-IvFi1Q" },
+            { id: "88", title: "30 Aug 2nd Shift हिन्दी UP Police Answer Key | UPP Paper Solution", videoId: "d--mUOvxduk" },
+            { id: "89", title: "30 Aug 1st Shift GS UP Police | Answer Key | UPP Paper Solution", videoId: "MHcH79DLf5E" },
+            { id: "90", title: "30 Aug 1st Shift Hindi UP Police | Answer Key | UPP Paper Solution", videoId: "tzZ1gHTr2NU" },
+            { id: "91", title: "25 Aug 2nd Shift GS UP Police | Answer Key | UPP Paper Solution", videoId: "xAtvLhZbfGQ" },
+            { id: "92", title: "25 Aug 2nd Shift Hindi UP Police | Answer Key | UPP Paper Solution", videoId: "LEEVE9RyrIQ" },
+            { id: "93", title: "25 Aug 1st Shift GS UP Police | Answer Key | UPP Paper Solution", videoId: "09-rk6Vuq1s" },
+            { id: "94", title: "25 Aug 1st Shift Hindi UP Police | Answer Key | UPP Paper Solution", videoId: "wj5vCCujaeA" },
+            { id: "95", title: "24 Aug UP Police 2nd Shift GS Answer Key | UPP Paper Solution", videoId: "s0--I0aI3L4" },
+            { id: "96", title: "24 Aug UP Police 2nd Shift हिन्दी Answer Key | UPP Paper Solution", videoId: "3iGDnO1hFJY" },
+            { id: "97", title: "24 Aug UP Police 1st Shift GS Answer Key | UPP Paper Solution", videoId: "2eWo-TP2k4c" },
+            { id: "98", title: "23 Aug UP Police 2nd Shift Hindi Answer Key | UPP Paper Solution", videoId: "7Y2FxSOaNpw" },
+            { id: "99", title: "24 Aug UP Police 1st Shift Hindi Answer Key | UPP Paper Solution", videoId: "NNg3J7SSq5o" },
+            { id: "100", title: "23 Aug UP Police 2nd Shift GS Answer Key | UPP Paper Solution", videoId: "E1_CO8YPJpc" },
+            { id: "101", title: "23 Aug UP Police 1st Shift GS Answer Key | UPP Paper Solution", videoId: "50_woInUDK8" },
+            { id: "102", title: "23 Aug UP Police 1st Shift Hindi Answer Key | UPP Paper Solution", videoId: "k3BgKwK5-pc" },
+            { id: "103", title: "33. UP Police Hindi Mock Test| Best Hindi Quiz | UPP Hindi Model Test", videoId: "qJKNkzQPgUM" },
+            { id: "104", title: "32.UPP Re-EXAM हिन्दी Mock Test, Hindi Practice Set, UPP Hindi Model Test", videoId: "PF1gjFIeeao" },
+            { id: "105", title: "31.UPP Re-EXAM हिन्दी Mock Test, Hindi Practice Set, UPP Hindi Model Test", videoId: "RvK4eTjb9ME" },
+            { id: "106", title: "30.UPP Re-EXAM हिन्दी Mock Test, Hindi Practice Set, UPP Hindi Model Test", videoId: "M1rQ-9j9w30" },
+            { id: "107", title: "29.UPP Re-EXAM हिन्दी Mock Test, Hindi Practice Set, UPP Hindi Model Test", videoId: "jCsPkAdqjcc" },
+            { id: "108", title: "28.UPP Re-EXAM हिन्दी Mock Test, Hindi Practice Set, UPP Hindi Model Test", videoId: "hoGu7hGixEQ" },
+            { id: "109", title: "27. UP पुलिस Re-EXAM हिन्दी CLASS | UP CONSTABLE Re-EXAM HINDI PRACTICE SET", videoId: "A06C7H3o9HM" },
+            { id: "110", title: "26. UP पुलिस Re-EXAM हिन्दी CLASS | UP CONSTABLE Re-EXAM HINDI PRACTICE SET", videoId: "eTGAyn7E5Sk" },
+            { id: "111", title: "25. UP POLICE RE EXAM HINDI CLASS | UP CONSTABLE RE EXAM HINDI PRACTICE SET", videoId: "Pa00eFHdpfk" },
+            { id: "112", title: "24. UP Police हिन्दी Mock Test Paper | Police Exam Hindi Question Answer", videoId: "STPwIbQ9koU" },
+            { id: "113", title: "23. UP Police Re-Exam हिन्दी Mock Test Paper | अति संभावित प्रश्न-उत्तर Class", videoId: "O6bvL-ERCwg" },
+            { id: "114", title: "22. UP Police Re-Exam हिन्दी Model Test Paper | अति संभावित प्रश्न-उत्तर Class", videoId: "JDiphh8UJvU" },
+            { id: "115", title: "21. UP Police Re-Exam हिन्दी Model Test Paper | अति संभावित प्रश्न-उत्तर Class", videoId: "rzUmeidSQd8" },
+            { id: "116", title: "20. UP Police Re-Exam हिन्दी Mock Test Paper | अति संभावित प्रश्न-उत्तर Class", videoId: "HW-eKuzJSkc" },
+            { id: "117", title: "19. UP Police हिन्दी Model Test Paper | अति संभावित प्रश्न-उत्तर Class", videoId: "tjLwFxNSGYA" },
+            { id: "118", title: "18. UP Police Hindi Model Test Paper 18 | UPP Hindi | Complete Hindi Grammar", videoId: "EkVKAobqJZA" },
+            { id: "119", title: "17. UP पुलिस की हिन्दी : एक नज़र में Hindi Grammar UP Police Constable", videoId: "CVGsVBJCWX4" },
+            { id: "120", title: "16. UP Police Hindi विशेष प्रश्न की प्रैक्टिस MCQ by Nitin Sir | Mock Test", videoId: "18SwvqsRdrk" },
+            { id: "121", title: "15. UP Police अति संभावित प्रश्न-उत्तर Hindi MCQ by Nitin Sir | Mock Test", videoId: "78CEVDK_QrY" },
+            { id: "122", title: "14. UP Police परीक्षा में जरुर आएगा Hindi MCQ by Nitin Sir | Mock Test", videoId: "VpTngIvSDMA" },
+            { id: "123", title: "13. UP Police परीक्षा में जरुर आएगा Hindi MCQ by Nitin Sir | Mock Test", videoId: "7btweLa1ssM" },
+            { id: "124", title: "12. UP Police अति संभावित प्रश्न : परीक्षा में जरुर आएगा Mock Test in Hindi", videoId: "ZPgqEGsSZ_4" },
+            { id: "125", title: "11. UP Police अति संभावित प्रश्न : परीक्षा में पक्का आएगा Mock Test in Hindi", videoId: "R9mSNTQcpJg" },
+            { id: "126", title: "10.UP Police अति संभावित प्रश्न Mock Test Solution in Hindi | Nitin Sir", videoId: "ene_Bq38EeY" },
+            { id: "127", title: "09.UP Police अति संभावित प्रश्न Mock Test Solution in Hindi | Nitin Sir", videoId: "rvGRLP9Ms24" },
+            { id: "128", title: "08.UP Police अति संभावित प्रश्न Mock Test Solution in Hindi | Nitin Sir", videoId: "d4PFDlAWIYE" },
+            { id: "129", title: "07. UP Police Mock Test Solution in Hindi | Nitin Sir Hindi Practice Set", videoId: "d3sihtoh8l8" },
+            { id: "130", title: "06. UP Police Previous Year Question Paper in Hindi Quiz | Nitin Sir", videoId: "Tvdv_dVy4r4" },
+            { id: "131", title: "05. UP Police Hindi Quiz | Previous Year Question Paper | Nitin Sir", videoId: "2iiyZXogdoA" },
+            { id: "132", title: "04. UP Police Hindi Quiz | Previous Year Question Paper | Nitin Sir", videoId: "rLDEDlOl5bI" },
+            { id: "133", title: "38. UP Police Hindi मास्टर विडियो सन्धि एवं संधि-विच्छेद | Master Sandhi", videoId: "DUwaakdEAwU" },
+            { id: "134", title: "37. UP Police Hindi स्वर, व्यंजन और विसर्ग संधि | Swar & Vyanjan Sandhi", videoId: "14D1gPBl-dA" },
+            { id: "135", title: "36. UP Police Hindi विसर्ग सन्धि एवं सन्धि-विच्छेद | Visarg Sandhi", videoId: "iiDZ1fh2deo" },
+            { id: "136", title: "35. UP Police Hindi व्यंजन सन्धि एवं सन्धि-विच्छेद | vyanjan sandhi", videoId: "dR-aP20lOAw" },
+            { id: "137", title: "34. UP Police Hindi व्यंजन सन्धि & सन्धि विच्छेद | vyanjan sandhi trick", videoId: "pjQBamn7T7U" },
+            { id: "138", title: "33. UP Police Hindi स्वर सन्धि एवं सन्धि विच्छेद | sandhi hindi grammar", videoId: "ORdnTrhjwU8" },
+            { id: "139", title: "32. UP Police Hindi सम्पूर्ण समास एवं समास विग्रह: samas in hindi", videoId: "c5vsVG9hVgE" },
+            { id: "140", title: "31. UP Police Hindi सम्पूर्ण समास एवं समास विग्रह: hindi samas", videoId: "zOavM9x5mrY" },
+            { id: "141", title: "30. UP Police Hindi बहुब्रीहि समास एवं समास विग्रह: samas tricks in hindi", videoId: "OHfK2oh3n2w" },
+            { id: "142", title: "29. UP Police Hindi द्वन्द्व समास एवं समास विग्रह: samas in hindi", videoId: "xy_k2iexvbk" },
+            { id: "143", title: "28. UP Police Hindi अव्ययीभाव समास एवं विग्रह: hindi samas grammar", videoId: "WHMuMfMnZGg" },
+            { id: "144", title: "27. Master Video कर्मधारय समास & द्विगु समास एवं विग्रह for UP Police Exams", videoId: "LG7gH28HC2k" },
+            { id: "145", title: "26. UP Police Hindi तत्पुरुष समास एवं विग्रह तत्पुरुष: hindi grammar samas", videoId: "gQhuK0nPF6M" },
+            { id: "146", title: "25. UP Police Hindi पर्यायवाची शब्द paryayvachi UPP | hindi grammar", videoId: "4SZXdIX7O54" },
+            { id: "147", title: "24. UP Police Hindi पर्यायवाची शब्द paryayvachi trick | hindi grammar", videoId: "0Jvqp4tzlSs" },
+            { id: "148", title: "23. UP Police Hindi पर्यायवाची शब्द paryayvachi trick | paryayvachi upp", videoId: "7WVcD1UKiTQ" },
+            { id: "149", title: "22. UP Police Hindi  तत्सम-तद्भव: tatsam tadbhav trick | hindi grammar", videoId: "fD-f1qENS1Q" },
+            { id: "150", title: "21. UP Police Hindi विदेशी शब्द | videshi shabd trick | Hindi Grammar", videoId: "lf8PE5YYMb0" },
+            { id: "151", title: "20. UP Police Hindi विदेशी शब्द  | videshi shabd | Hindi Grammar", videoId: "hVHEWeVs1ko" },
+            { id: "152", title: "19. UP Police Hindi विलोम शब्द | Vilom Shabd | vilom shabd upp", videoId: "48zTeKUtYUA" },
+            { id: "153", title: "18. UP Police Hindi विलोम शब्द | Vilom Shabd | upp vilom shabd", videoId: "jmKTyvn09XU" },
+            { id: "154", title: "17. UP Police Hindi प्रसिद्ध साहित्यिक रचनाएँ: rachna & rachnakar", videoId: "f1icHS9oyjw" },
+            { id: "155", title: "16. UP Police Hindi मुहावरे स्पेशल क्लास | Muhavare", videoId: "MTD4HuLA1h4" },
+            { id: "156", title: "03. UP Police Hindi Quiz | Previous Year Question Paper | Nitin Sir", videoId: "ee8iA0HnfAw" },
+            { id: "157", title: "02. UP Police Previous Year Question Paper | Nitin Sir Hindi Practice Set", videoId: "LlBxOJChrdQ" },
+            { id: "158", title: "01. UP Police Previous Year Question Paper | Nitin Sir Hindi Practice Set", videoId: "-GsF3yl9B6c" },
+            { id: "159", title: "15. UP Police Hindi प्रत्यय स्पेशल क्लास | pratyay hindi grammar", videoId: "U5Gowwo1FBw" },
+            { id: "160", title: "14. UP Police Hindi साहित्य की प्रमुख रचनाएँ : Sahitya Rachnayen", videoId: "80bxfY4p1jM" },
+            { id: "161", title: "13. UP POLICE Hindi लोकोक्तियाँ | Lokoktiyan", videoId: "GThoZhfieRY" },
+            { id: "162", title: "12. UP Police Hindi उपसर्ग | Upsarg hindi grammar", videoId: "j_xXciIyVoI" },
+            { id: "163", title: "10. UP Police Hindi अनेक शब्दों के लिए एक शब्द | UPP Hindi Vyakaran", videoId: "dCg2aPFO7yw" },
+            { id: "164", title: "09. UP Police Hindi समश्रुतभिन्नार्थक शब्द: Samshruti Bhinnarthak Shabd", videoId: "QRkhHLZ3zyc" },
+            { id: "165", title: "08. UP Police Hindi पर्यायवाची शब्द: Paryayvachi | Paryayvachi Trick", videoId: "lLgP7CwQtzE" },
+            { id: "166", title: "07. UP Police Hindi एकवचन & बहुवचन | Ekvachan & Bahuvachan Trick", videoId: "7W99liB8WUo" },
+            { id: "167", title: "06. UP Police Hindi Ling | लिंग के भेद | Ling Hindi Grammar", videoId: "O1K966BP2fM" },
+            { id: "168", title: "05. UP Police Hindi  तत्सम-तद्भव: Tatsam Tadbhav | Tatsam Tadbhav Trick", videoId: "7wGuPRXez5o" },
+            { id: "169", title: "04. UP Police Hindi विलोम शब्द | Vilom Shabd", videoId: "Prpi4VljNS0" },
+            { id: "170", title: "03. UP Police Hindi विशेष वर्तनी शुद्धि | Vartani Shuddhi", videoId: "GBEIdV89eoQ" },
+            { id: "171", title: "02. UP Police Hindi वाक्य शुद्धि | Vakya Shuddhi", videoId: "e22u4Tbk4Ug" },
+            { id: "172", title: "01. UP Police Hindi वर्तनी शुद्धि | Vartani Shuddhi", videoId: "EMCo8pCoWV4" },
+            { id: "173", title: "02. UP Police Hindi | Rachna & Rachnakar: रचना & रचनाकार", videoId: "2t2klpe69DQ" },
+            { id: "174", title: "11. UP Police Hindi | पारिभाषिक शब्दावली | Paribhashik Shabdavali", videoId: "HIxr2Nd-Th8" },
+            { id: "175", title: "UP Police Constable 2024 New Vacancy |UPP Best Course", videoId: "azrYKUby4Eo" },
+            { id: "176", title: "UP Police 2024 : Notification Out, New Vacancy 60244 पद", videoId: "v-DaeVp5Gn4" }
         ];
 
         const syllabusConfig = [
+            { title: "Hindi Language", keywords: ["Hindi", "UPSI", "Police", "Samas", "Sandhi", "Vartani", "Alankar", "Sahitya", "Rachna", "Viloam", "Paryayvachi", "Muhavare", "Lokoktiyan", "Ling", "Vachana", "Karak", "Kaal", "Upsarg", "Pratyay"] },
             { title: "Percentage", keywords: ["Percentage"] },
             { title: "Profit & Loss", keywords: ["Profit", "Discount"] }, 
             { title: "Algebra", keywords: ["Algebra"] },
@@ -250,7 +382,7 @@
                                 <div class="flex-1 min-w-0">
                                     <h4 class="text-sm font-medium text-slate-800 truncate group-hover:text-blue-600">${video.title}</h4>
                                     <p class="text-[10px] text-slate-500 mt-1">
-                                        ${video.isCustom ? 'Custom Class' : 'Maths Marathon'} • Notes Available
+                                        ${video.isCustom ? 'Custom Class' : 'Class'} • Notes Available
                                     </p>
                                 </div>
                                 <button class="p-2 text-slate-300 hover:text-blue-600" onclick="event.stopPropagation(); downloadNotes('${video.title.replace(/'/g, "\\'")}')">
@@ -358,7 +490,7 @@
                 const href = anchor.getAttribute('href');
                 if (href && (href.startsWith('http') || href.startsWith('www'))) {
                     e.preventDefault();
-                    alert("🚫 FOCUS MODE: External link blocked.");
+                    alert("  FOCUS MODE: External link blocked.");
                 }
             }
         });
