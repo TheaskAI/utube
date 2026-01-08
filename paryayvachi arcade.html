@@ -1,0 +1,714 @@
+<!DOCTYPE html>
+<html lang="hi">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Paryayvachi Master | पर्यायवाची मास्टर</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Poppins', sans-serif; }
+        .hindi-font { font-family: 'Tiro Devanagari Hindi', serif; }
+        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .option-btn { transition: all 0.2s; }
+        .option-btn:active { transform: scale(0.98); }
+        
+        /* Custom Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #f1f1f1; }
+        ::-webkit-scrollbar-thumb { background: #888; border-radius: 4px; }
+        ::-webkit-scrollbar-thumb:hover { background: #555; }
+
+        @keyframes slideIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-slide { animation: slideIn 0.3s ease-out forwards; }
+
+        @keyframes shake {
+            0%, 100% { transform: translateX(0); }
+            25% { transform: translateX(-5px); }
+            75% { transform: translateX(5px); }
+        }
+        .shake { animation: shake 0.3s ease-in-out; }
+
+        @keyframes pop {
+            0% { transform: scale(1); }
+            50% { transform: scale(1.2); }
+            100% { transform: scale(1); }
+        }
+        .pop { animation: pop 0.2s ease-out; }
+    </style>
+</head>
+<body class="bg-gradient-to-br from-indigo-500 via-purple-500 to-pink-500 min-h-screen text-gray-800 select-none">
+
+    <div id="app" class="max-w-md mx-auto min-h-screen bg-gray-50 shadow-2xl relative overflow-hidden flex flex-col">
+        
+        <!-- Header -->
+        <header class="bg-white p-4 shadow-md z-10 flex justify-between items-center">
+            <h1 class="text-xl font-bold text-indigo-700 flex items-center gap-2">
+                <span>📚</span> पर्यायवाची मास्टर
+            </h1>
+            <div class="flex gap-2">
+                 <button onclick="showHome()" class="p-2 rounded-full hover:bg-gray-100 text-gray-600">🏠</button>
+            </div>
+        </header>
+
+        <!-- Home Page -->
+        <div id="home-page" class="flex-1 flex flex-col p-6 gap-6 overflow-y-auto">
+            <div class="text-center mt-2">
+                <div class="w-20 h-20 bg-indigo-100 rounded-full flex items-center justify-center mx-auto mb-3 text-3xl shadow-inner border-2 border-white">
+                    🕉️
+                </div>
+                <h2 class="text-2xl font-bold text-gray-800">नमस्ते!</h2>
+                <p class="text-gray-500 text-xs">Choose your challenge</p>
+            </div>
+
+            <!-- Game Mode Selection -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                <label class="font-bold text-sm text-gray-600 mb-3 block">Game Mode</label>
+                <div class="grid grid-cols-3 gap-2">
+                    <button onclick="setMode('MIXED')" id="btn-mode-mixed" class="mode-btn p-2 rounded-lg border-2 text-xs font-bold text-center transition-colors bg-indigo-50 border-indigo-500 text-indigo-700">
+                        Mixed<br>🔀
+                    </button>
+                    <button onclick="setMode('POSITIVE')" id="btn-mode-positive" class="mode-btn p-2 rounded-lg border-2 text-xs font-bold text-center transition-colors border-gray-200 text-gray-500 hover:bg-gray-50">
+                        Synonyms<br>✅
+                    </button>
+                    <button onclick="setMode('NEGATIVE')" id="btn-mode-negative" class="mode-btn p-2 rounded-lg border-2 text-xs font-bold text-center transition-colors border-gray-200 text-gray-500 hover:bg-gray-50">
+                        Odd One<br>🚫
+                    </button>
+                </div>
+            </div>
+
+            <!-- Speed Slider -->
+            <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100">
+                <div class="flex justify-between items-center mb-2">
+                    <label class="font-semibold text-sm text-gray-600">Speed</label>
+                    <span id="speed-val" class="text-indigo-600 font-bold text-sm">Normal</span>
+                </div>
+                <input type="range" id="speed-slider" min="1" max="3" value="2" class="w-full accent-indigo-600 cursor-pointer" oninput="updateSpeedLabel(this.value)">
+                <div class="flex justify-between text-xs text-gray-400 mt-1">
+                    <span>Chill</span>
+                    <span>Rush</span>
+                </div>
+            </div>
+
+            <!-- Action Buttons -->
+            <div class="grid grid-cols-2 gap-4 mt-auto">
+                <button onclick="startLearn()" class="bg-white p-4 rounded-xl shadow border-b-4 border-gray-200 active:border-b-0 active:translate-y-1 hover:bg-gray-50 transition-all flex flex-col items-center gap-2">
+                    <span class="text-3xl">📖</span>
+                    <span class="font-bold text-gray-700">Learn</span>
+                </button>
+                <button onclick="startGame()" class="bg-indigo-600 p-4 rounded-xl shadow-lg border-b-4 border-indigo-800 active:border-b-0 active:translate-y-1 hover:bg-indigo-700 transition-all flex flex-col items-center gap-2 relative overflow-hidden group">
+                    <div class="absolute inset-0 bg-white/20 translate-y-full group-hover:translate-y-0 transition-transform duration-300"></div>
+                    <span class="text-3xl">🎮</span>
+                    <span class="font-bold text-white relative">Start Game</span>
+                </button>
+            </div>
+        </div>
+
+        <!-- Learn Page -->
+        <div id="learn-page" class="hidden flex-1 flex flex-col overflow-hidden bg-gray-100">
+            <div class="p-4 bg-white shadow-sm z-10">
+                <div class="relative">
+                    <span class="absolute left-3 top-3 text-gray-400">🔍</span>
+                    <input type="text" id="search-input" placeholder="Search word..." class="w-full bg-gray-100 border-none rounded-lg pl-10 pr-4 py-3 focus:ring-2 focus:ring-indigo-500 outline-none transition-shadow" onkeyup="renderLearnList(this.value)">
+                </div>
+            </div>
+            <div id="learn-list" class="flex-1 overflow-y-auto p-4 space-y-3 pb-20">
+                <!-- Content injected via JS -->
+            </div>
+        </div>
+
+        <!-- Game Page -->
+        <div id="game-page" class="hidden flex-1 flex flex-col relative bg-gray-50">
+            <!-- HUD -->
+            <div class="flex justify-between items-center px-6 py-3 bg-white border-b shadow-sm z-10">
+                <div class="flex flex-col">
+                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Score</span>
+                    <span id="score-display" class="text-xl font-bold text-indigo-600 font-mono">0</span>
+                </div>
+                
+                <!-- Lives Container -->
+                <div class="flex gap-1" id="lives-container">
+                    <span class="text-xl">❤️</span><span class="text-xl">❤️</span><span class="text-xl">❤️</span>
+                </div>
+
+                <div class="flex flex-col items-end">
+                    <span class="text-[10px] text-gray-400 font-bold uppercase tracking-wider">Streak</span>
+                    <span id="streak-display" class="text-xl font-bold text-orange-500 font-mono">0</span>
+                </div>
+            </div>
+
+            <!-- Timer Bar -->
+            <div class="h-1.5 w-full bg-gray-200">
+                <div id="timer-bar" class="h-full bg-indigo-500 w-full rounded-r-full"></div>
+            </div>
+
+            <!-- Game Content -->
+            <div class="flex-1 flex flex-col justify-center p-6 gap-6 overflow-y-auto">
+                <div class="animate-slide">
+                    <div class="flex justify-center mb-6">
+                        <span id="q-tag" class="px-4 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase bg-blue-100 text-blue-700 shadow-sm">
+                            Find Synonym
+                        </span>
+                    </div>
+                    
+                    <h2 class="text-center text-sm font-semibold text-gray-500 mb-1 uppercase tracking-widest">Target Word</h2>
+                    <h1 id="q-word" class="text-center text-4xl font-bold text-gray-800 hindi-font mb-8 drop-shadow-sm">शब्द</h1>
+
+                    <div id="options-container" class="grid grid-cols-1 gap-3">
+                        <!-- Options injected via JS -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Wrong Answer / Explanation Modal -->
+        <div id="explanation-modal" class="hidden absolute inset-0 bg-black/60 z-50 flex items-end sm:items-center justify-center p-4 backdrop-blur-sm transition-opacity duration-300">
+            <div class="bg-white w-full rounded-2xl p-6 shadow-2xl animate-slide max-h-[85vh] overflow-y-auto">
+                <div class="flex items-center gap-3 mb-4">
+                    <div id="modal-icon" class="text-4xl">❌</div>
+                    <div>
+                        <h3 id="modal-title" class="text-xl font-bold">Wrong!</h3>
+                        <p class="text-xs text-gray-500 font-medium uppercase tracking-wide">Correct Answer</p>
+                        <p id="modal-correct" class="font-bold text-indigo-600 text-lg hindi-font"></p>
+                    </div>
+                </div>
+                
+                <!-- Target Word Context -->
+                <div class="bg-indigo-50 p-4 rounded-xl border border-indigo-100 mb-4">
+                    <p class="text-[10px] font-bold text-indigo-400 uppercase mb-1">Synonyms of <span id="modal-word-ref" class="text-indigo-700"></span></p>
+                    <p id="modal-full-list" class="text-gray-700 text-sm hindi-font leading-relaxed"></p>
+                </div>
+
+                <!-- Wrong Answer Context (Dynamic) -->
+                <div id="wrong-choice-info" class="hidden bg-red-50 p-4 rounded-xl border border-red-100 mb-6">
+                    <p class="text-[10px] font-bold text-red-400 uppercase mb-1">But you chose <span id="modal-wrong-word" class="text-red-700 font-bold"></span></p>
+                    <p class="text-xs text-gray-600 mb-1">Which means:</p>
+                    <p id="modal-wrong-synonyms" class="text-gray-800 text-sm hindi-font leading-relaxed font-medium"></p>
+                </div>
+
+                <button onclick="handleNextStep()" class="w-full bg-indigo-600 text-white py-3.5 rounded-xl font-bold shadow-lg active:scale-95 transition-transform hover:bg-indigo-700">
+                    Next →
+                </button>
+            </div>
+        </div>
+
+        <!-- Game Over Modal -->
+        <div id="game-over-modal" class="hidden absolute inset-0 bg-black/80 z-50 flex items-center justify-center p-4 backdrop-blur-md">
+            <div class="bg-white w-full max-w-sm rounded-3xl p-8 shadow-2xl text-center animate-slide border-4 border-white">
+                <div class="mb-4 text-6xl">💀</div>
+                <h2 class="text-3xl font-black text-gray-800 mb-1">Game Over</h2>
+                <p class="text-gray-500 text-sm mb-6">Out of lives!</p>
+
+                <div class="flex justify-center gap-8 mb-8">
+                    <div class="flex flex-col">
+                        <span class="text-xs text-gray-400 font-bold uppercase">Score</span>
+                        <span id="final-score" class="text-3xl font-bold text-indigo-600">0</span>
+                    </div>
+                    <div class="flex flex-col">
+                        <span class="text-xs text-gray-400 font-bold uppercase">Best Streak</span>
+                        <span id="final-streak" class="text-3xl font-bold text-orange-500">0</span>
+                    </div>
+                </div>
+
+                <div class="flex gap-3">
+                    <button onclick="showHome()" class="flex-1 bg-gray-100 text-gray-700 py-3 rounded-xl font-bold hover:bg-gray-200 transition-colors">
+                        Home
+                    </button>
+                    <button onclick="startGame()" class="flex-1 bg-indigo-600 text-white py-3 rounded-xl font-bold shadow-lg hover:bg-indigo-700 active:scale-95 transition-transform">
+                        Try Again ↻
+                    </button>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+<script>
+/* -------------------------------------------------------------------------- */
+/* DATA                                    */
+/* -------------------------------------------------------------------------- */
+const rawData = `
+चंद्रमा : विधु, शशि, शशांक, सुधाकर, राकेश, कलानिधि, निशाकर, मयंक, महताब, मृगांक, सोम, रजनीश, द्विजराज, क्षपानाथ, सुधांशु, हिमांशु, इंदु
+चांदनी : चंद्रिका, ज्योत्सना, कौमुदी, जुनहाई, उजियारी, चंद्रमरीचि
+विष्णु: जनार्दन, विशम्भर, नारायण, चक्रपाणि, गरुड़ध्वज, अच्युत, मुकुंद, ऋषिकेश, लक्ष्मीपति, रमेश, कमलापति, कमलाकांत, कमलेश, विभु, विश्वरूप, उपेंद्र, शेषशायी, चतुर्भुज, वनमाली
+शंकर (शिव): चंद्रमौलि, त्रिलोचन, मदनारि, स्मरारि, उमापति, महेश, शंभू, पिनाकी, गंगाधर, ललाटाक्ष, भूतेश, आशुतोष, त्रिपुरारि, रुद्र, हर, महादेव, नीलकंठ, चंद्रशेखर, पशुपति
+ब्रह्मा: हिरण्यगर्भ, विरंचि, चतुरानन, विधि, विधाता, सृष्टा, स्वयंभू, कमलासन, नाभिज, प्रजापति, लोकेश, अज, पितामह, सदानंद
+इंद्र: मधवा, पुरंदर, शक्र, वासव, देवराज, सुरपति, वज्रधर, शचीपति, सहस्राक्ष, अमरपति, विडौजा, पाकशासन, कौशिक
+कामदेव: मनोज, अनंग, पुष्पधन्वा, रतिपति, मन्मथ, कंदर्प, मार, स्मर, मीनकेतु, कुसुमशर, पंचशर, मकरध्वज, अतनु
+हनुमान: वज्रांग, आंजनेय, मारुति, पवनसुत, कपीश, रामभक्त, अंजनिपुत्र, जितेंद्रिय, महावीर, कपिश्वर, बजरंगबली
+गणेश: हेरम्ब, विनायक, एकदंत, लंबोदर, वक्रतुंड, गजानन, गौरीसुत, मूषकवाहन, भवानीनंदन, विघ्नेश
+सरस्वती: वागेश्वरी, वीणापाणि, भारती, शारदा, महाश्वेता, गिरा, ब्राह्मी, इला, निधात्री, कर्णिका, वाग्देवी, हंसवाहिनी, विमला
+लक्ष्मी: रमा, कमला, इंदिरा, हरिप्रिया, सिंधुजा, पद्मा, भार्गवी, श्री, चंचला
+दुर्गा: मीनाक्षी, चंडिका, भवानी, कल्याणी, महागौरी, कालिका, कामाक्षी, सुभद्रा
+यमुना: कालिंदी, अर्कजा, रवितनया, सूर्यजा, कृष्णा, भानुजा, तरणि-तनुजा, यमभगिनी
+गंगा: जान्हवी, त्रिपथगा, भागीरथी, सुरसरि, देवनदी, अलकनंदा, मंदाकिनी, विष्णुपदी, देवपगा
+सूर्य: मार्तंड, आदित्य, भास्कर, दिनकर, अंशुमाली, अर्क, सविता, पतंग, तरणि, सहस्रांशु, प्रभाकर, रवि, भानु, हंस
+अग्नि: हुताशन, कृशानु, वैश्वानर, अनल, पावक, वह्नि, धूम्रकेतु, जातवेदस, दहन, वायुसखा
+बादल: जीमूत, अभ्र, बलाहक, पर्जन्य, नीरद, पयोद, वारिद, अंबुद, जलद, घन, मेघ, धर
+समुद्र: पारावार, रत्नाकर, जलधि, नदीश, अर्णव, पयोधि, तोयनिधि, वारिधि, सिंधु, नीरनिधि, अब्धि, उदधि
+आकाश: द्यौ, अभ्र, व्योम, अनंत, शून्य, अंबर, नभ, अंतरिक्ष, गगन, फलक
+पृथ्वी: अवनी, धरा, वसुंधरा, अचला, मेदिनी, मही, वसुधा, इला, उर्वी, भू, धरित्री, धरणी, रसा
+पर्वत: अचल, अद्रि, नग, शैल, भूधर, पहाड़, गिरि, तुंग, धरणीधर
+जंगल: विपिन, कांतार, अटवी, कानन, अरण्य, वन, दाव
+कमल: इन्दीवर, पुण्डरीक, कोकनद, शतदल, राजीव, सरोज, अंबुज, नीरज, तामरस, नलिन, जलज, पंकज, वारिज, उत्पल, अरविंद, पद्म, कंज
+आम: रसाल, सहकार, पिकबंधु, अतिसौरभ, आम्र, अमृतफल, अंब
+वृक्ष: विटप, द्रुम, गाछ, तरु, अगम, पादप, पेड़, रुख, शाखी
+शेर: मृगेन्द्र, नाहर, शार्दूल, केहरि, पंचानन, वनराज, मृगारी, सिंह, चित्रक
+घोड़ा: हय, बाजी, तुरंग, सैंधव, घोटक, रविपुत्र, अश्व, विमानक
+हाथी: कुंजर, मतंग, द्विरद, वितुण्ड, नाग, करी, हस्ती, सिंदूर, गयंद, वारण, गज, कुंभी
+सांप: उरग, पन्नग, अहि, व्याल, भुजंग, फणी, विषधर, सर्प, नाग, सारंग
+भौंरा: शिलीमुख, षट्पद, अली, मिलिंद, मधुप, चंचरीक, द्विरेफ, मधुकर, भृंग
+मछली: झख, सफरी, मीन, मत्स्य, जलजीवन, मकर
+पक्षी: विहग, द्विज, खग, शकुन्त, पखेरू, नभचर, अंडज, परिंदा, विहंग
+मुर्गा: ताम्रचूड़, अरुणशिखा, कुक्कुट
+मेंढक: दादुर, भेक, मंडूक, वर्षा-भू
+गाय: धेनु, सुरभि, भद्रा, पयस्विनी, गौ
+पत्नी: दारा, भार्या, वामा, अर्धांगिनी, सहगामिनी, गृहिणी, वधू, कलत्र, कांता, प्राणप्रिया
+पुत्री: दुहिता, तनुजा, आत्मजा, सुता, नंदिनी, तनया, बेटी
+पुत्र: तनय, नंदन, सूत, आत्मज, बेटा, पूत, वत्स
+स्त्री: वामा, भामा, अबला, महिला, नारी, रमणी, ललना, वनिता, कांता
+शत्रु: रिपु, अरि, बैरी, विपक्षी, अमित्र, दुश्मन
+मित्र: सहचर, सखा, सुहृदय, मीत, दोस्त, संगी
+अतिथि: पाहुना, अभ्यागत, आगंतुक, मेहमान
+दास: भृत्य, किंकर, अनुचर, परिचारक, सेवक, दास
+देवता: सुर, अमर, देव, निर्जर, विबुध, त्रिदश, गीर्वाण
+दानव: दैत्य, राक्षस, असुर, निशाचर, रजनीचर, यातुधान, तमीचर
+तलवार: चंद्रहास, शमशीर, करवाल, असि, खड्ग, कृपाण
+बाण: शिलीमुख, शर, विशिख, आशुग, इषु, नाराच, सायक
+तर्कश: तूणीर, निषंग, इषुधि, उपासंग
+धनुष: कोदंड, शरासन, पिनाक, सारंग, चाप, कमान
+सोना: हाटक, हेम, हिरण्य, जातरूप, कनक, पुष्कल, सुवर्ण, कुंदन
+पत्थर: प्रस्तर, अश्म, उपल, पाहन, पाषाण, शिला
+कपड़ा: चीर, वसन, परिधान, अंबर, पट, वस्त्र, दुकूल
+बिजली: सौदामिनी, चपला, तड़ित, क्षणप्रभा, दामिनी, चंचला, घनवल्ली
+हवा: समीर, मारुत, अनिल, प्रकंपन, बयार, वात, वायु, मृगवाहन, प्रभंजन
+किरण: मरीचि, मयूख, दीप्ति, रश्मि, अंशु, प्रभा, कर
+लहर: ऊर्मि, वीचि, तरंग, हिलोर
+रात्रि: विभावरी, निशीथ, यामिनी, त्रियामा, क्षणदा, तमिस्त्रा, शर्वरी, रजनी, निशा, रैन
+दिन: वासर, दिवस, दिवा, वार, अह्न
+जल: नीर, सलिल, उदक, पानी, अंबु, तोय, वारि, पय, जीवन, आब, रस, अमृत
+धन: अर्थ, वित्त, संपदा, द्रव्य, लक्ष्मी, श्री, दौलत
+क्रोध: अमर्ष, रोष, कोप, गुस्सा, तैश
+सुंदर: रमणीय, ललित, चारु, मनोहर, चित्ताकर्षक, कलित
+नियति: प्रारब्ध, होनी, भावी, दैव्य, भाग्य
+द्रौपदी: याज्ञसेनी, सैरंध्री, पांचाली, द्रुपदसुता, कृष्णा
+झंडा: केतु, निशान, पताका, ध्वज
+मोक्ष: कैवल्य, निर्वाण, अपवर्ग, सद्गति, परमपद, मुक्ति
+ईर्ष्या: डाह, जलन, कुढ़न, द्वेष, मत्सर
+इच्छा: ईहा, स्पृहा, वांछा, कामना, अभिलाषा, मनोरथ, चाह
+`.trim();
+
+// Parse Data
+const db = rawData.split('\n').map(line => {
+    let [wordPart, synonymsPart] = line.split(':');
+    let word = wordPart.trim();
+    let synonyms = synonymsPart.split(',').map(s => s.trim().replace('।', '')); 
+    return { word, synonyms };
+});
+
+/* -------------------------------------------------------------------------- */
+/* STATE                                   */
+/* -------------------------------------------------------------------------- */
+let state = {
+    score: 0,
+    streak: 0,
+    maxStreak: 0,
+    lives: 3,
+    timer: null,
+    timeLeft: 0,
+    timeTotal: 10,
+    currentQ: null,
+    isPaused: false,
+    gameMode: 'MIXED' // MIXED, POSITIVE, NEGATIVE
+};
+
+const speeds = {
+    "1": { label: "Relaxed", time: 20 },
+    "2": { label: "Normal", time: 10 },
+    "3": { label: "Fast", time: 5 }
+};
+
+/* -------------------------------------------------------------------------- */
+/* UTILITIES                                 */
+/* -------------------------------------------------------------------------- */
+const el = (id) => document.getElementById(id);
+const rand = (arr) => arr[Math.floor(Math.random() * arr.length)];
+const shuffle = (arr) => arr.sort(() => Math.random() - 0.5);
+
+function updateSpeedLabel(val) {
+    el('speed-val').textContent = speeds[val].label;
+    state.timeTotal = speeds[val].time;
+}
+
+// Find source object for any given synonym string
+function findSourceData(wordText) {
+    // 1. Check if it matches a main word
+    let found = db.find(d => d.word === wordText);
+    if(found) return found;
+
+    // 2. Check if it's inside a synonym list
+    found = db.find(d => d.synonyms.includes(wordText));
+    return found || null;
+}
+
+/* -------------------------------------------------------------------------- */
+/* NAVIGATION & MODES                         */
+/* -------------------------------------------------------------------------- */
+function hideAll() {
+    ['home-page', 'learn-page', 'game-page'].forEach(id => el(id).classList.add('hidden'));
+    ['explanation-modal', 'game-over-modal'].forEach(id => el(id).classList.add('hidden'));
+    clearInterval(state.timer);
+}
+
+function showHome() {
+    hideAll();
+    el('home-page').classList.remove('hidden');
+    updateModeUI();
+}
+
+function setMode(mode) {
+    state.gameMode = mode;
+    updateModeUI();
+}
+
+function updateModeUI() {
+    // Reset all buttons
+    document.querySelectorAll('.mode-btn').forEach(btn => {
+        btn.classList.remove('bg-indigo-50', 'border-indigo-500', 'text-indigo-700');
+        btn.classList.add('border-gray-200', 'text-gray-500');
+    });
+
+    // Highlight selected
+    const activeBtn = el(`btn-mode-${state.gameMode.toLowerCase()}`);
+    if(activeBtn) {
+        activeBtn.classList.remove('border-gray-200', 'text-gray-500');
+        activeBtn.classList.add('bg-indigo-50', 'border-indigo-500', 'text-indigo-700');
+    }
+}
+
+function startLearn() {
+    hideAll();
+    el('learn-page').classList.remove('hidden');
+    renderLearnList('');
+}
+
+function startGame() {
+    hideAll();
+    el('game-page').classList.remove('hidden');
+    state.score = 0;
+    state.streak = 0;
+    state.maxStreak = 0;
+    state.lives = 3;
+    updateHUD();
+    nextQuestion();
+}
+
+/* -------------------------------------------------------------------------- */
+/* LEARN MODE                                 */
+/* -------------------------------------------------------------------------- */
+function renderLearnList(query) {
+    const list = el('learn-list');
+    list.innerHTML = '';
+    const q = query.toLowerCase();
+
+    db.filter(item => 
+        item.word.toLowerCase().includes(q) || 
+        item.synonyms.some(s => s.toLowerCase().includes(q))
+    ).forEach(item => {
+        const card = document.createElement('div');
+        card.className = "bg-white p-4 rounded-xl shadow-sm border border-gray-100";
+        card.innerHTML = `
+            <h3 class="font-bold text-indigo-700 text-lg mb-2">${item.word}</h3>
+            <div class="flex flex-wrap gap-2">
+                ${item.synonyms.map(s => `<span class="bg-indigo-50 text-indigo-800 px-2 py-1 rounded text-sm hindi-font">${s}</span>`).join('')}
+            </div>
+        `;
+        list.appendChild(card);
+    });
+}
+
+/* -------------------------------------------------------------------------- */
+/* GAME LOGIC                                 */
+/* -------------------------------------------------------------------------- */
+
+function generateQuestion() {
+    // Determine type based on Mode
+    let type = state.gameMode;
+    if (type === 'MIXED') {
+        type = Math.random() > 0.5 ? 'POSITIVE' : 'NEGATIVE';
+    }
+
+    const targetObj = rand(db);
+    
+    // Pick distractors
+    const others = db.filter(x => x.word !== targetObj.word);
+    
+    let questionData = {
+        word: targetObj.word,
+        fullList: targetObj.synonyms,
+        options: [],
+        correctIndex: -1,
+        type: type,
+        correctText: ''
+    };
+
+    if (type === 'POSITIVE') {
+        // Find Synonym: 1 Correct, 3 Wrong
+        const correctAns = rand(targetObj.synonyms);
+        const wrong1 = rand(rand(others).synonyms);
+        const wrong2 = rand(rand(others).synonyms);
+        const wrong3 = rand(rand(others).synonyms);
+        
+        let opts = [correctAns, wrong1, wrong2, wrong3];
+        // Ensure unique options
+        opts = [...new Set(opts)];
+        while(opts.length < 4) {
+             opts.push(rand(rand(others).synonyms));
+             opts = [...new Set(opts)];
+        }
+
+        opts = shuffle(opts);
+        
+        questionData.options = opts;
+        questionData.correctIndex = opts.indexOf(correctAns);
+        questionData.correctText = correctAns;
+        questionData.tag = "Find Synonym";
+        
+    } else {
+        // Find Not Synonym: 3 Correct, 1 Wrong (The "Wrong" is the answer)
+        if (targetObj.synonyms.length < 3) return generateQuestion(); // Retry
+
+        let correctSyns = [...targetObj.synonyms];
+        shuffle(correctSyns);
+        const opt1 = correctSyns[0];
+        const opt2 = correctSyns[1];
+        const opt3 = correctSyns[2];
+        const oddOneOut = rand(rand(others).synonyms); 
+
+        let opts = [opt1, opt2, opt3, oddOneOut];
+        opts = shuffle(opts);
+
+        questionData.options = opts;
+        questionData.correctIndex = opts.indexOf(oddOneOut); 
+        questionData.correctText = oddOneOut;
+        questionData.tag = "Find Odd One Out";
+    }
+
+    return questionData;
+}
+
+function nextQuestion() {
+    el('explanation-modal').classList.add('hidden');
+    
+    // Check lives logic inside handleAnswer mainly, but just in case
+    if(state.lives <= 0) {
+        gameOver();
+        return;
+    }
+
+    state.currentQ = generateQuestion();
+    renderQuestionUI();
+    startTimer();
+}
+
+function renderQuestionUI() {
+    const q = state.currentQ;
+    
+    // Set Tag Color
+    const tagEl = el('q-tag');
+    tagEl.textContent = q.tag;
+    if (q.type === 'NEGATIVE') {
+        tagEl.className = "px-4 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase bg-red-100 text-red-700 shadow-sm";
+    } else {
+        tagEl.className = "px-4 py-1.5 rounded-full text-xs font-bold tracking-wide uppercase bg-green-100 text-green-700 shadow-sm";
+    }
+
+    el('q-word').textContent = q.word;
+
+    const cont = el('options-container');
+    cont.innerHTML = '';
+
+    q.options.forEach((opt, idx) => {
+        const btn = document.createElement('button');
+        btn.className = "option-btn w-full bg-white p-4 rounded-xl shadow-sm border-2 border-transparent hover:border-indigo-200 text-left font-medium text-gray-700 hindi-font text-lg relative overflow-hidden group";
+        btn.innerHTML = `
+            <span class="relative z-10">${opt}</span>
+            <div class="absolute inset-0 bg-indigo-50 opacity-0 group-hover:opacity-100 transition-opacity"></div>
+        `;
+        btn.onclick = () => handleAnswer(idx, btn, opt);
+        cont.appendChild(btn);
+    });
+}
+
+function handleAnswer(idx, btnBtn, text) {
+    if (state.isPaused) return;
+    clearInterval(state.timer);
+    state.isPaused = true;
+
+    const isCorrect = (idx === state.currentQ.correctIndex);
+
+    if (isCorrect) {
+        // Correct Animation
+        btnBtn.classList.add('bg-green-100', 'border-green-500', 'text-green-800', 'pop');
+        state.score += 10 + (state.streak * 2);
+        state.streak++;
+        if(state.streak > state.maxStreak) state.maxStreak = state.streak;
+        updateHUD();
+        setTimeout(() => {
+            state.isPaused = false;
+            nextQuestion();
+        }, 800);
+    } else {
+        // Wrong Animation
+        btnBtn.classList.add('bg-red-100', 'border-red-500', 'text-red-800', 'shake');
+        state.streak = 0;
+        state.lives--;
+        updateHUD();
+        
+        setTimeout(() => {
+            if(state.lives <= 0) {
+                // If dead, show explanation first, then on 'next' show game over? 
+                // Or show explanation and Game Over immediately? 
+                // Better flow: Show explanation of why it was wrong, then when they click "Next", show Game Over.
+                showExplanation(text);
+            } else {
+                showExplanation(text);
+            }
+        }, 600);
+    }
+}
+
+function showExplanation(userChoiceText) {
+    const q = state.currentQ;
+    el('modal-title').textContent = (state.lives <= 0) ? "Incorrect & Game Over!" : "Incorrect!";
+    el('modal-title').className = "text-xl font-bold text-red-600";
+    el('modal-icon').textContent = "❌";
+    el('modal-correct').textContent = q.correctText;
+    
+    // Main Word Data
+    el('modal-word-ref').textContent = q.word;
+    el('modal-full-list').textContent = q.fullList.join(', ');
+    
+    // Wrong Choice Data (Teaching moment)
+    // Only relevant if the user picked a wrong choice (not timeout)
+    const wrongInfoBox = el('wrong-choice-info');
+    
+    if (userChoiceText) {
+        // Find what the user selected belongs to
+        // Note: In NEGATIVE mode, the user selects the "Odd One Out" which IS correct.
+        // So this logic only fires if they selected a synonym in Negative mode (which is wrong),
+        // OR selected a non-synonym in Positive mode.
+        
+        // Simplest logic: Find the data object for the user's selected text
+        const sourceData = findSourceData(userChoiceText);
+        
+        if (sourceData && sourceData.word !== q.word) {
+            wrongInfoBox.classList.remove('hidden');
+            el('modal-wrong-word').textContent = userChoiceText;
+            // Show the main word it belongs to + some synonyms
+            el('modal-wrong-synonyms').textContent = `It is a synonym for "${sourceData.word}": ${sourceData.synonyms.slice(0, 5).join(', ')}...`;
+        } else {
+            // It might be a word that exists but logic didn't catch, or just generic error
+             wrongInfoBox.classList.add('hidden');
+        }
+    } else {
+        // Timeout
+        wrongInfoBox.classList.add('hidden');
+    }
+
+    el('explanation-modal').classList.remove('hidden');
+    state.isPaused = false; 
+}
+
+function handleNextStep() {
+    el('explanation-modal').classList.add('hidden');
+    if (state.lives <= 0) {
+        gameOver();
+    } else {
+        nextQuestion();
+    }
+}
+
+function handleTimeout() {
+    state.streak = 0;
+    state.lives--;
+    updateHUD();
+    
+    el('modal-title').textContent = "Time's Up!";
+    el('modal-title').className = "text-xl font-bold text-orange-600";
+    el('modal-icon').textContent = "⏰";
+    
+    const q = state.currentQ;
+    el('modal-correct').textContent = q.correctText;
+    el('modal-word-ref').textContent = q.word;
+    el('modal-full-list').textContent = q.fullList.join(', ');
+    el('wrong-choice-info').classList.add('hidden'); // No choice made
+    
+    el('explanation-modal').classList.remove('hidden');
+}
+
+function gameOver() {
+    el('explanation-modal').classList.add('hidden'); // Ensure logic modal is gone
+    el('game-over-modal').classList.remove('hidden');
+    el('final-score').textContent = state.score;
+    el('final-streak').textContent = state.maxStreak;
+    clearInterval(state.timer);
+}
+
+/* -------------------------------------------------------------------------- */
+/* TIMER & HUD                               */
+/* -------------------------------------------------------------------------- */
+function startTimer() {
+    // Reset bar
+    const bar = el('timer-bar');
+    bar.style.transition = 'none';
+    bar.style.width = '100%';
+    bar.offsetHeight; // Force reflow
+    
+    // Get time from slider to be safe
+    const sliderVal = el('speed-slider').value;
+    state.timeTotal = speeds[sliderVal].time; 
+    state.timeLeft = state.timeTotal;
+
+    // Start animation
+    bar.style.transition = `width ${state.timeTotal}s linear`;
+    bar.style.width = '0%';
+
+    clearInterval(state.timer);
+    
+    const step = 100; 
+    state.timer = setInterval(() => {
+        state.timeLeft -= (step/1000);
+        if (state.timeLeft <= 0) {
+            clearInterval(state.timer);
+            handleTimeout();
+        }
+    }, step);
+}
+
+function updateHUD() {
+    el('score-display').textContent = state.score;
+    el('streak-display').textContent = state.streak;
+    
+    // Update Hearts
+    const container = el('lives-container');
+    container.innerHTML = '';
+    for(let i=0; i<3; i++) {
+        if(i < state.lives) {
+            container.innerHTML += `<span class="text-xl text-red-500 drop-shadow-sm">❤️</span>`;
+        } else {
+            container.innerHTML += `<span class="text-xl text-gray-300 opacity-50">💔</span>`;
+        }
+    }
+}
+
+// Init speed label
+updateSpeedLabel(el('speed-slider').value);
+updateModeUI();
+
+</script>
+</body>
+</html>
