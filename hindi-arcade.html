@@ -2,13 +2,17 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Hindi Arcade - Ultimate</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; -webkit-tap-highlight-color: transparent; }
+        body { 
+            font-family: 'Inter', sans-serif; 
+            -webkit-tap-highlight-color: transparent; 
+            overscroll-behavior-y: contain;
+        }
         .hindi-font { font-family: 'Tiro Devanagari Hindi', serif; }
         .no-scrollbar::-webkit-scrollbar { display: none; }
         .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
@@ -19,14 +23,14 @@
             top: -60px;
             left: 50%;
             transform: translateX(-50%);
-            padding: 0.75rem 1.5rem;
+            padding: 0.5rem 1rem;
             background-color: white;
             border: 2px solid #f97316;
             color: #ea580c;
-            border-radius: 1rem;
+            border-radius: 0.75rem;
             box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
             font-family: 'Tiro Devanagari Hindi', serif;
-            font-size: 1.5rem;
+            font-size: 1.25rem;
             font-weight: bold;
             z-index: 10;
             white-space: nowrap;
@@ -35,153 +39,166 @@
 
         @keyframes fall {
             from { top: -60px; }
-            to { top: 85%; opacity: 0; }
+            to { top: 95%; opacity: 0; }
         }
 
         .btn-press { transition: transform 0.1s; }
-        .btn-press:active { transform: scale(0.95); }
+        .btn-press:active { transform: scale(0.92); }
 
         .correct-flash { animation: flash-green 0.3s ease-in-out forwards; }
-        @keyframes flash-green { 0%, 100% { background-color: white; } 50% { background-color: #86efac; } }
+        @keyframes flash-green { 0%, 100% { background-color: #f8fafc; } 50% { background-color: #86efac; } }
         
         .wrong-flash { animation: flash-red 0.3s ease-in-out forwards; }
-        @keyframes flash-red { 0%, 100% { background-color: white; } 50% { background-color: #fca5a5; } }
+        @keyframes flash-red { 0%, 100% { background-color: #f8fafc; } 50% { background-color: #fca5a5; } }
 
-        /* Animation for Popup */
         .pop-in { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
         @keyframes popIn {
             0% { transform: scale(0.8); opacity: 0; }
             100% { transform: scale(1); opacity: 1; }
         }
+
+        /* Safe area handling for Android/iOS notches */
+        .pt-safe { padding-top: env(safe-area-inset-top); }
+        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
     </style>
 </head>
 <body class="bg-orange-50 text-slate-800 h-screen flex flex-col overflow-hidden select-none">
 
-    <header class="bg-[#0f172a] text-white px-5 py-4 flex justify-between items-center shadow-md z-30 flex-none">
-        <div class="flex items-center gap-3">
-             <div class="w-8 h-8 rounded bg-orange-500 flex items-center justify-center font-bold text-white hindi-font text-lg shadow-sm shadow-orange-900/50"></div>
-             <h1 class="font-bold text-lg tracking-wide">Hindi Arcade</h1>
+    <!-- Global Header (Hidden during game) -->
+    <header id="main-header" class="bg-[#0f172a] text-white px-5 py-3 flex justify-between items-center shadow-md z-30 flex-none pt-safe">
+        <div class="flex items-center gap-2">
+             <div class="w-7 h-7 rounded bg-orange-500 flex items-center justify-center font-bold text-white hindi-font text-base shadow-sm"> अ </div>
+             <h1 class="font-bold text-base tracking-wide">Hindi Arcade</h1>
         </div>
         <div class="flex gap-2">
-            <button onclick="openImportModal()" class="flex items-center gap-1 bg-slate-700 hover:bg-slate-600 px-3 py-1.5 rounded-full text-xs font-bold transition-colors border border-slate-600">
+            <button onclick="openImportModal()" class="flex items-center gap-1 bg-slate-700 hover:bg-slate-600 px-2.5 py-1 rounded-full text-[10px] font-bold transition-colors border border-slate-600">
                 <i data-lucide="download" class="w-3 h-3"></i> Import
             </button>
-            <div class="flex items-center gap-2 bg-slate-800/50 px-3 py-1 rounded-full border border-slate-700">
-                <span class="text-[10px] font-bold tracking-wider text-slate-300">SHABD VARSHA</span>
-            </div>
         </div>
     </header>
 
-    <main class="flex-1 overflow-y-auto no-scrollbar relative bg-orange-50/50">
+    <main class="flex-1 relative bg-orange-50/50 flex flex-col min-h-0 overflow-hidden">
         
-        <div class="sticky top-0 z-20 bg-orange-50 p-4 pb-2">
+        <!-- Tab Bar (Hidden during game) -->
+        <div id="tab-container" class="sticky top-0 z-20 bg-orange-50 p-3 pb-1 flex-none">
             <div class="flex p-1 bg-white border border-orange-200 rounded-xl shadow-sm">
-                <button onclick="switchTab('learn')" id="btn-learn" class="flex-1 py-2 rounded-lg text-xs font-bold bg-orange-600 text-white shadow-md transition-all">
-                     Study
+                <button onclick="switchTab('learn')" id="btn-learn" class="flex-1 py-1.5 rounded-lg text-xs font-bold bg-orange-600 text-white shadow-md transition-all">
+                      Study
                 </button>
-                <button onclick="switchTab('game')" id="btn-game" class="flex-1 py-2 rounded-lg text-xs font-bold text-slate-500 hover:text-orange-700 transition-all">
-                     Play
+                <button onclick="switchTab('game')" id="btn-game" class="flex-1 py-1.5 rounded-lg text-xs font-bold text-slate-500 transition-all">
+                      Play
                 </button>
             </div>
         </div>
 
-        <div id="view-learn" class="p-4 pb-24 space-y-6">
-            <div class="flex gap-2 overflow-x-auto no-scrollbar pb-2">
-                <button onclick="renderStudy('vilom')" class="px-4 py-2 bg-white border border-orange-200 text-orange-700 rounded-full text-xs font-bold whitespace-nowrap active:bg-orange-100 shadow-sm">Vilom</button>
-                <button onclick="renderStudy('samas')" class="px-4 py-2 bg-white border border-orange-200 text-orange-700 rounded-full text-xs font-bold whitespace-nowrap active:bg-orange-100 shadow-sm">Samas</button>
-                <button onclick="renderStudy('muhavre')" class="px-4 py-2 bg-white border border-orange-200 text-orange-700 rounded-full text-xs font-bold whitespace-nowrap active:bg-orange-100 shadow-sm">Muhavre</button>
-                <button onclick="renderStudy('sandhi')" class="px-4 py-2 bg-white border border-orange-200 text-orange-700 rounded-full text-xs font-bold whitespace-nowrap active:bg-orange-100 shadow-sm">Sandhi</button>
-                <button onclick="renderStudy('custom')" class="px-4 py-2 bg-white border border-orange-200 text-purple-700 rounded-full text-xs font-bold whitespace-nowrap active:bg-purple-100 shadow-sm">Custom</button>
+        <!-- LEARN VIEW -->
+        <div id="view-learn" class="flex-1 overflow-y-auto no-scrollbar p-4 pb-24 space-y-4">
+            <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                <button onclick="renderStudy('vilom')" class="px-4 py-1.5 bg-white border border-orange-200 text-orange-700 rounded-full text-[10px] font-bold whitespace-nowrap active:bg-orange-100 shadow-sm">Vilom</button>
+                <button onclick="renderStudy('samas')" class="px-4 py-1.5 bg-white border border-orange-200 text-orange-700 rounded-full text-[10px] font-bold whitespace-nowrap active:bg-orange-100 shadow-sm">Samas</button>
+                <button onclick="renderStudy('muhavre')" class="px-4 py-1.5 bg-white border border-orange-200 text-orange-700 rounded-full text-[10px] font-bold whitespace-nowrap active:bg-orange-100 shadow-sm">Muhavre</button>
+                <button onclick="renderStudy('sandhi')" class="px-4 py-1.5 bg-white border border-orange-200 text-orange-700 rounded-full text-[10px] font-bold whitespace-nowrap active:bg-orange-100 shadow-sm">Sandhi</button>
+                <button onclick="renderStudy('custom')" class="px-4 py-1.5 bg-white border border-orange-200 text-purple-700 rounded-full text-[10px] font-bold whitespace-nowrap active:bg-purple-100 shadow-sm">Custom</button>
             </div>
             <div id="study-container" class="space-y-3"></div>
         </div>
 
-        <div id="view-game" class="hidden h-full flex flex-col absolute inset-0 top-[70px] bg-orange-50">
+        <!-- GAME VIEW -->
+        <div id="view-game" class="hidden absolute inset-0 bg-orange-50 flex flex-col z-10 overflow-hidden">
             
+            <!-- MENU VIEW inside Game View -->
             <div id="game-menu" class="absolute inset-0 z-20 bg-orange-50 flex flex-col items-center justify-center p-6 space-y-6">
                 <div class="text-center">
-                    <h2 class="text-4xl font-black text-slate-800 mb-1 hindi-font"> </h2>
-                    <p class="text-sm text-slate-500">Select speed & topic</p>
+                    <h2 class="text-4xl font-black text-slate-800 mb-1 hindi-font">शब्द वर्षा</h2>
+                    <p class="text-xs text-slate-500 font-bold tracking-widest uppercase">Select speed & topic</p>
                 </div>
 
-                <div class="bg-white p-1.5 rounded-xl border border-orange-100 shadow-sm flex w-full max-w-sm">
-                    <button onclick="setSpeed('easy')" id="spd-easy" class="flex-1 py-2 rounded-lg text-xs font-bold text-slate-500 hover:bg-orange-50 transition-all">Easy</button>
-                    <button onclick="setSpeed('medium')" id="spd-medium" class="flex-1 py-2 rounded-lg text-xs font-bold bg-orange-500 text-white shadow-md transition-all">Normal</button>
-                    <button onclick="setSpeed('hard')" id="spd-hard" class="flex-1 py-2 rounded-lg text-xs font-bold text-slate-500 hover:bg-orange-50 transition-all">Hard</button>
+                <div class="bg-white p-1 rounded-xl border border-orange-100 shadow-sm flex w-full max-w-xs">
+                    <button onclick="setSpeed('easy')" id="spd-easy" class="flex-1 py-1.5 rounded-lg text-[10px] font-bold text-slate-500 hover:bg-orange-50 transition-all">Easy</button>
+                    <button onclick="setSpeed('medium')" id="spd-medium" class="flex-1 py-1.5 rounded-lg text-[10px] font-bold bg-orange-500 text-white shadow-md transition-all">Normal</button>
+                    <button onclick="setSpeed('hard')" id="spd-hard" class="flex-1 py-1.5 rounded-lg text-[10px] font-bold text-slate-500 hover:bg-orange-50 transition-all">Hard</button>
                 </div>
 
-                <div class="grid grid-cols-2 gap-3 w-full max-w-sm">
-                    <button onclick="startGame('vilom')" class="p-5 bg-white border-2 border-orange-100 rounded-2xl shadow-sm hover:border-orange-500 hover:shadow-md transition-all group active:scale-95">
-                        <div class="text-2xl mb-1 group-hover:scale-110 transition-transform"></div>
-                        <div class="font-bold text-slate-700">Vilom</div>
+                <div class="grid grid-cols-2 gap-2 w-full max-w-xs">
+                    <button onclick="startGame('vilom')" class="p-4 bg-white border-2 border-orange-100 rounded-xl shadow-sm active:scale-95 transition-all text-center">
+                        <div class="text-xl mb-1">↔️</div>
+                        <div class="font-bold text-xs text-slate-700">Vilom</div>
                     </button>
-                    <button onclick="startGame('samas')" class="p-5 bg-white border-2 border-purple-100 rounded-2xl shadow-sm hover:border-purple-500 hover:shadow-md transition-all group active:scale-95">
-                        <div class="text-2xl mb-1 group-hover:scale-110 transition-transform"></div>
-                        <div class="font-bold text-slate-700">Samas</div>
+                    <button onclick="startGame('samas')" class="p-4 bg-white border-2 border-purple-100 rounded-xl shadow-sm active:scale-95 transition-all text-center">
+                        <div class="text-xl mb-1">🔗</div>
+                        <div class="font-bold text-xs text-slate-700">Samas</div>
                     </button>
-                    <button onclick="startGame('muhavre')" class="p-5 bg-white border-2 border-green-100 rounded-2xl shadow-sm hover:border-green-500 hover:shadow-md transition-all group active:scale-95">
-                        <div class="text-2xl mb-1 group-hover:scale-110 transition-transform"></div>
-                        <div class="font-bold text-slate-700">Muhavre</div>
+                    <button onclick="startGame('muhavre')" class="p-4 bg-white border-2 border-green-100 rounded-xl shadow-sm active:scale-95 transition-all text-center">
+                        <div class="text-xl mb-1">🗣️</div>
+                        <div class="font-bold text-xs text-slate-700">Muhavre</div>
                     </button>
-                    <button onclick="startGame('custom')" class="p-5 bg-white border-2 border-slate-100 rounded-2xl shadow-sm hover:border-slate-500 hover:shadow-md transition-all group active:scale-95">
-                        <div class="text-2xl mb-1 group-hover:scale-110 transition-transform"></div>
-                        <div class="font-bold text-slate-700">Custom</div>
+                    <button onclick="startGame('custom')" class="p-4 bg-white border-2 border-slate-100 rounded-xl shadow-sm active:scale-95 transition-all text-center">
+                        <div class="text-xl mb-1">📁</div>
+                        <div class="font-bold text-xs text-slate-700">Custom</div>
                     </button>
                 </div>
             </div>
 
+            <!-- ACTIVE GAME BOARD -->
             <div id="game-board" class="hidden relative w-full h-full flex flex-col overflow-hidden">
-                <div class="flex justify-between items-center p-4 z-10">
-                    <div class="bg-white/80 backdrop-blur px-3 py-1 rounded-full border border-slate-200 text-xs font-bold text-slate-600 shadow-sm">
-                        SCORE: <span id="score-val" class="text-orange-600 text-lg">0</span>
+                <!-- Mini HUD during game -->
+                <div class="flex justify-between items-center px-4 py-2 pt-safe z-10 bg-white/30 backdrop-blur-xs border-b border-orange-100">
+                    <div class="bg-white/90 px-3 py-1 rounded-full border border-slate-200 text-[10px] font-black text-slate-600 shadow-sm">
+                        SCORE: <span id="score-val" class="text-orange-600 text-sm">0</span>
                     </div>
-                    <div class="flex gap-1 text-xl" id="lives-display"></div>
+                    <div class="flex gap-1 text-sm" id="lives-display">❤️❤️❤️</div>
+                    <button onclick="showMenu()" class="p-1.5 bg-slate-800 text-white rounded-lg active:scale-90"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
                 </div>
 
-                <div id="drop-zone" class="flex-1 relative border-b-2 border-dashed border-orange-200/50 mx-4 mb-2"></div>
+                <!-- DROP ZONE (Word falling area) -->
+                <div id="drop-zone" class="flex-1 relative border-b border-dashed border-orange-200/50 mx-4 overflow-hidden"></div>
 
-                <div class="h-64 bg-white rounded-t-3xl shadow-[0_-5px_20px_rgba(0,0,0,0.05)] p-4 pb-24 z-20">
-                    <div class="text-center mb-2">
-                        <p class="text-[10px] font-bold text-slate-400 uppercase tracking-widest" id="question-type-label">SELECT ANSWER</p>
+                <!-- CONTROLS (Answer buttons) -->
+                <div class="flex-none bg-white rounded-t-[2.5rem] shadow-[0_-5px_30px_rgba(0,0,0,0.08)] p-4 pt-6 z-20 pb-safe">
+                    <div class="text-center mb-3">
+                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]" id="question-type-label">SELECT ANSWER</p>
                     </div>
-                    <div class="grid grid-cols-2 gap-3 h-full pb-4">
-                        <button onclick="checkAnswer(0)" id="opt-0" class="btn-press bg-slate-50 border-2 border-slate-100 rounded-xl font-bold text-slate-700 hindi-font text-xl shadow-sm active:bg-orange-100 active:border-orange-300 transition-colors">A</button>
-                        <button onclick="checkAnswer(1)" id="opt-1" class="btn-press bg-slate-50 border-2 border-slate-100 rounded-xl font-bold text-slate-700 hindi-font text-xl shadow-sm active:bg-orange-100 active:border-orange-300 transition-colors">B</button>
-                        <button onclick="checkAnswer(2)" id="opt-2" class="btn-press bg-slate-50 border-2 border-slate-100 rounded-xl font-bold text-slate-700 hindi-font text-xl shadow-sm active:bg-orange-100 active:border-orange-300 transition-colors">C</button>
-                        <button onclick="checkAnswer(3)" id="opt-3" class="btn-press bg-slate-50 border-2 border-slate-100 rounded-xl font-bold text-slate-700 hindi-font text-xl shadow-sm active:bg-orange-100 active:border-orange-300 transition-colors">D</button>
+                    <!-- Grid optimized for mobile height -->
+                    <div class="grid grid-cols-2 gap-2 max-h-[160px]">
+                        <button onclick="checkAnswer(0)" id="opt-0" class="btn-press bg-slate-50 border border-slate-200 rounded-2xl py-3 px-1 font-bold text-slate-800 hindi-font text-base shadow-sm active:bg-orange-50 flex items-center justify-center min-h-[50px]">A</button>
+                        <button onclick="checkAnswer(1)" id="opt-1" class="btn-press bg-slate-50 border border-slate-200 rounded-2xl py-3 px-1 font-bold text-slate-800 hindi-font text-base shadow-sm active:bg-orange-50 flex items-center justify-center min-h-[50px]">B</button>
+                        <button onclick="checkAnswer(2)" id="opt-2" class="btn-press bg-slate-50 border border-slate-200 rounded-2xl py-3 px-1 font-bold text-slate-800 hindi-font text-base shadow-sm active:bg-orange-50 flex items-center justify-center min-h-[50px]">C</button>
+                        <button onclick="checkAnswer(3)" id="opt-3" class="btn-press bg-slate-50 border border-slate-200 rounded-2xl py-3 px-1 font-bold text-slate-800 hindi-font text-base shadow-sm active:bg-orange-50 flex items-center justify-center min-h-[50px]">D</button>
                     </div>
                 </div>
             </div>
 
-            <div id="game-over" class="hidden absolute inset-0 z-50 bg-white/90 backdrop-blur-sm flex flex-col items-center justify-center p-6 animate-in zoom-in">
-                <div class="text-6xl mb-4"></div>
-                <h2 class="text-3xl font-black text-slate-800 mb-2">Game Over!</h2>
-                <div class="bg-orange-50 p-6 rounded-2xl border border-orange-100 text-center w-full max-w-xs mb-6">
-                    <p class="text-xs font-bold text-orange-400 uppercase">Final Score</p>
-                    <p id="final-score" class="text-5xl font-black text-orange-600 my-2">0</p>
+            <!-- GAME OVER MODAL -->
+            <div id="game-over" class="hidden absolute inset-0 z-50 bg-white/95 backdrop-blur-md flex flex-col items-center justify-center p-8 animate-in zoom-in">
+                <div class="text-6xl mb-4">🏆</div>
+                <h2 class="text-3xl font-black text-slate-800 mb-1">Game Over!</h2>
+                <div class="bg-orange-50 p-6 rounded-3xl border border-orange-100 text-center w-full max-w-xs my-6">
+                    <p class="text-[10px] font-bold text-orange-400 uppercase tracking-widest mb-1">Final Score</p>
+                    <p id="final-score" class="text-5xl font-black text-orange-600">0</p>
                 </div>
-                <button onclick="showMenu()" class="w-full max-w-xs py-4 bg-[#0f172a] text-white font-bold rounded-xl shadow-lg active:scale-95 transition-transform">
-                    MAIN MENU
+                <button onclick="showMenu()" class="w-full max-w-xs py-4 bg-[#0f172a] text-white font-black text-sm tracking-widest rounded-2xl shadow-xl active:scale-95 transition-transform">
+                    RETRY
                 </button>
             </div>
             
-            <div id="wrong-modal" class="hidden absolute inset-0 z-50 bg-black/60 backdrop-blur-sm flex items-center justify-center p-6">
-                <div class="bg-white rounded-2xl w-full max-w-xs p-6 shadow-2xl text-center pop-in border-b-4 border-red-500">
-                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl"></div>
-                    <h3 class="text-xl font-black text-slate-800 mb-1">Wrong Answer</h3>
-                    <p class="text-xs text-slate-400 font-bold uppercase mb-4">CORRECT ANSWER:</p>
+            <!-- WRONG ANSWER POPUP -->
+            <div id="wrong-modal" class="hidden absolute inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-6">
+                <div class="bg-white rounded-[2rem] w-full max-w-xs p-6 shadow-2xl text-center pop-in">
+                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">❌</div>
+                    <h3 class="text-xl font-black text-slate-800 mb-1">Wrong!</h3>
+                    <p class="text-[9px] text-slate-400 font-bold uppercase mb-3">CORRECT ANSWER:</p>
                     
-                    <div class="bg-green-50 border border-green-200 p-3 rounded-xl mb-4">
-                        <p id="modal-correct-ans" class="text-2xl font-bold text-green-700 hindi-font"></p>
+                    <div class="bg-green-50 border border-green-200 p-3 rounded-2xl mb-4">
+                        <p id="modal-correct-ans" class="text-xl font-bold text-green-700 hindi-font"></p>
                     </div>
 
-                    <div class="bg-slate-50 rounded-lg p-3 text-sm text-slate-600 mb-5 text-left leading-relaxed">
-                        <span class="text-xs font-bold text-slate-400 block mb-1 uppercase">Explanation:</span>
+                    <div id="explanation-box" class="bg-slate-50 rounded-xl p-3 text-xs text-slate-600 mb-5 text-left leading-relaxed">
+                        <span class="text-[9px] font-bold text-slate-400 block mb-1 uppercase">Explanation:</span>
                         <p id="modal-explanation" class="hindi-font"></p>
                     </div>
 
-                    <button onclick="resumeGame()" class="w-full py-3 bg-slate-800 text-white font-bold rounded-xl shadow-lg active:scale-95 transition-transform">
-                        Got it!
+                    <button onclick="resumeGame()" class="w-full py-3.5 bg-slate-800 text-white font-bold rounded-2xl shadow-lg active:scale-95 transition-transform">
+                        Continue
                     </button>
                 </div>
             </div>
@@ -189,52 +206,40 @@
         </div>
     </main>
 
-    <div id="import-modal" class="hidden fixed inset-0 z-50 bg-black/80 backdrop-blur-sm flex items-center justify-center p-4 animate-in fade-in">
-        <div class="bg-white rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl">
+    <!-- DATA IMPORT MODAL -->
+    <div id="import-modal" class="hidden fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl">
             <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <h3 class="font-bold text-lg">Import Custom Data</h3>
+                <h3 class="font-bold text-base">Import Data</h3>
                 <button onclick="closeImportModal()" class="p-1 hover:bg-slate-200 rounded-full"><i data-lucide="x" class="w-5 h-5 text-slate-400"></i></button>
             </div>
             <div class="p-5 space-y-4">
-                <p class="text-xs text-slate-500">Paste JSON data below. Format: <code>[{"q":"Q", "a":"A", "e":"Exp"}]</code></p>
-                <div class="bg-slate-50 border border-slate-200 p-3 rounded-lg">
-                    <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">SAMPLE FORMAT</p>
-                    <code class="text-xs text-blue-600 block whitespace-pre-wrap font-mono select-all">
-[
-  {"q": "", "a": "", "e": " vs "},
-  {"q": "Jal", "a": "Neer"}
-]</code>
-                </div>
-                <textarea id="import-area" rows="6" placeholder="Paste your JSON here..." class="w-full p-3 bg-white border border-slate-200 rounded-xl text-sm font-mono focus:outline-none focus:border-orange-500"></textarea>
-                <button onclick="saveImportData()" class="w-full py-3 bg-orange-600 text-white font-bold rounded-xl active:scale-95 transition-transform shadow-lg shadow-orange-200">
-                    Save & Import
+                <textarea id="import-area" rows="4" placeholder='[{"q":"Word", "a":"Answer", "e":"Hint"}]' class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-[10px] font-mono focus:outline-none focus:border-orange-500"></textarea>
+                <button onclick="saveImportData()" class="w-full py-3.5 bg-orange-600 text-white font-bold rounded-2xl active:scale-95 transition-transform shadow-lg">
+                    Save
                 </button>
             </div>
         </div>
     </div>
 
-    <nav class="fixed bottom-0 w-full bg-white border-t border-slate-200 pb-safe z-40">
-        <div class="flex justify-around items-center px-2 py-3">
-            <a href="index.html" class="flex flex-col items-center gap-1 min-w-[60px] text-slate-400 hover:text-slate-600">
-                <i data-lucide="home" class="w-6 h-6"></i>
-                <span class="text-[10px] font-medium">Home</span>
+    <!-- BOTTOM NAV (Hidden during game) -->
+    <nav id="bottom-nav" class="bg-white border-t border-slate-200 pb-safe z-40 flex-none">
+        <div class="flex justify-around items-center px-1 py-2">
+            <a href="#" class="flex flex-col items-center gap-1 min-w-[50px] text-slate-400">
+                <i data-lucide="home" class="w-5 h-5"></i>
+                <span class="text-[8px] font-medium">Home</span>
             </a>
-            <a href="course.html" class="flex flex-col items-center gap-1 min-w-[60px] text-slate-400 hover:text-slate-600">
-                <i data-lucide="layers" class="w-6 h-6"></i>
-                <span class="text-[10px] font-medium">Course</span>
+            <a href="#" class="flex flex-col items-center gap-1 min-w-[50px] text-orange-600">
+                <div class="w-5 h-5 flex items-center justify-center font-bold text-base leading-none border-2 border-current rounded-md bg-orange-50"> अ </div>
+                <span class="text-[8px] font-bold">Hindi</span>
             </a>
-            <a href="math-gym.html" class="flex flex-col items-center gap-1 min-w-[60px] text-slate-400 hover:text-slate-600">
-                <i data-lucide="zap" class="w-6 h-6"></i>
-                <span class="text-[10px] font-medium">Math</span>
+            <a href="#" class="flex flex-col items-center gap-1 min-w-[50px] text-slate-400">
+                <i data-lucide="zap" class="w-5 h-5"></i>
+                <span class="text-[8px] font-medium">Math</span>
             </a>
-            <a href="#" class="flex flex-col items-center gap-1 min-w-[60px] text-orange-600">
-                <div class="w-6 h-6 flex items-center justify-center font-bold text-lg leading-none border-2 border-current rounded-md bg-orange-50"></div>
-                <span class="text-[10px] font-bold">Hindi</span>
-                 <span class="w-1 h-1 bg-orange-600 rounded-full mt-0.5"></span>
-            </a>
-            <a href="reasoning.html" class="flex flex-col items-center gap-1 min-w-[60px] text-slate-400 hover:text-slate-600">
-                <i data-lucide="puzzle" class="w-6 h-6"></i>
-                <span class="text-[10px] font-medium">Reason</span>
+            <a href="#" class="flex flex-col items-center gap-1 min-w-[50px] text-slate-400">
+                <i data-lucide="puzzle" class="w-5 h-5"></i>
+                <span class="text-[8px] font-medium">Reason</span>
             </a>
         </div>
     </nav>
@@ -242,164 +247,82 @@
     <script>
         lucide.createIcons();
 
-    let vocabData = {
-    "vilom": [
-        { "q": "वैभव", "a": "दारिद्र्य", "e": "वैभव = धन-संपदा, दारिद्र्य = गरीबी।" },
-        { "q": "विपत्ति", "a": "संपत्ति", "e": "विपत्ति = मुसीबत, संपत्ति = खुशहाली।" },
-        { "q": "गणतंत्र", "a": "राजतंत्र", "e": "गणतंत्र = जनता का शासन, राजतंत्र = राजा का शासन।" },
-        { "q": "प्राचीन", "a": "अर्वाचीन", "e": "प्राचीन = बहुत पुराना, अर्वाचीन = आधुनिक/नया।" },
-        { "q": "विकीर्ण", "a": "संकीर्ण", "e": "विकीर्ण = फैला हुआ, संकीर्ण = सिकुड़ा हुआ।" },
-        { "q": "आकीर्ण", "a": "संकीर्ण", "e": "आकीर्ण = भरा हुआ/व्याप्त, संकीर्ण = तंग।" },
-        { "q": "रूक्ष", "a": "मसृण", "e": "रूक्ष = रूखा/खुरदरा, मसृण = कोमल/चिकना।" },
-        { "q": "वक्र", "a": "ऋजु", "e": "वक्र = टेढ़ा, ऋजु = सीधा।" },
-        { "q": "उन्मूलन", "a": "रोपण", "e": "उन्मूलन = जड़ से उखाड़ना, रोपण = लगाना (पौधा)।" },
-        { "q": "उन्मीलन", "a": "निमीलन", "e": "उन्मीलन = आँखें खुलना, निमीलन = आँखें बंद होना।" },
-        { "q": "सूक्ष्म", "a": "स्थूल", "e": "सूक्ष्म = बहुत छोटा, स्थूल = बड़ा/मोटा।" },
-        { "q": "एकत्र", "a": "विकीर्ण", "e": "एकत्र = इकट्ठा, विकीर्ण = फैला हुआ।" },
-        { "q": "शाश्वत", "a": "क्षणिक", "e": "शाश्वत = हमेशा रहने वाला, क्षणिक = पल भर का।" },
-        { "q": "साहचर्य", "a": "अलगाव", "e": "साहचर्य = साथ रहना, अलगाव = अलग होना।" },
-        { "q": "अनुसूया", "a": "असूया", "e": "असूया = ईर्ष्या/जलन, अनुसूया = ईर्ष्या रहित।" },
-        { "q": "प्रारब्ध", "a": "अनारब्ध", "e": "प्रारब्ध = भाग्य/शुरू किया हुआ, अनारब्ध = जो शुरू न हुआ हो।" },
-        { "q": "सम्मुख", "a": "विमुख", "e": "सम्मुख = सामने, विमुख = मुँह फेरे हुए।" },
-        { "q": "भूगोल", "a": "खगोल", "e": "भूगोल = पृथ्वी का वर्णन, खगोल = ब्रह्मांड/आकाश।" },
-        { "q": "नश्वर", "a": "चिरंतन", "e": "नश्वर = नाशवान, चिरंतन = पुरातन/शाश्वत।" },
-        { "q": "भूत", "a": "भविष्य", "e": "भूत = बीता हुआ, भविष्य = आने वाला।" },
-        { "q": "समास", "a": "व्यास", "e": "समास = संक्षेप, व्यास = विस्तार।" },
-        { "q": "संधि", "a": "विग्रह", "e": "संधि = मेल, विग्रह = अलग करना।" },
-        { "q": "समष्टि", "a": "व्यष्टि", "e": "समष्टि = समूह, व्यष्टि = व्यक्ति/इकाई।" },
-        { "q": "ऋत", "a": "अनृत", "e": "ऋत = सत्य, अनृत = झूठ।" },
-        { "q": "गगनचुंबी", "a": "तलस्पर्शी", "e": "गगनचुंबी = आकाश चूमने वाला, तलस्पर्शी = जमीन छूने वाला।" },
-        { "q": "तांडव", "a": "लास्य", "e": "तांडव = शिव का रौद्र नृत्य, लास्य = पार्वती का कोमल नृत्य।" },
-        { "q": "संयुक्त", "a": "वियुक्त", "e": "संयुक्त = जुड़ा हुआ, वियुक्त = अलग।" },
-        { "q": "विभावना", "a": "विशेषोक्ति", "e": "अलंकार के भेद: कारण के बिना कार्य vs कारण होने पर भी कार्य न होना।" },
-        { "q": "संपन्नता", "a": "विपन्नता", "e": "संपन्नता = अमीरी, विपन्नता = गरीबी/कष्ट।" },
-        { "q": "सृजन", "a": "विनाश", "e": "सृजन = निर्माण करना, विनाश = नष्ट करना।" },
-        { "q": "अस्थावर", "a": "जंगम", "e": "अस्थावर/स्थावर = स्थिर, जंगम = जो चल सके।" },
-        { "q": "विराट", "a": "क्षुद्र", "e": "विराट = विशाल, क्षुद्र = छोटा/तुच्छ।" },
-        { "q": "अज्ञ", "a": "विज्ञ", "e": "अज्ञ = नासमझ, विज्ञ = जानकार।" },
-        { "q": "सर्वज्ञ", "a": "अल्पज्ञ", "e": "सर्वज्ञ = सब जानने वाला, अल्पज्ञ = कम जानने वाला।" },
-        { "q": "गौरव", "a": "लाघव", "e": "गौरव = बड़प्पन/भारीपन, लाघव = छोटापन/हल्कापन।" },
-        { "q": "वैमनस्य", "a": "सौमनस्य", "e": "वैमनस्य = शत्रुता/बैर, सौमनस्य = मित्रता/प्रेम।" },
-        { "q": "ग्राह्य", "a": "त्याज्य", "e": "ग्राह्य = लेने योग्य, त्याज्य = छोड़ने योग्य।" },
-        { "q": "आमिष", "a": "निरामिश", "e": "आमिष = मांसयुक्त भोजन, निरामिश = मांस रहित।" },
-        { "q": "अथ", "a": "इति", "e": "अथ = आरंभ, इति = समाप्ति।" },
-        { "q": "श्री गणेश", "a": "इति श्री", "e": "किसी कार्य को शुरू करना vs समाप्त करना।" },
-        { "q": "अवर", "a": "प्रवर", "e": "अवर = कनिष्ठ (Junior), प्रवर = वरिष्ठ (Senior/Superior)।" },
-        { "q": "कुटिल", "a": "सरल", "e": "कुटिल = टेढ़ा/चालबाज, सरल = सीधा।" },
-        { "q": "उक्त", "a": "अनुक्त", "e": "उक्त = कहा गया, अनुक्त = अनकहा।" },
-        { "q": "अतिवृष्टि", "a": "अनावृष्टि", "e": "अतिवृष्टि = भारी वर्षा, अनावृष्टि = सूखा।" },
-        { "q": "मूक", "a": "वाचाल", "e": "मूक = गूँगा, वाचाल = बहुत बोलने वाला।" },
-        { "q": "कृतज्ञ", "a": "कृतघ्न", "e": "कृतज्ञ = उपकार मानने वाला, कृतघ्न = उपकार न मानने वाला।" },
-        { "q": "अभिज्ञ", "a": "अनभिज्ञ", "e": "अभिज्ञ = जानकार, अनभिज्ञ = अनजान।" },
-        { "q": "जड़", "a": "चेतन", "e": "जड़ = निर्जीव/मूर्ख, चेतन = सजीव/जागृत।" },
-        { "q": "संक्षेप", "a": "विस्तार", "e": "छोटा रूप vs बड़ा रूप।" },
-        { "q": "आकृष्ट", "a": "विकृष्ट", "e": "आकृष्ट = आकर्षित, विकृष्ट = दूर धकेला हुआ।" },
-        { "q": "गृहीत", "a": "अर्पित", "e": "गृहीत = लिया हुआ, अर्पित = दिया हुआ/भेंट।" },
-        { "q": "कृत्रिम", "a": "नैसर्गिक", "e": "कृत्रिम = बनावटी, नैसर्गिक = प्राकृतिक।" },
-        { "q": "निंदा", "a": "स्तुति", "e": "निंदा = बुराई, स्तुति = प्रशंसा।" },
-        { "q": "उत्तम", "a": "अधम", "e": "उत्तम = श्रेष्ठ, अधम = नीच।" },
-        { "q": "अतिथि", "a": "आतिथेय", "e": "अतिथि = मेहमान, आतिथेय = मेज़बान (Host)।" },
-        { "q": "स्वस्थ", "a": "रुग्ण", "e": "रुग्ण = रोगी।" },
-        { "q": "अभ्यांतर", "a": "बाह्य", "e": "अभ्यांतर = अंदर का, बाह्य = बाहर का।" },
-        { "q": "अनिवार्य", "a": "ऐच्छिक", "e": "अनिवार्य = जो करना ही हो, ऐच्छिक = अपनी इच्छा पर।" },
-        { "q": "उदात्त", "a": "अनुदात्त", "e": "उदात्त = ऊँचा/श्रेष्ठ, अनुदात्त = नीचा।" },
-        { "q": "स्वकीया", "a": "परकीया", "e": "नायिका भेद: अपनी पत्नी vs दूसरे की पत्नी।" },
-        { "q": "आविर्भाव", "a": "तिरोभाव", "e": "आविर्भाव = प्रकट होना, तिरोभाव = लोप होना/गायब होना।" },
-        { "q": "पुरस्कार", "a": "तिरस्कार", "e": "सम्मान देना vs अपमान करना।" },
-        { "q": "नूतन", "a": "पुरातन", "e": "नूतन = नया, पुरातन = पुराना।" },
-        { "q": "उपचय", "a": "अपचय", "e": "उपचय = वृद्धि/इकट्ठा होना, अपचय = ह्रास/खर्च।" },
-        { "q": "प्रसारण", "a": "संकुचन", "e": "प्रसारण = फैलाव, संकुचन = सिकुड़ना।" },
-        { "q": "स्वार्थ", "a": "परमार्थ", "e": "खुद का भला vs दूसरों का भला।" },
-        { "q": "आगामी", "a": "विगत", "e": "आगामी = आने वाला, विगत = बीता हुआ।" },
-        { "q": "आध्यात्मिक", "a": "सांसारिक", "e": "आत्मा-परमात्मा संबंधी vs दुनियादारी।" },
-        { "q": "अपव्यय", "a": "मितव्यय", "e": "अपव्यय = फिजूलखर्ची, मितव्यय = कम खर्च करना।" },
-        { "q": "उद्धत", "a": "विनीत", "e": "उद्धत = उग्र/अक्खड़, विनीत = नम्र।" },
-        { "q": "आवर्तक", "a": "विवर्तक", "e": "आवर्तक = दोहराने वाला, विवर्तक = न दोहराने वाला।" },
-        { "q": "खंडन", "a": "मंडन", "e": "खंडन = काटना/विरोध, मंडन = समर्थन/सजाना।" },
-        { "q": "द्वंद्व", "a": "शांति", "e": "द्वंद्व = संघर्ष/दुविधा, शांति = सुकून।" },
-        { "q": "सत्याग्रह", "a": "दुराग्रह", "e": "सत्याग्रह = सत्य के लिए आग्रह, दुराग्रह = अनुचित हठ।" },
-        { "q": "संगठन", "a": "विघटन", "e": "संगठन = जुड़ना, विघटन = टूटकर अलग होना।" },
-        { "q": "संकल्प", "a": "विकल्प", "e": "संकल्प = दृढ़ निश्चय, विकल्प = दूसरा रास्ता (Option)।" },
-        { "q": "तेजस्वी", "a": "निस्तेज", "e": "तेजस्वी = कांतिवान, निस्तेज = चमकहीन।" },
-        { "q": "जारज", "a": "औरस", "e": "जारज = नाजायज संतान, औरस = वैध संतान।" },
-        { "q": "संश्लेषण", "a": "विश्लेषण", "e": "संश्लेषण = मिलाना, विश्लेषण = अलग-अलग करके समझना।" },
-        { "q": "आरोह", "a": "अवरोह", "e": "आरोह = चढ़ना, अवरोह = उतरना।" },
-        { "q": "उथला", "a": "गहरा", "e": "उथला = कम गहरा (Shallow)।" },
-        { "q": "उत्तरीय", "a": "अधोवस्त्र", "e": "उत्तरीय = कंधे पर रखने वाला वस्त्र, अधोवस्त्र = कमर से नीचे का वस्त्र।" },
-        { "q": "कृपण", "a": "दानी", "e": "कृपण = कंजूस।" },
-        { "q": "सदैव", "a": "विरद", "e": "सदैव = हमेशा, विरद = कभी-कभी।" },
-        { "q": "औदार्य", "a": "अनौदार्य", "e": "औदार्य = उदारता/दरियादिली।" },
-        { "q": "सहोदर", "a": "अन्योदर", "e": "सहोदर = सगा भाई, अन्योदर = सौतेला भाई।" },
-        { "q": "अधीन", "a": "स्वतंत्र", "e": "अधीन = गुलाम/दूसरे के वश में।" },
-        { "q": "अवलंब", "a": "निरावलंब", "e": "अवलंब = सहारा, निरावलंब = बेसहारा।" },
-        { "q": "अवरोध", "a": "अनवरोध", "e": "अवरोध = रुकावट।" },
-        { "q": "अभिमुख", "a": "प्रतिमुख", "e": "अभिमुख = सामने, प्रतिमुख = विपरीत।" },
-        { "q": "अतल", "a": "वितल", "e": "गहराई के माप (लोक)।" },
-        { "q": "आत्मोन्मुखी", "a": "परोन्मुखी", "e": "अपने में खोया हुआ vs दूसरों की ओर उन्मुख।" },
-        { "q": "आडंबर", "a": "सादगी", "e": "आडंबर = दिखावा।" },
-        { "q": "आलसी", "a": "कर्मठ", "e": "कर्मठ = काम में लगा रहने वाला।" },
-        { "q": "उद्यम", "a": "आलस्य", "e": "उद्यम = मेहनत/प्रयास।" },
-        { "q": "पतित", "a": "उत्थित", "e": "पतित = गिरा हुआ, उत्थित = उठा हुआ।" },
-        { "q": "उदीची", "a": "अवाची", "e": "उदीची = उत्तर दिशा, अवाची = दक्षिण दिशा।" }
-    ],
-    "samas": [
-        { "q": "राजपुत्र", "a": "तत्पुरुष" }, { "q": "यथाशक्ति", "a": "अव्ययीभाव" },
-        { "q": "नीलकंठ", "a": "बहुव्रीहि" }, { "q": "चौराहा", "a": "द्विगु" },
-        { "q": "माता-पिता", "a": "द्वन्द्व" }, { "q": "महात्मा", "a": "कर्मधारय" },
-        { "q": "आजन्म", "a": "अव्ययीभाव" }, { "q": "दशानन", "a": "बहुव्रीहि" },
-        { "q": "रसोईघर", "a": "तत्पुरुष" }, { "q": "नवरत्न", "a": "द्विगु" }
-    ],
-    "muhavre": [
-        { "q": "आँख का तारा", "a": "बहुत प्यारा" }, { "q": "नौ दो ग्यारह होना", "a": "भाग जाना" },
-        { "q": "ईद का चाँद", "a": "बहुत दिनों बाद दिखना" }, { "q": "घी के दिए जलाना", "a": "खुशी मनाना" },
-        { "q": "दाँत खट्टे करना", "a": "हरा देना" }, { "q": "लोहे के चने चबाना", "a": "कठिन संघर्ष" },
-        { "q": "श्री गणेश करना", "a": "शुरू करना" }, { "q": "हाथ मलना", "a": "पछताना" }
-    ],
-    "sandhi": [
-        { "q": "विद्या + आलय", "a": "विद्यालय" }, { "q": "रवि + इंद्र", "a": "रवींद्र" },
-        { "q": "भानु + उदय", "a": "भानूदय" }, { "q": "नर + ईश", "a": "नरेश" },
-        { "q": "सदा + एव", "a": "सदैव" }, { "q": "सु + आगत", "a": "स्वागत" },
-        { "q": "पो + अन", "a": "पवन" }, { "q": "जगत + ईश", "a": "जगदीश" }
-    ],
-    "custom": []
-};
+        let vocabData = {
+            "vilom": [
+                { "q": "वैभव", "a": "दारिद्र्य", "e": "वैभव = धन-संपदा, दारिद्र्य = गरीबी।" },
+                { "q": "विपत्ति", "a": "संपत्ति", "e": "विपत्ति = मुसीबत, संपत्ति = खुशहाली।" },
+                { "q": "गणतंत्र", "a": "राजतंत्र", "e": "गणतंत्र = जनता का शासन, राजतंत्र = राजा का शासन।" },
+                { "q": "प्राचीन", "a": "अर्वाचीन", "e": "प्राचीन = बहुत पुराना, अर्वाचीन = आधुनिक/नया।" },
+                { "q": "वक्र", "a": "ऋजु", "e": "वक्र = टेढ़ा, ऋजु = सीधा।" },
+                { "q": "उन्मूलन", "a": "रोपण", "e": "उन्मूलन = जड़ से उखाड़ना, रोपण = लगाना (पौधा)।" },
+                { "q": "उन्मीलन", "a": "निमीलन", "e": "उन्मीलन = आँखें खुलना, निमीलन = आँखें बंद होना।" },
+                { "q": "शाश्वत", "a": "क्षणिक", "e": "शाश्वत = हमेशा रहने वाला, क्षणिक = पल भर का।" },
+                { "q": "नश्वर", "a": "चिरंतन", "e": "नश्वर = नाशवान, चिरंतन = पुरातन/शाश्वत।" },
+                { "q": "समास", "a": "व्यास", "e": "समास = संक्षेप, व्यास = विस्तार।" },
+                { "q": "संधि", "a": "विग्रह", "e": "संधि = मेल, विग्रह = अलग करना।" },
+                { "q": "सृजन", "a": "विनाश", "e": "सृजन = निर्माण करना, विनाश = नष्ट करना।" },
+                { "q": "विराट", "a": "क्षुद्र", "e": "विराट = विशाल, क्षुद्र = छोटा/तुच्छ।" },
+                { "q": "अज्ञ", "a": "विज्ञ", "e": "अज्ञ = नासमझ, विज्ञ = जानकार।" },
+                { "q": "श्री गणेश", "a": "इति श्री", "e": "किसी कार्य को शुरू करना vs समाप्त करना।" },
+                { "q": "अतिवृष्टि", "a": "अनावृष्टि", "e": "अतिवृष्टि = भारी वर्षा, अनावृष्टि = सूखा।" },
+                { "q": "मूक", "a": "वाचाल", "e": "मूक = गूँगा, वाचाल = बहुत बोलने वाला।" },
+                { "q": "कृतज्ञ", "a": "कृतघ्न", "e": "कृतज्ञ = उपकार मानने वाला, कृतघ्न = उपकार न मानने वाला।" },
+                { "q": "जड़", "a": "चेतन", "e": "जड़ = निर्जीव/मूर्ख, चेतन = सजीव/जागृत।" },
+                { "q": "कृत्रिम", "a": "नैसर्गिक", "e": "कृत्रिम = बनावटी, नैसर्गिक = प्राकृतिक।" },
+                { "q": "अतिथि", "a": "आतिथेय", "e": "अतिथि = मेहमान, आतिथेय = मेज़बान (Host)।" }
+            ],
+            "samas": [
+                { "q": "राजपुत्र", "a": "तत्पुरुष", "e": "राजा का पुत्र" }, 
+                { "q": "यथाशक्ति", "a": "अव्ययीभाव", "e": "शक्ति के अनुसार" },
+                { "q": "नीलकंठ", "a": "बहुव्रीहि", "e": "नीला है कंठ जिसका (शिव)" }, 
+                { "q": "चौराहा", "a": "द्विगु", "e": "चार राहों का समूह" },
+                { "q": "माता-पिता", "a": "द्वन्द्व", "e": "माता और पिता" }, 
+                { "q": "महात्मा", "a": "कर्मधारय", "e": "महान है जो आत्मा" },
+                { "q": "लंबोदर", "a": "बहुव्रीहि", "e": "लंबा है उदर जिसका (गणेश)" },
+                { "q": "पंचवटी", "a": "द्विगु", "e": "पाँच वटों का समूह" }
+            ],
+            "muhavre": [
+                { "q": "आँख का तारा", "a": "बहुत प्यारा", "e": "अत्यंत प्रिय होना।" }, 
+                { "q": "नौ दो ग्यारह", "a": "भाग जाना", "e": "चंपत हो जाना।" },
+                { "q": "ईद का चाँद", "a": "बहुत कम दिखना", "e": "बहुत दिनों बाद मिलना।" }, 
+                { "q": "घी के दिए", "a": "खुशी मनाना", "e": "अत्यधिक प्रसन्न होना।" },
+                { "q": "हाथ मलना", "a": "पछताना", "e": "अवसर हाथ से निकल जाने पर दुखी होना।" }
+            ],
+            "sandhi": [
+                { "q": "विद्या + आलय", "a": "विद्यालय", "e": "दीर्घ संधि" }, 
+                { "q": "सु + आगत", "a": "स्वागत", "e": "यण संधि" },
+                { "q": "सदा + एव", "a": "सदैव", "e": "वृद्धि संधि" }, 
+                { "q": "नर + ईश", "a": "नरेश", "e": "गुण संधि" }
+            ],
+            "custom": []
+        };
 
-
-        const savedCustom = localStorage.getItem('hindi_arcade_custom');
-        if (savedCustom) vocabData.custom = JSON.parse(savedCustom);
-
-        // --- STATE ---
         let state = {
             mode: 'vilom',
             score: 0,
             lives: 3,
-            selectedSpeed: 'medium', // Default speed setting
-            speed: 4000,             // Actual ms
+            selectedSpeed: 'medium',
+            speed: 4000,
             activeWord: null,
-            currentItem: null,       // Store current item for explanation
+            currentItem: null,
             correctIndex: 0,
             isOver: false,
             isPaused: false
         };
 
-        const speeds = {
-            easy: 6000,
-            medium: 4000,
-            hard: 2500
-        };
+        const speeds = { easy: 6000, medium: 4000, hard: 2500 };
 
-        // --- UI LOGIC ---
         function switchTab(tab) {
             document.getElementById('view-learn').style.display = tab === 'learn' ? 'block' : 'none';
             document.getElementById('view-game').style.display = tab === 'game' ? 'flex' : 'none';
             
             if (tab === 'learn') {
-                document.getElementById('btn-learn').className = "flex-1 py-2 rounded-lg text-xs font-bold bg-orange-600 text-white shadow-md transition-all";
-                document.getElementById('btn-game').className = "flex-1 py-2 rounded-lg text-xs font-bold text-slate-500 hover:text-orange-700 transition-all";
+                document.getElementById('btn-learn').className = "flex-1 py-1.5 rounded-lg text-xs font-bold bg-orange-600 text-white shadow-md transition-all";
+                document.getElementById('btn-game').className = "flex-1 py-1.5 rounded-lg text-xs font-bold text-slate-500 transition-all";
                 renderStudy('vilom');
             } else {
-                document.getElementById('btn-game').className = "flex-1 py-2 rounded-lg text-xs font-bold bg-[#0f172a] text-white shadow-md transition-all";
-                document.getElementById('btn-learn').className = "flex-1 py-2 rounded-lg text-xs font-bold text-slate-500 hover:text-orange-700 transition-all";
+                document.getElementById('btn-game').className = "flex-1 py-1.5 rounded-lg text-xs font-bold bg-[#0f172a] text-white shadow-md transition-all";
+                document.getElementById('btn-learn').className = "flex-1 py-1.5 rounded-lg text-xs font-bold text-slate-500 transition-all";
                 showMenu();
             }
         }
@@ -407,75 +330,57 @@
         function setSpeed(lvl) {
             state.selectedSpeed = lvl;
             ['easy', 'medium', 'hard'].forEach(l => {
-                document.getElementById('spd-'+l).className = "flex-1 py-2 rounded-lg text-xs font-bold text-slate-500 hover:bg-orange-50 transition-all";
+                document.getElementById('spd-'+l).className = "flex-1 py-1.5 rounded-lg text-[10px] font-bold text-slate-500 hover:bg-orange-50 transition-all";
             });
-            document.getElementById('spd-'+lvl).className = "flex-1 py-2 rounded-lg text-xs font-bold bg-orange-500 text-white shadow-md transition-all";
+            document.getElementById('spd-'+lvl).className = "flex-1 py-1.5 rounded-lg text-[10px] font-bold bg-orange-500 text-white shadow-md transition-all";
         }
 
-        // --- STUDY ---
         function renderStudy(topic) {
             const container = document.getElementById('study-container');
             container.innerHTML = '';
             const list = vocabData[topic];
-            
-            if (!list || list.length === 0) {
-                container.innerHTML = `<div class="text-center p-8 text-slate-400"><p class="text-sm">No data found.</p><button onclick="openImportModal()" class="text-xs text-blue-600 underline mt-2">Import Data</button></div>`;
-                return;
-            }
-
             list.forEach(item => {
                 const card = document.createElement('div');
-                card.className = "bg-white p-4 rounded-xl shadow-sm border border-orange-100 flex flex-col gap-2";
-                let html = `<div class="flex justify-between items-center"><div class="font-bold text-lg text-slate-700 hindi-font">${item.q}</div><div class="text-orange-300"></div><div class="font-bold text-lg text-orange-600 hindi-font">${item.a}</div></div>`;
-                if(item.e) {
-                     html += `<div class="text-xs text-slate-500 bg-orange-50 p-2 rounded border border-orange-100 italic hindi-font">${item.e}</div>`;
-                }
-                card.innerHTML = html;
+                card.className = "bg-white p-3 rounded-2xl shadow-sm border border-orange-100";
+                card.innerHTML = `<div class="flex justify-between items-center mb-1"><div class="font-bold text-slate-700 hindi-font">${item.q}</div><div class="font-bold text-orange-600 hindi-font">${item.a}</div></div><div class="text-[10px] text-slate-400 hindi-font italic">${item.e || ''}</div>`;
                 container.appendChild(card);
             });
         }
 
-        // --- IMPORT ---
-        function openImportModal() { document.getElementById('import-modal').classList.remove('hidden'); }
-        function closeImportModal() { document.getElementById('import-modal').classList.add('hidden'); }
-        function saveImportData() {
-            try {
-                const parsed = JSON.parse(document.getElementById('import-area').value);
-                if (Array.isArray(parsed) && parsed.length > 0 && parsed[0].q && parsed[0].a) {
-                    vocabData.custom = [...vocabData.custom, ...parsed];
-                    localStorage.setItem('hindi_arcade_custom', JSON.stringify(vocabData.custom));
-                    alert(`Imported ${parsed.length} items!`);
-                    closeImportModal();
-                    if(document.getElementById('view-learn').style.display !== 'none') renderStudy('custom');
-                } else alert("Invalid format!");
-            } catch (e) { alert("JSON Error"); }
-        }
-
-        // --- GAME ---
         function showMenu() {
+            // Restore headers
+            document.getElementById('main-header').classList.remove('hidden');
+            document.getElementById('tab-container').classList.remove('hidden');
+            document.getElementById('bottom-nav').classList.remove('hidden');
+            
             document.getElementById('game-menu').style.display = 'flex';
             document.getElementById('game-board').style.display = 'none';
             document.getElementById('game-over').style.display = 'none';
             document.getElementById('wrong-modal').classList.add('hidden');
+            if(state.activeWord) state.activeWord.remove();
         }
 
         function startGame(topic) {
             if (!vocabData[topic] || vocabData[topic].length < 4) {
-                alert("Need at least 4 items to play!");
-                return;
+                alert("Add more data first!"); return;
             }
+            
+            // Hide headers for immersive game view
+            document.getElementById('main-header').classList.add('hidden');
+            document.getElementById('tab-container').classList.add('hidden');
+            document.getElementById('bottom-nav').classList.add('hidden');
+            
             state.mode = topic;
             state.score = 0;
             state.lives = 3;
             state.speed = speeds[state.selectedSpeed]; 
-            state.activeWord = null;
             state.isOver = false;
             state.isPaused = false;
             
             document.getElementById('game-menu').style.display = 'none';
             document.getElementById('game-board').style.display = 'flex';
             
-            const labels = { vilom: "SELECT ANTONYM", samas: "IDENTIFY SAMAS", muhavre: "COMPLETE IDIOM", sandhi: "JOIN WORDS", custom: "SELECT ANSWER" };
+            const labels = { vilom: "SELECT ANTONYM", samas: "IDENTIFY SAMAS", muhavre: "MEANING", sandhi: "CORRECT WORD", custom: "SELECT ANSWER" };
             document.getElementById('question-type-label').textContent = labels[topic];
 
             updateHUD();
@@ -488,9 +393,8 @@
 
             const dataset = vocabData[state.mode];
             const item = dataset[Math.floor(Math.random() * dataset.length)];
-            state.currentItem = item; // Save for explanation
+            state.currentItem = item;
             
-            // Options
             const options = [item.a];
             while (options.length < 4) {
                 const randomItem = dataset[Math.floor(Math.random() * dataset.length)];
@@ -499,16 +403,12 @@
             const shuffled = options.sort(() => Math.random() - 0.5);
             state.correctIndex = shuffled.indexOf(item.a);
 
-            // Buttons
             for(let i=0; i<4; i++) {
                 const btn = document.getElementById(`opt-${i}`);
                 btn.textContent = shuffled[i];
-                btn.className = "btn-press bg-slate-50 border-2 border-slate-100 rounded-xl font-bold text-slate-700 hindi-font text-lg shadow-sm active:bg-orange-100 active:border-orange-300 transition-colors";
-                btn.style = ''; 
-                btn.disabled = false;
+                btn.className = "btn-press bg-slate-50 border border-slate-200 rounded-2xl py-3 px-1 font-bold text-slate-800 hindi-font text-base shadow-sm active:bg-orange-50 flex items-center justify-center min-h-[50px]";
             }
 
-            // Falling Word
             const wordEl = document.createElement('div');
             wordEl.className = 'falling-word';
             wordEl.textContent = item.q;
@@ -526,20 +426,16 @@
             if (idx === state.correctIndex) {
                 state.score += 10;
                 if(state.score % 50 === 0 && state.speed > 1500) state.speed -= 200;
-                
                 selectedBtn.classList.add('correct-flash');
-                
-                // Pop effect for word
                 state.activeWord.style.animation = 'none';
-                state.activeWord.style.transform = 'scale(1.5)';
+                state.activeWord.style.transform = 'scale(1.2) translateX(-50%)';
                 state.activeWord.style.opacity = '0';
                 state.activeWord.style.transition = 'all 0.2s';
-
                 setTimeout(() => {
                     selectedBtn.classList.remove('correct-flash');
                     updateHUD();
                     nextRound();
-                }, 300);
+                }, 250);
             } else {
                 handleWrongAnswer(selectedBtn);
             }
@@ -549,32 +445,24 @@
             state.isPaused = true;
             state.lives--;
             updateHUD();
-
-            // Flash red
             btnElement.classList.add('wrong-flash');
-            
-            // Stop animation immediately
             if(state.activeWord) state.activeWord.style.animationPlayState = 'paused';
-
-            // Show popup
-            const expText = state.currentItem.e || "No explanation available for this word.";
+            
             document.getElementById('modal-correct-ans').textContent = state.currentItem.a;
-            document.getElementById('modal-explanation').textContent = expText;
+            const exp = state.currentItem.e || "No extra notes.";
+            document.getElementById('modal-explanation').textContent = exp;
             
             setTimeout(() => {
                 btnElement.classList.remove('wrong-flash');
                 document.getElementById('wrong-modal').classList.remove('hidden');
-            }, 400);
+            }, 300);
         }
 
         function resumeGame() {
             document.getElementById('wrong-modal').classList.add('hidden');
             state.isPaused = false;
-            
-            // Cleanup current round and start next
             if(state.activeWord) state.activeWord.remove();
             state.activeWord = null;
-            
             if (state.lives > 0) nextRound();
             else endGame();
         }
@@ -591,7 +479,7 @@
 
         function updateHUD() {
             document.getElementById('score-val').textContent = state.score;
-            document.getElementById('lives-display').textContent = ''.repeat(state.lives);
+            document.getElementById('lives-display').textContent = '❤️'.repeat(Math.max(0, state.lives));
         }
 
         function endGame() {
@@ -601,15 +489,20 @@
             document.getElementById('game-over').style.display = 'flex';
         }
 
+        function openImportModal() { document.getElementById('import-modal').classList.remove('hidden'); }
+        function closeImportModal() { document.getElementById('import-modal').classList.add('hidden'); }
+        function saveImportData() {
+            try {
+                const parsed = JSON.parse(document.getElementById('import-area').value);
+                if (Array.isArray(parsed)) {
+                    vocabData.custom = [...vocabData.custom, ...parsed];
+                    alert("Imported!"); closeImportModal();
+                }
+            } catch (e) { alert("JSON Error"); }
+        }
+
         renderStudy('vilom');
-        
-        document.addEventListener('click', function(e) {
-            const anchor = e.target.closest('a');
-            if (anchor && (anchor.getAttribute('href').startsWith('http') || anchor.getAttribute('href').startsWith('www'))) {
-                e.preventDefault();
-                alert(" FOCUS MODE: External link blocked.");
-            }
-        });
     </script>
 </body>
 </html>
+
