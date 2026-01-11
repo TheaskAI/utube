@@ -3,34 +3,35 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
-    <title>Hindi Arcade - Ultimate</title>
+    <title>Hindi Arcade - Optimized</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://unpkg.com/lucide@latest"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;900&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;800&family=Tiro+Devanagari+Hindi&display=swap" rel="stylesheet">
     <style>
+        :root { --sat: env(safe-area-inset-top); --sab: env(safe-area-inset-bottom); }
         body { 
             font-family: 'Inter', sans-serif; 
             -webkit-tap-highlight-color: transparent; 
-            overscroll-behavior-y: contain;
+            height: 100dvh; /* Dynamic viewport height for Chrome Android */
+            overflow: hidden;
+            background-color: #fffaf5;
         }
         .hindi-font { font-family: 'Tiro Devanagari Hindi', serif; }
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
         
-        /* Falling Animation */
+        /* Falling Word Styling */
         .falling-word {
             position: absolute;
-            top: -60px;
+            top: -50px;
             left: 50%;
             transform: translateX(-50%);
-            padding: 0.5rem 1rem;
-            background-color: white;
+            padding: 8px 16px;
+            background: white;
             border: 2px solid #f97316;
             color: #ea580c;
-            border-radius: 0.75rem;
-            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+            border-radius: 12px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
             font-family: 'Tiro Devanagari Hindi', serif;
-            font-size: 1.25rem;
+            font-size: 1.1rem;
             font-weight: bold;
             z-index: 10;
             white-space: nowrap;
@@ -38,13 +39,12 @@
         }
 
         @keyframes fall {
-            from { top: -60px; }
-            to { top: 95%; opacity: 0; }
+            from { top: -50px; }
+            to { top: 100%; opacity: 0; }
         }
 
-        .btn-press { transition: transform 0.1s; }
-        .btn-press:active { transform: scale(0.92); }
-
+        .btn-press:active { transform: scale(0.95); }
+        
         .correct-flash { animation: flash-green 0.3s ease-in-out forwards; }
         @keyframes flash-green { 0%, 100% { background-color: #f8fafc; } 50% { background-color: #86efac; } }
         
@@ -52,197 +52,152 @@
         @keyframes flash-red { 0%, 100% { background-color: #f8fafc; } 50% { background-color: #fca5a5; } }
 
         .pop-in { animation: popIn 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards; }
-        @keyframes popIn {
-            0% { transform: scale(0.8); opacity: 0; }
-            100% { transform: scale(1); opacity: 1; }
-        }
-
-        /* Safe area handling for Android/iOS notches */
-        .pt-safe { padding-top: env(safe-area-inset-top); }
-        .pb-safe { padding-bottom: env(safe-area-inset-bottom); }
+        @keyframes popIn { 0% { transform: scale(0.8); opacity: 0; } 100% { transform: scale(1); opacity: 1; } }
     </style>
 </head>
-<body class="bg-orange-50 text-slate-800 h-screen flex flex-col overflow-hidden select-none">
+<body class="flex flex-col select-none">
 
-    <!-- Global Header (Hidden during game) -->
-    <header id="main-header" class="bg-[#0f172a] text-white px-5 py-3 flex justify-between items-center shadow-md z-30 flex-none pt-safe">
+    <!-- GLOBAL UI (Hidden during game) -->
+    <header id="main-header" class="bg-[#0f172a] text-white px-4 py-3 flex justify-between items-center shrink-0">
         <div class="flex items-center gap-2">
-             <div class="w-7 h-7 rounded bg-orange-500 flex items-center justify-center font-bold text-white hindi-font text-base shadow-sm"> अ </div>
-             <h1 class="font-bold text-base tracking-wide">Hindi Arcade</h1>
+             <div class="w-7 h-7 rounded bg-orange-500 flex items-center justify-center font-bold text-white text-sm">अ</div>
+             <h1 class="font-bold text-sm">Hindi Arcade</h1>
         </div>
-        <div class="flex gap-2">
-            <button onclick="openImportModal()" class="flex items-center gap-1 bg-slate-700 hover:bg-slate-600 px-2.5 py-1 rounded-full text-[10px] font-bold transition-colors border border-slate-600">
-                <i data-lucide="download" class="w-3 h-3"></i> Import
-            </button>
-        </div>
+        <button onclick="openImportModal()" class="bg-slate-700 px-3 py-1 rounded-full text-[10px] font-bold border border-slate-600">Import</button>
     </header>
 
-    <main class="flex-1 relative bg-orange-50/50 flex flex-col min-h-0 overflow-hidden">
-        
-        <!-- Tab Bar (Hidden during game) -->
-        <div id="tab-container" class="sticky top-0 z-20 bg-orange-50 p-3 pb-1 flex-none">
-            <div class="flex p-1 bg-white border border-orange-200 rounded-xl shadow-sm">
-                <button onclick="switchTab('learn')" id="btn-learn" class="flex-1 py-1.5 rounded-lg text-xs font-bold bg-orange-600 text-white shadow-md transition-all">
-                      Study
-                </button>
-                <button onclick="switchTab('game')" id="btn-game" class="flex-1 py-1.5 rounded-lg text-xs font-bold text-slate-500 transition-all">
-                      Play
-                </button>
-            </div>
-        </div>
-
-        <!-- LEARN VIEW -->
-        <div id="view-learn" class="flex-1 overflow-y-auto no-scrollbar p-4 pb-24 space-y-4">
-            <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
-                <button onclick="renderStudy('vilom')" class="px-4 py-1.5 bg-white border border-orange-200 text-orange-700 rounded-full text-[10px] font-bold whitespace-nowrap active:bg-orange-100 shadow-sm">Vilom</button>
-                <button onclick="renderStudy('samas')" class="px-4 py-1.5 bg-white border border-orange-200 text-orange-700 rounded-full text-[10px] font-bold whitespace-nowrap active:bg-orange-100 shadow-sm">Samas</button>
-                <button onclick="renderStudy('muhavre')" class="px-4 py-1.5 bg-white border border-orange-200 text-orange-700 rounded-full text-[10px] font-bold whitespace-nowrap active:bg-orange-100 shadow-sm">Muhavre</button>
-                <button onclick="renderStudy('sandhi')" class="px-4 py-1.5 bg-white border border-orange-200 text-orange-700 rounded-full text-[10px] font-bold whitespace-nowrap active:bg-orange-100 shadow-sm">Sandhi</button>
-                <button onclick="renderStudy('custom')" class="px-4 py-1.5 bg-white border border-orange-200 text-purple-700 rounded-full text-[10px] font-bold whitespace-nowrap active:bg-purple-100 shadow-sm">Custom</button>
-            </div>
-            <div id="study-container" class="space-y-3"></div>
-        </div>
-
-        <!-- GAME VIEW -->
-        <div id="view-game" class="hidden absolute inset-0 bg-orange-50 flex flex-col z-10 overflow-hidden">
-            
-            <!-- MENU VIEW inside Game View -->
-            <div id="game-menu" class="absolute inset-0 z-20 bg-orange-50 flex flex-col items-center justify-center p-6 space-y-6">
-                <div class="text-center">
-                    <h2 class="text-4xl font-black text-slate-800 mb-1 hindi-font">शब्द वर्षा</h2>
-                    <p class="text-xs text-slate-500 font-bold tracking-widest uppercase">Select speed & topic</p>
-                </div>
-
-                <div class="bg-white p-1 rounded-xl border border-orange-100 shadow-sm flex w-full max-w-xs">
-                    <button onclick="setSpeed('easy')" id="spd-easy" class="flex-1 py-1.5 rounded-lg text-[10px] font-bold text-slate-500 hover:bg-orange-50 transition-all">Easy</button>
-                    <button onclick="setSpeed('medium')" id="spd-medium" class="flex-1 py-1.5 rounded-lg text-[10px] font-bold bg-orange-500 text-white shadow-md transition-all">Normal</button>
-                    <button onclick="setSpeed('hard')" id="spd-hard" class="flex-1 py-1.5 rounded-lg text-[10px] font-bold text-slate-500 hover:bg-orange-50 transition-all">Hard</button>
-                </div>
-
-                <div class="grid grid-cols-2 gap-2 w-full max-w-xs">
-                    <button onclick="startGame('vilom')" class="p-4 bg-white border-2 border-orange-100 rounded-xl shadow-sm active:scale-95 transition-all text-center">
-                        <div class="text-xl mb-1">↔️</div>
-                        <div class="font-bold text-xs text-slate-700">Vilom</div>
-                    </button>
-                    <button onclick="startGame('samas')" class="p-4 bg-white border-2 border-purple-100 rounded-xl shadow-sm active:scale-95 transition-all text-center">
-                        <div class="text-xl mb-1">🔗</div>
-                        <div class="font-bold text-xs text-slate-700">Samas</div>
-                    </button>
-                    <button onclick="startGame('muhavre')" class="p-4 bg-white border-2 border-green-100 rounded-xl shadow-sm active:scale-95 transition-all text-center">
-                        <div class="text-xl mb-1">🗣️</div>
-                        <div class="font-bold text-xs text-slate-700">Muhavre</div>
-                    </button>
-                    <button onclick="startGame('custom')" class="p-4 bg-white border-2 border-slate-100 rounded-xl shadow-sm active:scale-95 transition-all text-center">
-                        <div class="text-xl mb-1">📁</div>
-                        <div class="font-bold text-xs text-slate-700">Custom</div>
-                    </button>
-                </div>
-            </div>
-
-            <!-- ACTIVE GAME BOARD -->
-            <div id="game-board" class="hidden relative w-full h-full flex flex-col overflow-hidden">
-                <!-- Mini HUD during game -->
-                <div class="flex justify-between items-center px-4 py-2 pt-safe z-10 bg-white/30 backdrop-blur-xs border-b border-orange-100">
-                    <div class="bg-white/90 px-3 py-1 rounded-full border border-slate-200 text-[10px] font-black text-slate-600 shadow-sm">
-                        SCORE: <span id="score-val" class="text-orange-600 text-sm">0</span>
-                    </div>
-                    <div class="flex gap-1 text-sm" id="lives-display">❤️❤️❤️</div>
-                    <button onclick="showMenu()" class="p-1.5 bg-slate-800 text-white rounded-lg active:scale-90"><i data-lucide="x" class="w-3.5 h-3.5"></i></button>
-                </div>
-
-                <!-- DROP ZONE (Word falling area) -->
-                <div id="drop-zone" class="flex-1 relative border-b border-dashed border-orange-200/50 mx-4 overflow-hidden"></div>
-
-                <!-- CONTROLS (Answer buttons) -->
-                <div class="flex-none bg-white rounded-t-[2.5rem] shadow-[0_-5px_30px_rgba(0,0,0,0.08)] p-4 pt-6 z-20 pb-safe">
-                    <div class="text-center mb-3">
-                        <p class="text-[9px] font-black text-slate-400 uppercase tracking-[0.2em]" id="question-type-label">SELECT ANSWER</p>
-                    </div>
-                    <!-- Grid optimized for mobile height -->
-                    <div class="grid grid-cols-2 gap-2 max-h-[160px]">
-                        <button onclick="checkAnswer(0)" id="opt-0" class="btn-press bg-slate-50 border border-slate-200 rounded-2xl py-3 px-1 font-bold text-slate-800 hindi-font text-base shadow-sm active:bg-orange-50 flex items-center justify-center min-h-[50px]">A</button>
-                        <button onclick="checkAnswer(1)" id="opt-1" class="btn-press bg-slate-50 border border-slate-200 rounded-2xl py-3 px-1 font-bold text-slate-800 hindi-font text-base shadow-sm active:bg-orange-50 flex items-center justify-center min-h-[50px]">B</button>
-                        <button onclick="checkAnswer(2)" id="opt-2" class="btn-press bg-slate-50 border border-slate-200 rounded-2xl py-3 px-1 font-bold text-slate-800 hindi-font text-base shadow-sm active:bg-orange-50 flex items-center justify-center min-h-[50px]">C</button>
-                        <button onclick="checkAnswer(3)" id="opt-3" class="btn-press bg-slate-50 border border-slate-200 rounded-2xl py-3 px-1 font-bold text-slate-800 hindi-font text-base shadow-sm active:bg-orange-50 flex items-center justify-center min-h-[50px]">D</button>
-                    </div>
-                </div>
-            </div>
-
-            <!-- GAME OVER MODAL -->
-            <div id="game-over" class="hidden absolute inset-0 z-50 bg-white/95 backdrop-blur-md flex flex-col items-center justify-center p-8 animate-in zoom-in">
-                <div class="text-6xl mb-4">🏆</div>
-                <h2 class="text-3xl font-black text-slate-800 mb-1">Game Over!</h2>
-                <div class="bg-orange-50 p-6 rounded-3xl border border-orange-100 text-center w-full max-w-xs my-6">
-                    <p class="text-[10px] font-bold text-orange-400 uppercase tracking-widest mb-1">Final Score</p>
-                    <p id="final-score" class="text-5xl font-black text-orange-600">0</p>
-                </div>
-                <button onclick="showMenu()" class="w-full max-w-xs py-4 bg-[#0f172a] text-white font-black text-sm tracking-widest rounded-2xl shadow-xl active:scale-95 transition-transform">
-                    RETRY
-                </button>
-            </div>
-            
-            <!-- WRONG ANSWER POPUP -->
-            <div id="wrong-modal" class="hidden absolute inset-0 z-50 bg-black/70 backdrop-blur-sm flex items-center justify-center p-6">
-                <div class="bg-white rounded-[2rem] w-full max-w-xs p-6 shadow-2xl text-center pop-in">
-                    <div class="w-12 h-12 bg-red-100 rounded-full flex items-center justify-center mx-auto mb-3 text-2xl">❌</div>
-                    <h3 class="text-xl font-black text-slate-800 mb-1">Wrong!</h3>
-                    <p class="text-[9px] text-slate-400 font-bold uppercase mb-3">CORRECT ANSWER:</p>
-                    
-                    <div class="bg-green-50 border border-green-200 p-3 rounded-2xl mb-4">
-                        <p id="modal-correct-ans" class="text-xl font-bold text-green-700 hindi-font"></p>
-                    </div>
-
-                    <div id="explanation-box" class="bg-slate-50 rounded-xl p-3 text-xs text-slate-600 mb-5 text-left leading-relaxed">
-                        <span class="text-[9px] font-bold text-slate-400 block mb-1 uppercase">Explanation:</span>
-                        <p id="modal-explanation" class="hindi-font"></p>
-                    </div>
-
-                    <button onclick="resumeGame()" class="w-full py-3.5 bg-slate-800 text-white font-bold rounded-2xl shadow-lg active:scale-95 transition-transform">
-                        Continue
-                    </button>
-                </div>
-            </div>
-
-        </div>
-    </main>
-
-    <!-- DATA IMPORT MODAL -->
-    <div id="import-modal" class="hidden fixed inset-0 z-[60] bg-black/80 backdrop-blur-sm flex items-center justify-center p-4">
-        <div class="bg-white rounded-3xl w-full max-w-sm overflow-hidden shadow-2xl">
-            <div class="p-5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                <h3 class="font-bold text-base">Import Data</h3>
-                <button onclick="closeImportModal()" class="p-1 hover:bg-slate-200 rounded-full"><i data-lucide="x" class="w-5 h-5 text-slate-400"></i></button>
-            </div>
-            <div class="p-5 space-y-4">
-                <textarea id="import-area" rows="4" placeholder='[{"q":"Word", "a":"Answer", "e":"Hint"}]' class="w-full p-4 bg-slate-50 border border-slate-200 rounded-2xl text-[10px] font-mono focus:outline-none focus:border-orange-500"></textarea>
-                <button onclick="saveImportData()" class="w-full py-3.5 bg-orange-600 text-white font-bold rounded-2xl active:scale-95 transition-transform shadow-lg">
-                    Save
-                </button>
-            </div>
+    <div id="tab-container" class="p-3 bg-orange-50 shrink-0 border-b border-orange-100">
+        <div class="flex p-1 bg-white border border-orange-200 rounded-xl shadow-sm">
+            <button onclick="switchTab('learn')" id="btn-learn" class="flex-1 py-1.5 rounded-lg text-xs font-bold bg-orange-600 text-white shadow-md">Study</button>
+            <button onclick="switchTab('game')" id="btn-game" class="flex-1 py-1.5 rounded-lg text-xs font-bold text-slate-500">Play</button>
         </div>
     </div>
 
+    <!-- MAIN CONTENT AREA -->
+    <main class="flex-1 relative overflow-hidden flex flex-col">
+        
+        <!-- LEARN VIEW -->
+        <div id="view-learn" class="h-full overflow-y-auto p-4 pb-20 space-y-4">
+             <div class="flex gap-2 overflow-x-auto no-scrollbar pb-1">
+                <button onclick="renderStudy('vilom')" class="px-4 py-1.5 bg-white border border-orange-200 text-orange-700 rounded-full text-[10px] font-bold whitespace-nowrap active:bg-orange-100">Vilom</button>
+                <button onclick="renderStudy('samas')" class="px-4 py-1.5 bg-white border border-orange-200 text-orange-700 rounded-full text-[10px] font-bold whitespace-nowrap active:bg-orange-100">Samas</button>
+                <button onclick="renderStudy('muhavre')" class="px-4 py-1.5 bg-white border border-orange-200 text-orange-700 rounded-full text-[10px] font-bold whitespace-nowrap active:bg-orange-100">Muhavre</button>
+                <button onclick="renderStudy('custom')" class="px-4 py-1.5 bg-white border border-orange-200 text-purple-700 rounded-full text-[10px] font-bold whitespace-nowrap active:bg-purple-100">Custom</button>
+            </div>
+            <div id="study-container" class="space-y-2"></div>
+        </div>
+
+        <!-- GAME CONTAINER -->
+        <div id="view-game" class="hidden absolute inset-0 bg-white flex flex-col z-50">
+            
+            <!-- MENU -->
+            <div id="game-menu" class="absolute inset-0 bg-white z-20 flex flex-col items-center justify-center p-6 space-y-6">
+                <div class="text-center">
+                    <h2 class="text-3xl font-black text-slate-800 hindi-font">शब्द वर्षा</h2>
+                    <p class="text-[10px] text-slate-400 font-bold uppercase tracking-widest mt-1">Difficulty & Topic</p>
+                </div>
+
+                <div class="bg-slate-50 p-1 rounded-xl border border-slate-100 flex w-full max-w-xs">
+                    <button onclick="setSpeed('easy')" id="spd-easy" class="flex-1 py-2 rounded-lg text-[10px] font-bold text-slate-400">Easy</button>
+                    <button onclick="setSpeed('medium')" id="spd-medium" class="flex-1 py-2 rounded-lg text-[10px] font-bold bg-orange-500 text-white shadow-sm">Normal</button>
+                    <button onclick="setSpeed('hard')" id="spd-hard" class="flex-1 py-2 rounded-lg text-[10px] font-bold text-slate-400">Hard</button>
+                </div>
+
+                <div class="grid grid-cols-2 gap-3 w-full max-w-xs">
+                    <button onclick="startGame('vilom')" class="aspect-square bg-orange-50 rounded-2xl border-b-4 border-orange-200 flex flex-col items-center justify-center active:translate-y-1 active:border-b-0 transition-all">
+                        <span class="text-2xl mb-1">↔️</span><span class="font-bold text-xs text-orange-800">Vilom</span>
+                    </button>
+                    <button onclick="startGame('samas')" class="aspect-square bg-purple-50 rounded-2xl border-b-4 border-purple-200 flex flex-col items-center justify-center active:translate-y-1 active:border-b-0 transition-all">
+                        <span class="text-2xl mb-1">🔗</span><span class="font-bold text-xs text-purple-800">Samas</span>
+                    </button>
+                    <button onclick="startGame('muhavre')" class="aspect-square bg-green-50 rounded-2xl border-b-4 border-green-200 flex flex-col items-center justify-center active:translate-y-1 active:border-b-0 transition-all">
+                        <span class="text-2xl mb-1">🗣️</span><span class="font-bold text-xs text-green-800">Muhavre</span>
+                    </button>
+                    <button onclick="startGame('custom')" class="aspect-square bg-slate-50 rounded-2xl border-b-4 border-slate-200 flex flex-col items-center justify-center active:translate-y-1 active:border-b-0 transition-all">
+                        <span class="text-2xl mb-1">📁</span><span class="font-bold text-xs text-slate-800">Custom</span>
+                    </button>
+                </div>
+                
+                <button onclick="switchTab('learn')" class="text-slate-400 text-xs font-bold underline">Back to Study</button>
+            </div>
+
+            <!-- ACTIVE BOARD -->
+            <div id="game-board" class="hidden flex-1 flex flex-col relative overflow-hidden">
+                <!-- Compact HUD -->
+                <div class="flex justify-between items-center px-4 py-2 bg-slate-900 text-white">
+                    <div class="text-[10px] font-black tracking-tighter">SCORE: <span id="score-val" class="text-orange-400 text-sm">0</span></div>
+                    <div id="lives-display" class="text-xs">❤️❤️❤️</div>
+                    <button onclick="showMenu()" class="p-1"><i data-lucide="x" class="w-4 h-4"></i></button>
+                </div>
+
+                <!-- Word Falling Zone -->
+                <div id="drop-zone" class="flex-1 relative overflow-hidden bg-slate-50">
+                    <div class="absolute bottom-0 w-full h-1 bg-red-100 opacity-20"></div>
+                </div>
+
+                <!-- BOTTOM CONTROLS (Always visible in Chrome) -->
+                <div class="shrink-0 bg-white border-t border-slate-200 p-2 pb-4 shadow-[0_-4px_10px_rgba(0,0,0,0.05)]">
+                    <p id="question-type-label" class="text-[8px] font-black text-slate-300 text-center mb-1 uppercase tracking-widest">Select Answer</p>
+                    <div class="grid grid-cols-2 gap-2 h-32">
+                        <button onclick="checkAnswer(0)" id="opt-0" class="btn-press bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 hindi-font text-base active:bg-orange-50">A</button>
+                        <button onclick="checkAnswer(1)" id="opt-1" class="btn-press bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 hindi-font text-base active:bg-orange-50">B</button>
+                        <button onclick="checkAnswer(2)" id="opt-2" class="btn-press bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 hindi-font text-base active:bg-orange-50">C</button>
+                        <button onclick="checkAnswer(3)" id="opt-3" class="btn-press bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 hindi-font text-base active:bg-orange-50">D</button>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- POPUPS (Wrong/GameOver) -->
+            <div id="wrong-modal" class="hidden absolute inset-0 z-50 bg-slate-900/80 backdrop-blur-sm flex items-center justify-center p-6">
+                <div class="bg-white rounded-3xl w-full max-w-xs p-5 shadow-2xl pop-in">
+                    <div class="text-center mb-4">
+                        <div class="text-2xl mb-1">❌</div>
+                        <h3 class="font-black text-slate-800">Wrong Answer</h3>
+                    </div>
+                    <div class="bg-green-50 border border-green-200 p-3 rounded-xl text-center mb-3">
+                        <p class="text-[9px] font-bold text-green-600 uppercase mb-1">CORRECT ANSWER</p>
+                        <p id="modal-correct-ans" class="text-lg font-bold text-green-800 hindi-font"></p>
+                    </div>
+                    <div class="bg-slate-50 p-3 rounded-xl text-[11px] text-slate-500 mb-5 leading-relaxed">
+                        <p id="modal-explanation" class="hindi-font"></p>
+                    </div>
+                    <button onclick="resumeGame()" class="w-full py-3 bg-slate-800 text-white font-bold rounded-xl shadow-lg active:scale-95">Continue</button>
+                </div>
+            </div>
+
+            <div id="game-over" class="hidden absolute inset-0 z-50 bg-white flex flex-col items-center justify-center p-8">
+                <div class="text-5xl mb-4">🎖️</div>
+                <h2 class="text-2xl font-black text-slate-800 mb-1">Game Over</h2>
+                <div class="text-center my-6">
+                    <p class="text-[10px] text-slate-400 font-bold uppercase mb-1">Score</p>
+                    <p id="final-score" class="text-5xl font-black text-orange-500">0</p>
+                </div>
+                <button onclick="showMenu()" class="w-full max-w-xs py-4 bg-slate-900 text-white font-bold rounded-2xl shadow-xl active:scale-95">Main Menu</button>
+            </div>
+        </div>
+    </main>
+
     <!-- BOTTOM NAV (Hidden during game) -->
-    <nav id="bottom-nav" class="bg-white border-t border-slate-200 pb-safe z-40 flex-none">
-        <div class="flex justify-around items-center px-1 py-2">
-            <a href="#" class="flex flex-col items-center gap-1 min-w-[50px] text-slate-400">
-                <i data-lucide="home" class="w-5 h-5"></i>
-                <span class="text-[8px] font-medium">Home</span>
-            </a>
-            <a href="#" class="flex flex-col items-center gap-1 min-w-[50px] text-orange-600">
-                <div class="w-5 h-5 flex items-center justify-center font-bold text-base leading-none border-2 border-current rounded-md bg-orange-50"> अ </div>
-                <span class="text-[8px] font-bold">Hindi</span>
-            </a>
-            <a href="#" class="flex flex-col items-center gap-1 min-w-[50px] text-slate-400">
-                <i data-lucide="zap" class="w-5 h-5"></i>
-                <span class="text-[8px] font-medium">Math</span>
-            </a>
-            <a href="#" class="flex flex-col items-center gap-1 min-w-[50px] text-slate-400">
-                <i data-lucide="puzzle" class="w-5 h-5"></i>
-                <span class="text-[8px] font-medium">Reason</span>
-            </a>
+    <nav id="bottom-nav" class="bg-white border-t border-slate-100 flex-none px-2 py-2">
+        <div class="flex justify-around items-center">
+            <div class="flex flex-col items-center opacity-30"><i data-lucide="home" class="w-5 h-5"></i><span class="text-[8px]">Home</span></div>
+            <div class="flex flex-col items-center text-orange-600"><div class="w-5 h-5 border-2 border-current rounded flex items-center justify-center text-[10px] font-bold">अ</div><span class="text-[8px] font-bold">Hindi</span></div>
+            <div class="flex flex-col items-center opacity-30"><i data-lucide="zap" class="w-5 h-5"></i><span class="text-[8px]">Math</span></div>
+            <div class="flex flex-col items-center opacity-30"><i data-lucide="puzzle" class="w-5 h-5"></i><span class="text-[8px]">Reason</span></div>
         </div>
     </nav>
+
+    <!-- IMPORT MODAL -->
+    <div id="import-modal" class="hidden fixed inset-0 z-[100] bg-black/80 flex items-center justify-center p-4">
+        <div class="bg-white rounded-3xl w-full max-w-xs p-5">
+            <h3 class="font-bold mb-4 text-center">Import JSON</h3>
+            <textarea id="import-area" rows="4" placeholder='[{"q":"Word", "a":"Ans", "e":"Exp"}]' class="w-full p-3 bg-slate-50 border border-slate-200 rounded-xl text-[10px] font-mono mb-4 focus:outline-none"></textarea>
+            <div class="flex gap-2">
+                <button onclick="closeImportModal()" class="flex-1 py-3 text-slate-400 text-xs font-bold">Cancel</button>
+                <button onclick="saveImportData()" class="flex-1 py-3 bg-orange-600 text-white rounded-xl text-xs font-bold shadow-lg">Save</button>
+            </div>
+        </div>
+    </div>
 
     <script>
         lucide.createIcons();
@@ -298,61 +253,59 @@
         };
 
         let state = {
-            mode: 'vilom',
-            score: 0,
-            lives: 3,
-            selectedSpeed: 'medium',
-            speed: 4000,
-            activeWord: null,
-            currentItem: null,
-            correctIndex: 0,
-            isOver: false,
-            isPaused: false
+            mode: 'vilom', score: 0, lives: 3, 
+            speed: 4000, activeWord: null, currentItem: null,
+            correctIndex: 0, isOver: false, isPaused: false
         };
-
-        const speeds = { easy: 6000, medium: 4000, hard: 2500 };
 
         function switchTab(tab) {
             document.getElementById('view-learn').style.display = tab === 'learn' ? 'block' : 'none';
             document.getElementById('view-game').style.display = tab === 'game' ? 'flex' : 'none';
             
+            const btnL = document.getElementById('btn-learn');
+            const btnG = document.getElementById('btn-game');
+            
             if (tab === 'learn') {
-                document.getElementById('btn-learn').className = "flex-1 py-1.5 rounded-lg text-xs font-bold bg-orange-600 text-white shadow-md transition-all";
-                document.getElementById('btn-game').className = "flex-1 py-1.5 rounded-lg text-xs font-bold text-slate-500 transition-all";
+                btnL.className = "flex-1 py-1.5 rounded-lg text-xs font-bold bg-orange-600 text-white shadow-md";
+                btnG.className = "flex-1 py-1.5 rounded-lg text-xs font-bold text-slate-500";
                 renderStudy('vilom');
+                showGlobalUI(true);
             } else {
-                document.getElementById('btn-game').className = "flex-1 py-1.5 rounded-lg text-xs font-bold bg-[#0f172a] text-white shadow-md transition-all";
-                document.getElementById('btn-learn').className = "flex-1 py-1.5 rounded-lg text-xs font-bold text-slate-500 transition-all";
+                btnG.className = "flex-1 py-1.5 rounded-lg text-xs font-bold bg-[#0f172a] text-white shadow-md";
+                btnL.className = "flex-1 py-1.5 rounded-lg text-xs font-bold text-slate-500";
                 showMenu();
             }
         }
 
+        function showGlobalUI(show) {
+            const val = show ? 'flex' : 'none';
+            const valBlock = show ? 'block' : 'none';
+            document.getElementById('main-header').style.display = val;
+            document.getElementById('tab-container').style.display = valBlock;
+            document.getElementById('bottom-nav').style.display = valBlock;
+        }
+
         function setSpeed(lvl) {
-            state.selectedSpeed = lvl;
             ['easy', 'medium', 'hard'].forEach(l => {
-                document.getElementById('spd-'+l).className = "flex-1 py-1.5 rounded-lg text-[10px] font-bold text-slate-500 hover:bg-orange-50 transition-all";
+                document.getElementById('spd-'+l).className = "flex-1 py-2 rounded-lg text-[10px] font-bold text-slate-400";
             });
-            document.getElementById('spd-'+lvl).className = "flex-1 py-1.5 rounded-lg text-[10px] font-bold bg-orange-500 text-white shadow-md transition-all";
+            document.getElementById('spd-'+lvl).className = "flex-1 py-2 rounded-lg text-[10px] font-bold bg-orange-500 text-white shadow-sm";
+            state.speed = { easy: 6000, medium: 4000, hard: 2500 }[lvl];
         }
 
         function renderStudy(topic) {
             const container = document.getElementById('study-container');
             container.innerHTML = '';
-            const list = vocabData[topic];
-            list.forEach(item => {
+            vocabData[topic].forEach(item => {
                 const card = document.createElement('div');
-                card.className = "bg-white p-3 rounded-2xl shadow-sm border border-orange-100";
-                card.innerHTML = `<div class="flex justify-between items-center mb-1"><div class="font-bold text-slate-700 hindi-font">${item.q}</div><div class="font-bold text-orange-600 hindi-font">${item.a}</div></div><div class="text-[10px] text-slate-400 hindi-font italic">${item.e || ''}</div>`;
+                card.className = "bg-white p-3 rounded-2xl shadow-sm border border-orange-100 flex justify-between items-center";
+                card.innerHTML = `<div class="font-bold text-slate-700 hindi-font text-sm">${item.q}</div><div class="text-slate-300">→</div><div class="font-bold text-orange-600 hindi-font text-sm">${item.a}</div>`;
                 container.appendChild(card);
             });
         }
 
         function showMenu() {
-            // Restore headers
-            document.getElementById('main-header').classList.remove('hidden');
-            document.getElementById('tab-container').classList.remove('hidden');
-            document.getElementById('bottom-nav').classList.remove('hidden');
-            
+            showGlobalUI(true);
             document.getElementById('game-menu').style.display = 'flex';
             document.getElementById('game-board').style.display = 'none';
             document.getElementById('game-over').style.display = 'none';
@@ -361,28 +314,17 @@
         }
 
         function startGame(topic) {
-            if (!vocabData[topic] || vocabData[topic].length < 4) {
-                alert("Add more data first!"); return;
-            }
+            if (!vocabData[topic] || vocabData[topic].length < 4) return alert("Need more data!");
             
-            // Hide headers for immersive game view
-            document.getElementById('main-header').classList.add('hidden');
-            document.getElementById('tab-container').classList.add('hidden');
-            document.getElementById('bottom-nav').classList.add('hidden');
-            
+            showGlobalUI(false); // Remove headers/nav for game
             state.mode = topic;
             state.score = 0;
             state.lives = 3;
-            state.speed = speeds[state.selectedSpeed]; 
             state.isOver = false;
             state.isPaused = false;
             
             document.getElementById('game-menu').style.display = 'none';
             document.getElementById('game-board').style.display = 'flex';
-            
-            const labels = { vilom: "SELECT ANTONYM", samas: "IDENTIFY SAMAS", muhavre: "MEANING", sandhi: "CORRECT WORD", custom: "SELECT ANSWER" };
-            document.getElementById('question-type-label').textContent = labels[topic];
-
             updateHUD();
             nextRound();
         }
@@ -397,8 +339,8 @@
             
             const options = [item.a];
             while (options.length < 4) {
-                const randomItem = dataset[Math.floor(Math.random() * dataset.length)];
-                if (!options.includes(randomItem.a)) options.push(randomItem.a);
+                const r = dataset[Math.floor(Math.random() * dataset.length)].a;
+                if (!options.includes(r)) options.push(r);
             }
             const shuffled = options.sort(() => Math.random() - 0.5);
             state.correctIndex = shuffled.indexOf(item.a);
@@ -406,7 +348,7 @@
             for(let i=0; i<4; i++) {
                 const btn = document.getElementById(`opt-${i}`);
                 btn.textContent = shuffled[i];
-                btn.className = "btn-press bg-slate-50 border border-slate-200 rounded-2xl py-3 px-1 font-bold text-slate-800 hindi-font text-base shadow-sm active:bg-orange-50 flex items-center justify-center min-h-[50px]";
+                btn.className = "btn-press bg-slate-50 border border-slate-200 rounded-xl font-bold text-slate-700 hindi-font text-sm active:bg-orange-50";
             }
 
             const wordEl = document.createElement('div');
@@ -421,39 +363,32 @@
 
         function checkAnswer(idx) {
             if (state.isOver || state.isPaused) return;
-            const selectedBtn = document.getElementById(`opt-${idx}`);
-
+            const btn = document.getElementById(`opt-${idx}`);
             if (idx === state.correctIndex) {
                 state.score += 10;
-                if(state.score % 50 === 0 && state.speed > 1500) state.speed -= 200;
-                selectedBtn.classList.add('correct-flash');
-                state.activeWord.style.animation = 'none';
-                state.activeWord.style.transform = 'scale(1.2) translateX(-50%)';
+                btn.classList.add('correct-flash');
                 state.activeWord.style.opacity = '0';
-                state.activeWord.style.transition = 'all 0.2s';
                 setTimeout(() => {
-                    selectedBtn.classList.remove('correct-flash');
-                    updateHUD();
-                    nextRound();
-                }, 250);
+                    btn.classList.remove('correct-flash');
+                    updateHUD(); nextRound();
+                }, 200);
             } else {
-                handleWrongAnswer(selectedBtn);
+                handleWrongAnswer(btn);
             }
         }
 
-        function handleWrongAnswer(btnElement) {
+        function handleWrongAnswer(btn) {
             state.isPaused = true;
             state.lives--;
             updateHUD();
-            btnElement.classList.add('wrong-flash');
+            btn.classList.add('wrong-flash');
             if(state.activeWord) state.activeWord.style.animationPlayState = 'paused';
             
             document.getElementById('modal-correct-ans').textContent = state.currentItem.a;
-            const exp = state.currentItem.e || "No extra notes.";
-            document.getElementById('modal-explanation').textContent = exp;
+            document.getElementById('modal-explanation').textContent = state.currentItem.e || "Meaning or context of the word.";
             
             setTimeout(() => {
-                btnElement.classList.remove('wrong-flash');
+                btn.classList.remove('wrong-flash');
                 document.getElementById('wrong-modal').classList.remove('hidden');
             }, 300);
         }
@@ -461,18 +396,13 @@
         function resumeGame() {
             document.getElementById('wrong-modal').classList.add('hidden');
             state.isPaused = false;
-            if(state.activeWord) state.activeWord.remove();
-            state.activeWord = null;
             if (state.lives > 0) nextRound();
             else endGame();
         }
 
         function handleMiss() {
-            if (state.isOver || !state.activeWord || state.isPaused) return;
-            state.lives--;
-            updateHUD();
-            state.activeWord.remove();
-            state.activeWord = null;
+            if (state.isOver || state.isPaused) return;
+            state.lives--; updateHUD();
             if (state.lives > 0) nextRound();
             else endGame();
         }
@@ -493,12 +423,9 @@
         function closeImportModal() { document.getElementById('import-modal').classList.add('hidden'); }
         function saveImportData() {
             try {
-                const parsed = JSON.parse(document.getElementById('import-area').value);
-                if (Array.isArray(parsed)) {
-                    vocabData.custom = [...vocabData.custom, ...parsed];
-                    alert("Imported!"); closeImportModal();
-                }
-            } catch (e) { alert("JSON Error"); }
+                const p = JSON.parse(document.getElementById('import-area').value);
+                if (Array.isArray(p)) { vocabData.custom = [...vocabData.custom, ...p]; closeImportModal(); }
+            } catch (e) { alert("Invalid JSON"); }
         }
 
         renderStudy('vilom');
