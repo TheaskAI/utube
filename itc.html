@@ -7,9 +7,6 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
     <style>
-        :root {
-            --hi-font-scale: 1.15;
-        }
         body {
             font-family: 'Plus Jakarta Sans', 'Noto Sans Devanagari', sans-serif;
             background-color: #f8fafc;
@@ -17,15 +14,12 @@
             user-select: none;
             -webkit-tap-highlight-color: transparent;
         }
-        /* Increased font size for Hindi mode */
-        body.lang-hindi {
-            font-size: 1.1rem;
-        }
-        .lang-hindi #txt-logo { font-size: 1.5rem; }
-        .lang-hindi .text-\[10px\] { font-size: 13px; }
-        .lang-hindi .text-\[9px\] { font-size: 12px; }
-        .lang-hindi .text-xs { font-size: 14px; }
-        .lang-hindi .text-sm { font-size: 16px; }
+        
+        /* Hindi Readability Scale */
+        body.lang-hindi { font-size: 1.05rem; }
+        body.lang-hindi .text-tiny { font-size: 13px; }
+        body.lang-hindi .text-sm { font-size: 16px; }
+        body.lang-hindi .text-xs { font-size: 14.5px; }
 
         .app-container {
             max-width: 480px;
@@ -48,112 +42,60 @@
             animation: shimmer 1.5s infinite linear;
             border-radius: 12px;
         }
-
         #skeleton-overlay {
-            position: fixed;
-            top: 0;
-            left: 50%;
-            transform: translateX(-50%);
-            width: 100%;
-            max-width: 480px;
-            height: 100%;
-            background: white;
-            z-index: 100;
-            display: flex;
-            flex-direction: column;
-            padding: 24px;
+            position: fixed; top: 0; left: 50%; transform: translateX(-50%);
+            width: 100%; max-width: 480px; height: 100%; background: white;
+            z-index: 100; display: flex; flex-direction: column; padding: 24px;
             transition: opacity 0.4s ease-out;
         }
 
-        /* Bottom Nav Styling */
+        /* Bottom Nav */
         .bottom-nav {
-            position: fixed;
-            bottom: 0;
-            left: 50%;
-            transform: translateX(-50%);
+            position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
+            width: 100%; max-width: 480px; background: rgba(255, 255, 255, 0.98);
+            backdrop-filter: blur(10px); border-top: 1px solid #f1f5f9;
+            height: 72px; display: flex; justify-content: space-around;
+            align-items: center; z-index: 50; padding-bottom: env(safe-area-inset-bottom);
+        }
+        .nav-item { flex: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #94a3b8; transition: all 0.2s ease; }
+        .nav-item.active { color: #4f46e5; }
+        .nav-item.active .nav-icon-bg { background: #eef2ff; }
+        .nav-icon-bg { padding: 6px 16px; border-radius: 16px; transition: all 0.2s ease; }
+
+        input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+        /* Table Layout */
+        .tax-table {
             width: 100%;
-            max-width: 480px;
-            background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(10px);
-            border-top: 1px solid #f1f5f9;
-            height: 72px;
-            display: flex;
-            justify-content: space-around;
-            align-items: center;
-            z-index: 50;
-            padding-bottom: env(safe-area-inset-bottom);
+            border-collapse: collapse;
+            font-size: 0.875rem;
         }
-
-        .nav-item {
-            flex: 1;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            gap: 4px;
-            color: #94a3b8;
-            transition: all 0.2s ease;
-        }
-
-        .nav-item.active {
-            color: #4f46e5;
-        }
-
-        .nav-item.active .nav-icon-bg {
-            background: #eef2ff;
-        }
-
-        .nav-icon-bg {
-            padding: 6px 16px;
-            border-radius: 16px;
-            transition: all 0.2s ease;
-        }
-
-        input[type="number"]::-webkit-inner-spin-button,
-        input[type="number"]::-webkit-outer-spin-button {
-            -webkit-appearance: none;
-            margin: 0;
-        }
-
-        .comp-grid {
-            display: grid;
-            grid-template-columns: 2.2fr 1fr 1fr;
-            align-items: center;
-        }
+        .tax-table tr { border-bottom: 1px solid #f1f5f9; }
+        .tax-table td { padding: 12px 0; }
+        .tax-table td:last-child { text-align: right; font-weight: 700; }
+        .tax-table .label { color: #64748b; font-weight: 500; }
+        .tax-table .indent { padding-left: 16px; font-size: 0.8rem; }
+        .tax-table .sub-label { color: #94a3b8; }
+        .tax-table .total-row { border-top: 2px solid #e2e8f0; font-weight: 800; color: #1e293b; }
 
         /* Collapse Animation */
-        #deduction-content {
-            transition: max-height 0.3s ease-out, opacity 0.2s ease;
-            overflow: hidden;
-        }
-        #deduction-content.collapsed {
-            max-height: 0;
-            opacity: 0;
-        }
-        #deduction-content.expanded {
-            max-height: 500px;
-            opacity: 1;
-        }
+        #deduction-content { transition: max-height 0.3s ease-out, opacity 0.2s ease; overflow: hidden; }
+        #deduction-content.collapsed { max-height: 0; opacity: 0; }
+        #deduction-content.expanded { max-height: 500px; opacity: 1; }
     </style>
 </head>
 <body>
 
-<!-- Skeleton Loader Overlay -->
+<!-- Skeleton Loader -->
 <div id="skeleton-overlay">
     <div class="flex justify-between items-center mb-10">
         <div class="w-24 h-8 skeleton"></div>
         <div class="w-10 h-10 skeleton rounded-full"></div>
     </div>
-    <div class="w-32 h-4 skeleton mb-4"></div>
     <div class="w-full h-16 skeleton mb-10"></div>
     <div class="space-y-4">
         <div class="w-full h-20 skeleton rounded-3xl"></div>
         <div class="w-full h-20 skeleton rounded-3xl"></div>
-    </div>
-    <div class="mt-auto flex justify-around p-4">
-        <div class="w-20 h-12 skeleton rounded-2xl"></div>
-        <div class="w-20 h-12 skeleton rounded-2xl"></div>
     </div>
 </div>
 
@@ -163,179 +105,182 @@
     <header class="p-6 pb-4 flex justify-between items-center border-b border-slate-50 sticky top-0 bg-white/80 backdrop-blur-md z-30">
         <div>
             <h1 id="txt-logo" class="text-xl font-extrabold text-indigo-600 tracking-tight">I.T.C.</h1>
-            <p id="txt-year" class="text-[9px] font-black text-slate-300 uppercase tracking-widest">FY 2025-26 Budget</p>
+            <p id="txt-year" class="text-tiny font-black text-slate-300 uppercase tracking-widest" style="font-size: 9px;">FY 2025-26 Budget</p>
         </div>
-        <button id="lang-toggle" class="bg-slate-100 text-slate-600 px-4 py-2 rounded-2xl text-[10px] font-black uppercase transition-all active:scale-90">
+        <button id="lang-toggle" class="bg-slate-100 text-slate-600 px-4 py-2 rounded-2xl text-tiny font-black uppercase transition-all active:scale-90" style="font-size: 10px;">
             हिंदी
         </button>
     </header>
 
-    <!-- Main Content -->
     <main class="flex-grow overflow-y-auto pb-24">
         
-        <!-- VIEW 1: INPUT DATA -->
+        <!-- TAB 1: INPUT DATA -->
         <div id="view-inputs" class="p-6 space-y-6">
             <section>
-                <label id="lbl-income" class="text-[10px] font-bold text-slate-400 uppercase tracking-widest mb-2 block">Gross Total Income (₹)</label>
+                <label id="lbl-income" class="text-tiny font-bold text-slate-400 uppercase tracking-widest mb-2 block" style="font-size: 10px;">Gross Total Income (₹)</label>
                 <div class="relative">
                     <span class="absolute left-0 bottom-2 text-3xl font-light text-slate-300">₹</span>
                     <input type="number" id="inp-income" value="1500000" class="w-full pl-8 py-2 text-4xl font-black text-slate-800 border-b-2 border-slate-100 focus:border-indigo-500 outline-none transition-all">
                 </div>
             </section>
 
-            <!-- Collapsible Deductions Section -->
+            <!-- Collapsible Deductions -->
             <section class="pt-2">
                 <button id="toggle-deductions" class="w-full flex justify-between items-center p-2 rounded-xl hover:bg-slate-50 transition-colors group">
                     <h3 id="lbl-deductions" class="font-bold text-slate-800 text-sm">Deductions & Exemptions</h3>
-                    <svg id="chevron-icon" class="w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" />
-                    </svg>
+                    <svg id="chevron-icon" class="w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" /></svg>
                 </button>
-                
                 <div id="deduction-content" class="collapsed mt-3 space-y-3 px-1">
-                    <div class="bg-slate-50 p-4 rounded-3xl flex justify-between items-center">
-                        <div>
-                            <p id="lbl-80c" class="text-xs font-bold text-slate-600">Section 80C</p>
-                            <p class="text-[9px] text-slate-400 uppercase font-bold">PPF, LIC (Max 1.5L)</p>
-                        </div>
+                    <div class="bg-slate-50 p-4 rounded-3xl flex justify-between items-center shadow-sm">
+                        <div class="flex-1"><p id="lbl-80c" class="text-xs font-bold text-slate-600">Section 80C</p><p class="text-tiny text-slate-400 uppercase font-bold" style="font-size: 8px;">Max 1.5L</p></div>
                         <input type="number" id="inp-80c" value="0" class="w-24 text-right bg-transparent font-bold text-indigo-600 outline-none">
                     </div>
-                    <div class="bg-slate-50 p-4 rounded-3xl flex justify-between items-center">
-                        <div>
-                            <p id="lbl-80d" class="text-xs font-bold text-slate-600">Section 80D</p>
-                            <p class="text-[9px] text-slate-400 uppercase font-bold">Health Insurance</p>
-                        </div>
+                    <div class="bg-slate-50 p-4 rounded-3xl flex justify-between items-center shadow-sm">
+                        <div class="flex-1"><p id="lbl-80d" class="text-xs font-bold text-slate-600">Section 80D</p><p class="text-tiny text-slate-400 uppercase font-bold" style="font-size: 8px;">Health Ins.</p></div>
                         <input type="number" id="inp-80d" value="0" class="w-24 text-right bg-transparent font-bold text-indigo-600 outline-none">
                     </div>
-                    <div class="bg-slate-50 p-4 rounded-3xl flex justify-between items-center">
-                        <div>
-                            <p id="lbl-hra" class="text-xs font-bold text-slate-600">HRA / Rent</p>
-                            <p class="text-[9px] text-slate-400 uppercase font-bold">House Rent Allowance</p>
-                        </div>
+                    <div class="bg-slate-50 p-4 rounded-3xl flex justify-between items-center shadow-sm">
+                        <div class="flex-1"><p id="lbl-hra" class="text-xs font-bold text-slate-600">HRA / Rent</p><p class="text-tiny text-slate-400 uppercase font-bold" style="font-size: 8px;">Exemption</p></div>
                         <input type="number" id="inp-hra" value="0" class="w-24 text-right bg-transparent font-bold text-indigo-600 outline-none">
                     </div>
                 </div>
             </section>
 
-            <!-- Quick Summary Card -->
             <div class="bg-indigo-600 rounded-[2.5rem] p-6 text-white shadow-xl shadow-indigo-100 relative overflow-hidden">
-                <p id="lbl-new-tax" class="text-[10px] font-bold uppercase tracking-widest opacity-60">Estimated Tax (New)</p>
+                <p id="lbl-new-tax-card" class="text-tiny font-bold uppercase tracking-widest opacity-60" style="font-size: 10px;">New Regime Tax</p>
                 <h2 id="quick-tax" class="text-4xl font-black mt-1">₹0</h2>
                 <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full"></div>
             </div>
         </div>
 
-        <!-- VIEW 2: COMPARISON TABLE -->
-        <div id="view-compare" class="hidden p-4 space-y-6">
+        <!-- TAB 2: COMPARISON VIEW -->
+        <div id="view-compare" class="hidden p-6 space-y-8 animate-in fade-in duration-300">
             
+            <!-- Recommendation -->
             <div id="banner-winner" class="bg-indigo-50 border border-indigo-100 p-5 rounded-[2rem] flex items-center gap-4">
-                <div class="bg-indigo-600 text-white p-2.5 rounded-full">
-                    <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
-                </div>
-                <div>
-                    <p id="lbl-recommend" class="text-[9px] font-black text-indigo-600 uppercase">Recommendation</p>
-                    <p id="txt-winner" class="text-sm font-bold text-slate-800">New Regime is better</p>
-                    <p class="text-[10px] font-bold text-indigo-700 mt-0.5"><span id="lbl-save">Saves</span> <span id="val-save" class="underline underline-offset-2">₹0</span></p>
+                <div class="bg-indigo-600 text-white p-2 rounded-full"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div>
+                <div class="flex-1">
+                    <p id="lbl-recommend" class="text-tiny font-black text-indigo-600 uppercase tracking-tighter" style="font-size: 9px;">Recommendation</p>
+                    <p id="txt-winner" class="text-sm font-bold text-slate-800">New Tax Regime</p>
+                    <p class="text-xs font-bold text-indigo-700 opacity-80"><span id="lbl-save">Saves</span> <span id="val-save" class="underline underline-offset-2">₹0</span></p>
                 </div>
             </div>
 
-            <div class="bg-white border border-slate-100 rounded-3xl overflow-hidden shadow-sm">
-                <div class="comp-grid bg-slate-50 p-4 border-b border-slate-100 text-[9px] font-black text-slate-400 uppercase tracking-widest">
-                    <span id="th-part">Particulars</span>
-                    <span class="text-center">New</span>
-                    <span class="text-center">Old</span>
+            <!-- New Regime Table -->
+            <div class="space-y-4">
+                <div class="flex items-center gap-2 px-2">
+                    <div class="w-2 h-6 bg-indigo-600 rounded-full"></div>
+                    <h3 id="lbl-title-new" class="font-bold text-slate-800 uppercase tracking-wider text-xs">New Tax Regime</h3>
                 </div>
-                <div id="table-body" class="text-xs font-medium text-slate-700 divide-y divide-slate-50"></div>
-                <div class="comp-grid p-5 bg-slate-900 text-white font-black text-sm">
-                    <span id="lbl-total-payable">Net Tax Payable</span>
-                    <span id="final-new" class="text-center text-indigo-400">₹0</span>
-                    <span id="final-old" class="text-center text-slate-400">₹0</span>
+                <div class="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm">
+                    <table class="tax-table" id="table-new">
+                        <!-- New Regime rows injected here -->
+                    </table>
                 </div>
             </div>
 
-            <p class="text-[9px] text-center text-slate-300 font-bold uppercase tracking-widest">Budget 2025-26 Compliant</p>
+            <!-- Old Regime Table -->
+            <div class="space-y-4">
+                <div class="flex items-center gap-2 px-2">
+                    <div class="w-2 h-6 bg-slate-400 rounded-full"></div>
+                    <h3 id="lbl-title-old" class="font-bold text-slate-500 uppercase tracking-wider text-xs">Old Tax Regime</h3>
+                </div>
+                <div class="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm">
+                    <table class="tax-table" id="table-old">
+                        <!-- Old Regime rows injected here -->
+                    </table>
+                </div>
+            </div>
+
+            <p id="lbl-footer-legal" class="text-center text-[9px] text-slate-400 font-bold uppercase tracking-widest pb-4">Data Compliant with Budget 2025-26</p>
         </div>
     </main>
 
-    <!-- Bottom Navigation -->
+    <!-- Bottom Nav -->
     <nav class="bottom-nav">
         <button onclick="switchTab('inputs')" id="nav-inputs" class="nav-item active">
-            <div class="nav-icon-bg">
-                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg>
-            </div>
-            <span id="nav-txt-input" class="text-[9px] font-black uppercase tracking-tighter">Input Data</span>
+            <div class="nav-icon-bg"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg></div>
+            <span id="nav-txt-input" class="text-tiny font-black uppercase tracking-tighter" style="font-size: 9px;">Input Data</span>
         </button>
         <button onclick="switchTab('compare')" id="nav-compare" class="nav-item">
-            <div class="nav-icon-bg">
-                <svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg>
-            </div>
-            <span id="nav-txt-compare" class="text-[9px] font-black uppercase tracking-tighter">Compare</span>
+            <div class="nav-icon-bg"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg></div>
+            <span id="nav-txt-compare" class="text-tiny font-black uppercase tracking-tighter" style="font-size: 9px;">Compare</span>
         </button>
     </nav>
 </div>
 
 <script>
-    let langState = 'en';
+    let currentLang = 'en';
     let activeTab = 'inputs';
     let dedCollapsed = true;
 
-    const t = {
+    const translations = {
         en: {
-            income: "Gross Total Income (₹)",
-            ded: "Deductions & Exemptions",
-            newTax: "Estimated Tax (New)",
-            recommend: "Recommendation",
-            save: "Saves",
-            bestMsg: "{regime} is better",
-            thPart: "Particulars",
-            totalPayable: "Net Tax Payable",
-            navInputs: "Input Data",
-            navCompare: "Compare",
-            stdDed: "Standard Deduction",
-            chapter6: "VI-A Deductions",
-            taxable: "Net Taxable Income",
-            slab: "Slab {r}",
-            cess: "Cess (4%)"
+            income: "Gross Total Income", deds: "Deductions & Exemptions", recommend: "Recommendation", save: "Saves", stdDed: "Standard Deduction", totalTaxable: "Net Taxable Income", slab: "Slab {r}", cess: "Education Cess (4%)", totalPayable: "Net Tax Payable", navInput: "Input Data", navCompare: "Compare", newTitle: "New Tax Regime", oldTitle: "Old Tax Regime", bestMsg: "{regime} is better", investDed: "Investment Deductions", zeroTax: "No Tax Payable"
         },
         hi: {
-            income: "कुल वार्षिक आय (₹)",
-            ded: "बचत और कटौतियां",
-            newTax: "नया टैक्स (अनुमानित)",
-            recommend: "हमारा सुझाव",
-            save: "बचत",
-            bestMsg: "{regime} व्यवस्था बेहतर है",
-            thPart: "विवरण",
-            totalPayable: "कुल देय टैक्स",
-            navInputs: "डेटा भरें",
-            navCompare: "तुलना",
-            stdDed: "मानक कटौती",
-            chapter6: "छूट (80C, 80D आदि)",
-            taxable: "कर योग्य आय",
-            slab: "स्लैब {r}",
-            cess: "सेस (4%)"
+            income: "कुल वार्षिक आय", deds: "बचत और कटौतियां", recommend: "सुझाव", save: "बचत", stdDed: "मानक कटौती", totalTaxable: "कर योग्य आय", slab: "स्लैब {r}", cess: "शिक्षा सेस (4%)", totalPayable: "कुल देय टैक्स", navInput: "डेटा भरें", navCompare: "तुलना करें", newTitle: "नई टैक्स व्यवस्था", oldTitle: "पुरानी टैक्स व्यवस्था", bestMsg: "{regime} व्यवस्था बेहतर है", investDed: "निवेश में छूट", zeroTax: "कोई टैक्स नहीं"
         }
     };
 
-    const slabs = {
+    const configSlabs = {
         new: [
-            { l: 0, h: 400000, r: 0 },
-            { l: 400000, h: 800000, r: 0.05 },
-            { l: 800000, h: 1200000, r: 0.10 },
-            { l: 1200000, h: 1600000, r: 0.15 },
-            { l: 1600000, h: 2000000, r: 0.20 },
-            { l: 2000000, h: 2400000, r: 0.25 },
-            { l: 2400000, h: Infinity, r: 0.30 }
+            { l: 0, h: 400000, r: 0 }, { l: 400000, h: 800000, r: 0.05 }, { l: 800000, h: 1200000, r: 0.10 }, { l: 1200000, h: 1600000, r: 0.15 }, { l: 1600000, h: 2000000, r: 0.20 }, { l: 2000000, h: 2400000, r: 0.25 }, { l: 2400000, h: Infinity, r: 0.30 }
         ],
         old: [
-            { l: 0, h: 250000, r: 0 },
-            { l: 250000, h: 500000, r: 0.05 },
-            { l: 500000, h: 1000000, r: 0.20 },
-            { l: 1000000, h: Infinity, r: 0.30 }
+            { l: 0, h: 250000, r: 0 }, { l: 250000, h: 500000, r: 0.05 }, { l: 500000, h: 1000000, r: 0.20 }, { l: 1000000, h: Infinity, r: 0.30 }
         ]
     };
 
-    function format(v) {
-        return "₹" + Math.round(v).toLocaleString('en-IN');
+    function format(v) { return "₹" + Math.round(v).toLocaleString('en-IN'); }
+
+    function runMath(gross, isNew, d) {
+        const std = isNew ? 75000 : 50000;
+        let taxable = Math.max(0, gross - std - d);
+        let tax = 0;
+        let breakdown = [];
+        const config = isNew ? configSlabs.new : configSlabs.old;
+
+        for (let s of config) {
+            let slabTax = 0;
+            if (taxable > s.l) {
+                let amt = Math.min(taxable, s.h) - s.l;
+                slabTax = amt * s.r;
+                tax += slabTax;
+            }
+            if (slabTax > 0 || (s.l === 0 && taxable > 0)) {
+                breakdown.push({ range: `${s.l/100000}L - ${s.h === Infinity ? '∞' : s.h/100000 + 'L'}`, rate: (s.r*100)+"%", tax: slabTax });
+            }
+        }
+
+        const rebateLimit = isNew ? 1200000 : 500000;
+        if (taxable <= rebateLimit) tax = 0;
+        const cess = tax * 0.04;
+        return { total: tax + cess, tax, taxable, std, deds: d, breakdown };
+    }
+
+    function generateRows(data) {
+        const t = translations[currentLang];
+        let html = `
+            <tr><td class="label">${t.income}</td><td>${format(data.gross)}</td></tr>
+            <tr><td class="label">${t.stdDed}</td><td class="text-emerald-600">-${format(data.std)}</td></tr>
+        `;
+        if (data.isOld) {
+            html += `<tr><td class="label">${t.investDed}</td><td class="text-emerald-600">-${format(data.deds)}</td></tr>`;
+        }
+        html += `<tr class="total-row"><td class="label">${t.totalTaxable}</td><td class="text-indigo-600">${format(data.taxable)}</td></tr>`;
+        
+        if (data.total === 0 && data.taxable > 0) {
+            html += `<tr><td colspan="2" class="text-center py-4 text-xs font-bold text-slate-400 italic">${t.zeroTax}</td></tr>`;
+        } else {
+            data.breakdown.forEach(s => {
+                html += `<tr><td class="label indent">${t.slab.replace('{r}', s.range)} <span class="sub-label">(${s.rate})</span></td><td>${format(s.tax)}</td></tr>`;
+            });
+            html += `<tr><td class="label">${t.cess}</td><td>${format(data.total - data.tax)}</td></tr>`;
+        }
+        
+        html += `<tr class="total-row" style="font-size: 1rem; border-top: 2px solid #334155;"><td class="label" style="color: #1e293b;">${t.totalPayable}</td><td style="color: #4f46e5;">${format(data.total)}</td></tr>`;
+        return html;
     }
 
     function calculate() {
@@ -348,65 +293,17 @@
         const resOld = runMath(income, false, d80c + d80d + dhra);
 
         document.getElementById('quick-tax').innerText = format(resNew.total);
-        document.getElementById('final-new').innerText = format(resNew.total);
-        document.getElementById('final-old').innerText = format(resOld.total);
-
-        const diff = Math.abs(resNew.total - resOld.total);
+        
         const winner = resNew.total <= resOld.total ? 'New' : 'Old';
-        document.getElementById('val-save').innerText = format(diff);
-        document.getElementById('txt-winner').innerText = t[langState].bestMsg.replace('{regime}', winner === 'New' ? (langState === 'en' ? 'New Regime' : 'नई') : (langState === 'en' ? 'Old Regime' : 'पुरानी'));
+        document.getElementById('val-save').innerText = format(Math.abs(resNew.total - resOld.total));
+        document.getElementById('txt-winner').innerText = translations[currentLang][winner === 'New' ? 'newTitle' : 'oldTitle'];
         
-        renderTable(income, resNew, resOld);
-    }
-
-    function runMath(gross, isNew, deds) {
-        const std = isNew ? 75000 : 50000;
-        let taxable = Math.max(0, gross - std - deds);
-        let tax = 0;
-        let breakdown = [];
-        const config = isNew ? slabs.new : slabs.old;
-
-        for (let s of config) {
-            let slabTax = 0;
-            if (taxable > s.l) {
-                let amt = Math.min(taxable, s.h) - s.l;
-                slabTax = amt * s.r;
-                tax += slabTax;
-            }
-            breakdown.push({ range: `${s.l/100000}L-${s.h === Infinity ? '∞' : s.h/100000 + 'L'}`, rate: (s.r*100)+"%", tax: slabTax });
-        }
-
-        const rebateLimit = isNew ? 1200000 : 500000;
-        if (taxable <= rebateLimit) tax = 0;
-        const total = tax + (tax * 0.04);
-        return { total, tax, taxable, std, deds, breakdown };
-    }
-
-    function renderTable(gross, resN, resO) {
-        const body = document.getElementById('table-body');
-        body.innerHTML = '';
+        document.getElementById('table-new').innerHTML = generateRows({...resNew, gross: income, isOld: false});
+        document.getElementById('table-old').innerHTML = generateRows({...resOld, gross: income, isOld: true});
         
-        const addRow = (label, nVal, oVal, color = 'text-slate-500') => {
-            const div = document.createElement('div');
-            div.className = "comp-grid p-4";
-            div.innerHTML = `<span class="${color} font-bold">${label}</span><span class="text-center font-bold">${nVal}</span><span class="text-center font-bold">${oVal}</span>`;
-            body.appendChild(div);
-        };
-
-        addRow(t[langState].income, format(gross), format(gross), 'text-slate-800');
-        addRow(t[langState].stdDed, `-${format(resN.std)}`, `-${format(resO.std)}`, 'text-emerald-600 font-bold');
-        addRow(t[langState].chapter6, "-", `-${format(resO.deds)}`, 'text-emerald-600 font-bold');
-        addRow(t[langState].taxable, format(resN.taxable), format(resO.taxable), 'bg-slate-50 text-indigo-600 font-black');
-
-        const maxSlabs = Math.max(resN.breakdown.length, resO.breakdown.length);
-        for(let i=0; i < maxSlabs; i++) {
-            const nS = resN.breakdown[i];
-            const oS = resO.breakdown[i];
-            const label = nS ? t[langState].slab.replace('{r}', nS.range) : t[langState].slab.replace('{r}', oS.range);
-            addRow(label, nS ? format(nS.tax) : '-', oS ? format(oS.tax) : '-');
-        }
-
-        addRow(t[langState].cess, format(resN.total - resN.tax), format(resO.total - resO.tax));
+        document.getElementById('banner-winner').className = winner === 'New' 
+            ? "bg-indigo-50 border border-indigo-100 p-5 rounded-[2rem] flex items-center gap-4"
+            : "bg-emerald-50 border border-emerald-100 p-5 rounded-[2rem] flex items-center gap-4";
     }
 
     function switchTab(target) {
@@ -419,26 +316,20 @@
     }
 
     function toggleLang() {
-        langState = langState === 'en' ? 'hi' : 'en';
-        document.getElementById('lang-toggle').innerText = langState === 'en' ? 'हिंदी' : 'ENG';
-        
-        // Toggle body class for font sizes
-        if(langState === 'hi') {
-            document.body.classList.add('lang-hindi');
-        } else {
-            document.body.classList.remove('lang-hindi');
-        }
+        currentLang = currentLang === 'en' ? 'hi' : 'en';
+        document.getElementById('lang-toggle').innerText = currentLang === 'en' ? 'हिंदी' : 'ENG';
+        document.body.classList.toggle('lang-hindi', currentLang === 'hi');
 
-        const s = t[langState];
+        const s = translations[currentLang];
         document.getElementById('lbl-income').innerText = s.income;
-        document.getElementById('lbl-deductions').innerText = s.ded;
-        document.getElementById('lbl-new-tax').innerText = s.newTax;
+        document.getElementById('lbl-deductions').innerText = s.deds;
+        document.getElementById('lbl-new-tax-card').innerText = s.newTax;
         document.getElementById('lbl-recommend').innerText = s.recommend;
         document.getElementById('lbl-save').innerText = s.save;
-        document.getElementById('th-part').innerText = s.thPart;
-        document.getElementById('lbl-total-payable').innerText = s.totalPayable;
-        document.getElementById('nav-txt-input').innerText = s.navInputs;
+        document.getElementById('nav-txt-input').innerText = s.navInput;
         document.getElementById('nav-txt-compare').innerText = s.navCompare;
+        document.getElementById('lbl-title-new').innerText = s.newTitle;
+        document.getElementById('lbl-title-old').innerText = s.oldTitle;
         calculate();
     }
 
@@ -446,26 +337,17 @@
         dedCollapsed = !dedCollapsed;
         const content = document.getElementById('deduction-content');
         const chevron = document.getElementById('chevron-icon');
-        
-        if (dedCollapsed) {
-            content.classList.replace('expanded', 'collapsed');
-            chevron.style.transform = 'rotate(0deg)';
-        } else {
-            content.classList.replace('collapsed', 'expanded');
-            chevron.style.transform = 'rotate(180deg)';
-        }
+        content.classList.replace(dedCollapsed ? 'expanded' : 'collapsed', dedCollapsed ? 'collapsed' : 'expanded');
+        chevron.style.transform = `rotate(${dedCollapsed ? 0 : 180}deg)`;
     }
 
     window.onload = function() {
         calculate();
-        // Event listeners
-        document.getElementById('toggle-deductions').addEventListener('click', toggleDeductions);
-        document.getElementById('lang-toggle').addEventListener('click', toggleLang);
+        document.getElementById('toggle-deductions').onclick = toggleDeductions;
+        document.getElementById('lang-toggle').onclick = toggleLang;
         ['inp-income', 'inp-80c', 'inp-80d', 'inp-hra'].forEach(id => {
-            document.getElementById(id).addEventListener('input', calculate);
+            document.getElementById(id).oninput = calculate;
         });
-
-        // Hide Skeleton
         setTimeout(() => {
             const loader = document.getElementById('skeleton-overlay');
             loader.style.opacity = '0';
