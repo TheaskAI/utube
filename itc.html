@@ -1,43 +1,49 @@
 <!DOCTYPE html>
-<html lang="en">
+<html lang="hi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>I.T.C. India | Budget 2025-26</title>
     <script src="https://cdn.tailwindcss.com"></script>
-    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;700&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&family=Noto+Sans+Devanagari:wght@400;500;700&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary-indigo: #4338ca;
+            --text-main: #0f172a;
+            --text-secondary: #334155;
+            --bg-app: #ffffff;
+        }
+
         body {
-            font-family: 'Plus Jakarta Sans', 'Noto Sans Devanagari', sans-serif;
-            background-color: #f8fafc;
-            color: #1e293b;
+            font-family: 'Noto Sans Devanagari', 'Plus Jakarta Sans', sans-serif;
+            background-color: #f1f5f9;
+            color: var(--text-main);
             user-select: none;
             -webkit-tap-highlight-color: transparent;
+            font-size: 1.15rem;
+            line-height: 1.6;
         }
-        
-        /* Hindi Readability Scale */
-        body.lang-hindi { font-size: 1.05rem; }
-        body.lang-hindi .text-tiny { font-size: 13px; }
-        body.lang-hindi .text-sm { font-size: 16px; }
-        body.lang-hindi .text-xs { font-size: 14.5px; }
 
+        .high-contrast-text { color: var(--text-main) !important; font-weight: 700 !important; }
+        .text-tiny { font-size: 0.85rem !important; }
+        
         .app-container {
             max-width: 480px;
             margin: 0 auto;
             min-height: 100vh;
-            background: #ffffff;
+            background: var(--bg-app);
             display: flex;
             flex-direction: column;
             position: relative;
+            box-shadow: 0 0 40px rgba(0,0,0,0.1);
         }
         
-        /* Skeleton Animation */
         @keyframes shimmer {
             0% { background-position: -200% 0; }
             100% { background-position: 200% 0; }
         }
         .skeleton {
-            background: linear-gradient(90deg, #f1f5f9 25%, #e2e8f0 50%, #f1f5f9 75%);
+            background: linear-gradient(90deg, #e2e8f0 25%, #cbd5e1 50%, #e2e8f0 75%);
             background-size: 200% 100%;
             animation: shimmer 1.5s infinite linear;
             border-radius: 12px;
@@ -49,177 +55,192 @@
             transition: opacity 0.4s ease-out;
         }
 
-        /* Bottom Nav */
         .bottom-nav {
             position: fixed; bottom: 0; left: 50%; transform: translateX(-50%);
-            width: 100%; max-width: 480px; background: rgba(255, 255, 255, 0.98);
-            backdrop-filter: blur(10px); border-top: 1px solid #f1f5f9;
-            height: 72px; display: flex; justify-content: space-around;
+            width: 100%; max-width: 480px; background: #ffffff;
+            border-top: 2px solid #e2e8f0;
+            height: 80px; display: flex; justify-content: space-around;
             align-items: center; z-index: 50; padding-bottom: env(safe-area-inset-bottom);
         }
-        .nav-item { flex: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #94a3b8; transition: all 0.2s ease; }
-        .nav-item.active { color: #4f46e5; }
-        .nav-item.active .nav-icon-bg { background: #eef2ff; }
-        .nav-icon-bg { padding: 6px 16px; border-radius: 16px; transition: all 0.2s ease; }
+        .nav-item { flex: 1; height: 100%; display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 4px; color: #64748b; transition: all 0.2s ease; cursor: pointer; border: none; background: none; }
+        .nav-item.active { color: var(--primary-indigo); }
+        .nav-item.active .nav-icon-bg { background: #e0e7ff; border: 1px solid var(--primary-indigo); }
+        .nav-icon-bg { padding: 8px 20px; border-radius: 20px; transition: all 0.2s ease; border: 1px solid transparent; }
 
-        input[type="number"]::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
-
-        /* Table Layout */
-        .tax-table {
+        input[type="number"] {
+            border-bottom: 3px solid #e2e8f0;
+            background: transparent;
             width: 100%;
-            border-collapse: collapse;
-            font-size: 0.875rem;
+            outline: none;
+            transition: border-color 0.2s;
         }
-        .tax-table tr { border-bottom: 1px solid #f1f5f9; }
-        .tax-table td { padding: 12px 0; }
-        .tax-table td:last-child { text-align: right; font-weight: 700; }
-        .tax-table .label { color: #64748b; font-weight: 500; }
-        .tax-table .indent { padding-left: 16px; font-size: 0.8rem; }
-        .tax-table .sub-label { color: #94a3b8; }
-        .tax-table .total-row { border-top: 2px solid #e2e8f0; font-weight: 800; color: #1e293b; }
+        input[type="number"]:focus { border-bottom-color: var(--primary-indigo); }
 
-        /* Collapse Animation */
-        #deduction-content { transition: max-height 0.3s ease-out, opacity 0.2s ease; overflow: hidden; }
+        .tax-table { width: 100%; border-collapse: collapse; }
+        .tax-table tr { border-bottom: 2px solid #f1f5f9; }
+        .tax-table td { padding: 16px 0; }
+        .tax-table td:last-child { text-align: right; font-weight: 800; color: var(--text-main); font-size: 1.1rem; }
+        .tax-table .label { color: var(--text-secondary); font-weight: 600; font-size: 1rem; }
+        .tax-table .total-row { border-top: 3px solid #0f172a; font-weight: 900; }
+
+        #deduction-content { transition: max-height 0.3s ease-in-out, opacity 0.2s ease; overflow: hidden; }
         #deduction-content.collapsed { max-height: 0; opacity: 0; }
-        #deduction-content.expanded { max-height: 500px; opacity: 1; }
+        #deduction-content.expanded { max-height: 800px; opacity: 1; }
+
+        .btn-lang {
+            background: #0f172a;
+            color: white;
+            padding: 8px 16px;
+            border-radius: 12px;
+            font-weight: 800;
+            font-size: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+
+        .clickable-card {
+            cursor: pointer;
+            transition: transform 0.2s, background-color 0.2s;
+        }
+        .clickable-card:active {
+            transform: scale(0.98);
+            background-color: #000;
+        }
     </style>
 </head>
-<body>
+<body class="lang-hindi">
 
-<!-- Skeleton Loader -->
 <div id="skeleton-overlay">
     <div class="flex justify-between items-center mb-10">
-        <div class="w-24 h-8 skeleton"></div>
-        <div class="w-10 h-10 skeleton rounded-full"></div>
+        <div class="w-24 h-10 skeleton"></div>
+        <div class="w-16 h-10 skeleton rounded-xl"></div>
     </div>
-    <div class="w-full h-16 skeleton mb-10"></div>
-    <div class="space-y-4">
-        <div class="w-full h-20 skeleton rounded-3xl"></div>
-        <div class="w-full h-20 skeleton rounded-3xl"></div>
+    <div class="w-full h-24 skeleton mb-10"></div>
+    <div class="space-y-6">
+        <div class="w-full h-24 skeleton rounded-3xl"></div>
+        <div class="w-full h-24 skeleton rounded-3xl"></div>
     </div>
 </div>
 
-<div class="app-container shadow-2xl">
+<div class="app-container">
     
-    <!-- Top Header -->
-    <header class="p-6 pb-4 flex justify-between items-center border-b border-slate-50 sticky top-0 bg-white/80 backdrop-blur-md z-30">
+    <header class="p-6 pb-4 flex justify-between items-center border-b-2 border-slate-100 sticky top-0 bg-white/95 backdrop-blur-md z-30">
         <div>
-            <h1 id="txt-logo" class="text-xl font-extrabold text-indigo-600 tracking-tight">I.T.C.</h1>
-            <p id="txt-year" class="text-tiny font-black text-slate-300 uppercase tracking-widest" style="font-size: 9px;">FY 2025-26 Budget</p>
+            <h1 id="txt-logo" class="text-2xl font-black text-indigo-700 tracking-tight">I.T.C.</h1>
+            <p id="txt-year" class="text-tiny font-bold text-slate-500 uppercase tracking-widest">बजट 2025-26</p>
         </div>
-        <button id="lang-toggle" class="bg-slate-100 text-slate-600 px-4 py-2 rounded-2xl text-tiny font-black uppercase transition-all active:scale-90" style="font-size: 10px;">
-            हिंदी
+        <button id="lang-toggle" class="btn-lang active:scale-95 transition-transform">
+            ENGLISH
         </button>
     </header>
 
-    <main class="flex-grow overflow-y-auto pb-24">
+    <main class="flex-grow overflow-y-auto pb-28">
         
-        <!-- TAB 1: INPUT DATA -->
-        <div id="view-inputs" class="p-6 space-y-6">
+        <!-- VIEW 1: INPUTS -->
+        <div id="view-inputs" class="p-6 space-y-8">
             <section>
-                <label id="lbl-income" class="text-tiny font-bold text-slate-400 uppercase tracking-widest mb-2 block" style="font-size: 10px;">Gross Total Income (₹)</label>
+                <label id="lbl-income" class="text-sm font-black text-slate-600 uppercase tracking-wider mb-3 block">कुल वार्षिक आय (₹)</label>
                 <div class="relative">
-                    <span class="absolute left-0 bottom-2 text-3xl font-light text-slate-300">₹</span>
-                    <input type="number" id="inp-income" value="1500000" class="w-full pl-8 py-2 text-4xl font-black text-slate-800 border-b-2 border-slate-100 focus:border-indigo-500 outline-none transition-all">
+                    <span class="absolute left-0 bottom-3 text-4xl font-light text-slate-400">₹</span>
+                    <input type="number" id="inp-income" value="1500000" class="pl-10 py-3 text-5xl font-black text-slate-900">
                 </div>
             </section>
 
-            <!-- Collapsible Deductions -->
-            <section class="pt-2">
-                <button id="toggle-deductions" class="w-full flex justify-between items-center p-2 rounded-xl hover:bg-slate-50 transition-colors group">
-                    <h3 id="lbl-deductions" class="font-bold text-slate-800 text-sm">Deductions & Exemptions</h3>
-                    <svg id="chevron-icon" class="w-5 h-5 text-slate-400 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M19 9l-7 7-7-7" /></svg>
+            <section class="bg-slate-50 p-4 rounded-[2rem] border border-slate-200">
+                <button id="toggle-deductions" class="w-full flex justify-between items-center p-2 group bg-transparent border-none">
+                    <h3 id="lbl-deductions" class="font-black text-slate-800 text-lg">कटौती और छूट (Deductions)</h3>
+                    <svg id="chevron-icon" class="w-6 h-6 text-slate-900 transition-transform duration-300" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M19 9l-7 7-7-7" /></svg>
                 </button>
-                <div id="deduction-content" class="collapsed mt-3 space-y-3 px-1">
-                    <div class="bg-slate-50 p-4 rounded-3xl flex justify-between items-center shadow-sm">
-                        <div class="flex-1"><p id="lbl-80c" class="text-xs font-bold text-slate-600">Section 80C</p><p class="text-tiny text-slate-400 uppercase font-bold" style="font-size: 8px;">Max 1.5L</p></div>
-                        <input type="number" id="inp-80c" value="0" class="w-24 text-right bg-transparent font-bold text-indigo-600 outline-none">
+                <div id="deduction-content" class="collapsed mt-4 space-y-4">
+                    <div class="bg-white p-5 rounded-2xl flex justify-between items-center shadow-sm border border-slate-100">
+                        <div class="flex-1"><p id="lbl-80c" class="font-bold text-slate-800">सेक्शन 80C</p><p class="text-xs text-slate-500 font-bold">अधिकतम 1.5 लाख</p></div>
+                        <input type="number" id="inp-80c" value="150000" class="w-32 text-right font-black text-indigo-700 text-xl border-none">
                     </div>
-                    <div class="bg-slate-50 p-4 rounded-3xl flex justify-between items-center shadow-sm">
-                        <div class="flex-1"><p id="lbl-80d" class="text-xs font-bold text-slate-600">Section 80D</p><p class="text-tiny text-slate-400 uppercase font-bold" style="font-size: 8px;">Health Ins.</p></div>
-                        <input type="number" id="inp-80d" value="0" class="w-24 text-right bg-transparent font-bold text-indigo-600 outline-none">
+                    <div class="bg-white p-5 rounded-2xl flex justify-between items-center shadow-sm border border-slate-100">
+                        <div class="flex-1"><p id="lbl-80d" class="font-bold text-slate-800">सेक्शन 80D</p><p class="text-xs text-slate-500 font-bold">स्वास्थ्य बीमा</p></div>
+                        <input type="number" id="inp-80d" value="25000" class="w-32 text-right font-black text-indigo-700 text-xl border-none">
                     </div>
-                    <div class="bg-slate-50 p-4 rounded-3xl flex justify-between items-center shadow-sm">
-                        <div class="flex-1"><p id="lbl-hra" class="text-xs font-bold text-slate-600">HRA / Rent</p><p class="text-tiny text-slate-400 uppercase font-bold" style="font-size: 8px;">Exemption</p></div>
-                        <input type="number" id="inp-hra" value="0" class="w-24 text-right bg-transparent font-bold text-indigo-600 outline-none">
+                    <div class="bg-white p-5 rounded-2xl flex justify-between items-center shadow-sm border border-slate-100">
+                        <div class="flex-1"><p id="lbl-hra" class="font-bold text-slate-800">HRA / किराया</p><p class="text-xs text-slate-500 font-bold">मकान किराया छूट</p></div>
+                        <input type="number" id="inp-hra" value="0" class="w-32 text-right font-black text-indigo-700 text-xl border-none">
                     </div>
                 </div>
             </section>
 
-            <div class="bg-indigo-600 rounded-[2.5rem] p-6 text-white shadow-xl shadow-indigo-100 relative overflow-hidden">
-                <p id="lbl-new-tax-card" class="text-tiny font-bold uppercase tracking-widest opacity-60" style="font-size: 10px;">New Regime Tax</p>
-                <h2 id="quick-tax" class="text-4xl font-black mt-1">₹0</h2>
-                <div class="absolute -right-4 -bottom-4 w-24 h-24 bg-white/10 rounded-full"></div>
+            <!-- Linked Card -->
+            <div onclick="switchTab('compare')" class="clickable-card bg-slate-900 rounded-[3rem] p-8 text-white shadow-2xl relative overflow-hidden group">
+                <div class="flex justify-between items-start">
+                    <div>
+                        <p id="lbl-new-tax-card" class="text-xs font-black uppercase tracking-[0.2em] text-indigo-300">नई व्यवस्था के अनुसार टैक्स</p>
+                        <h2 id="quick-tax" class="text-5xl font-black mt-3">₹ 0</h2>
+                    </div>
+                    <div class="bg-white/10 p-2 rounded-full group-hover:bg-white/20 transition-colors">
+                        <svg class="w-6 h-6 text-white" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 5l7 7-7 7" /></svg>
+                    </div>
+                </div>
+                <p class="text-[11px] mt-4 font-bold text-indigo-200/60 uppercase tracking-widest">तुलना और विस्तृत डेटा देखने के लिए क्लिक करें</p>
+                <div class="absolute -right-6 -top-6 w-32 h-32 bg-indigo-500/20 rounded-full blur-2xl"></div>
             </div>
         </div>
 
-        <!-- TAB 2: COMPARISON VIEW -->
-        <div id="view-compare" class="hidden p-6 space-y-8 animate-in fade-in duration-300">
+        <!-- VIEW 2: COMPARE -->
+        <div id="view-compare" class="hidden p-6 space-y-10 animate-in fade-in slide-in-from-bottom-4 duration-300">
             
-            <!-- Recommendation -->
-            <div id="banner-winner" class="bg-indigo-50 border border-indigo-100 p-5 rounded-[2rem] flex items-center gap-4">
-                <div class="bg-indigo-600 text-white p-2 rounded-full"><svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div>
+            <div id="banner-winner" class="bg-indigo-600 p-6 rounded-[2.5rem] text-white flex items-center gap-5 shadow-lg">
+                <div class="bg-white text-indigo-600 p-3 rounded-2xl shadow-inner"><svg class="w-8 h-8" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" /></svg></div>
                 <div class="flex-1">
-                    <p id="lbl-recommend" class="text-tiny font-black text-indigo-600 uppercase tracking-tighter" style="font-size: 9px;">Recommendation</p>
-                    <p id="txt-winner" class="text-sm font-bold text-slate-800">New Tax Regime</p>
-                    <p class="text-xs font-bold text-indigo-700 opacity-80"><span id="lbl-save">Saves</span> <span id="val-save" class="underline underline-offset-2">₹0</span></p>
+                    <p id="lbl-recommend" class="text-xs font-black uppercase tracking-widest opacity-80">सर्वोत्तम विकल्प</p>
+                    <p id="txt-winner" class="text-xl font-black">नई टैक्स व्यवस्था</p>
+                    <p class="text-sm font-bold mt-1 text-indigo-100"><span id="lbl-save">बचत:</span> <span id="val-save" class="text-lg">₹ 0</span></p>
                 </div>
             </div>
 
-            <!-- New Regime Table -->
-            <div class="space-y-4">
-                <div class="flex items-center gap-2 px-2">
-                    <div class="w-2 h-6 bg-indigo-600 rounded-full"></div>
-                    <h3 id="lbl-title-new" class="font-bold text-slate-800 uppercase tracking-wider text-xs">New Tax Regime</h3>
+            <div class="space-y-6">
+                <div class="flex items-center gap-3 px-2">
+                    <div class="w-2.5 h-8 bg-indigo-600 rounded-full"></div>
+                    <h3 id="lbl-title-new" class="font-black text-slate-900 uppercase text-sm tracking-widest">नई टैक्स व्यवस्था (New)</h3>
                 </div>
-                <div class="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm">
-                    <table class="tax-table" id="table-new">
-                        <!-- New Regime rows injected here -->
-                    </table>
+                <div class="bg-white border-2 border-slate-100 rounded-[2.5rem] p-6 shadow-sm">
+                    <table class="tax-table" id="table-new"></table>
                 </div>
             </div>
 
-            <!-- Old Regime Table -->
-            <div class="space-y-4">
-                <div class="flex items-center gap-2 px-2">
-                    <div class="w-2 h-6 bg-slate-400 rounded-full"></div>
-                    <h3 id="lbl-title-old" class="font-bold text-slate-500 uppercase tracking-wider text-xs">Old Tax Regime</h3>
+            <div class="space-y-6">
+                <div class="flex items-center gap-3 px-2">
+                    <div class="w-2.5 h-8 bg-slate-400 rounded-full"></div>
+                    <h3 id="lbl-title-old" class="font-black text-slate-500 uppercase text-sm tracking-widest">पुरानी टैक्स व्यवस्था (Old)</h3>
                 </div>
-                <div class="bg-white border border-slate-100 rounded-3xl p-6 shadow-sm">
-                    <table class="tax-table" id="table-old">
-                        <!-- Old Regime rows injected here -->
-                    </table>
+                <div class="bg-white border-2 border-slate-100 rounded-[2.5rem] p-6 shadow-sm">
+                    <table class="tax-table" id="table-old"></table>
                 </div>
             </div>
 
-            <p id="lbl-footer-legal" class="text-center text-[9px] text-slate-400 font-bold uppercase tracking-widest pb-4">Data Compliant with Budget 2025-26</p>
+            <p id="lbl-legal" class="text-center text-[11px] text-slate-400 font-black uppercase tracking-widest pb-8">बजट 2025-26 के अनुसार डेटा</p>
         </div>
     </main>
 
-    <!-- Bottom Nav -->
     <nav class="bottom-nav">
         <button onclick="switchTab('inputs')" id="nav-inputs" class="nav-item active">
-            <div class="nav-icon-bg"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg></div>
-            <span id="nav-txt-input" class="text-tiny font-black uppercase tracking-tighter" style="font-size: 9px;">Input Data</span>
+            <div class="nav-icon-bg"><svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M11 5H6a2 2 0 00-2 2v11a2 2 0 002 2h11a2 2 0 002-2v-5m-1.414-9.414a2 2 0 112.828 2.828L11.828 15H9v-2.828l8.586-8.586z" /></svg></div>
+            <span id="nav-txt-input" class="text-xs font-black uppercase tracking-tighter">डेटा भरें</span>
         </button>
         <button onclick="switchTab('compare')" id="nav-compare" class="nav-item">
-            <div class="nav-icon-bg"><svg class="w-6 h-6" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg></div>
-            <span id="nav-txt-compare" class="text-tiny font-black uppercase tracking-tighter" style="font-size: 9px;">Compare</span>
+            <div class="nav-icon-bg"><svg class="w-7 h-7" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2.5" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" /></svg></div>
+            <span id="nav-txt-compare" class="text-xs font-black uppercase tracking-tighter">तुलना करें</span>
         </button>
     </nav>
 </div>
 
 <script>
-    let currentLang = 'en';
+    let currentLang = 'hi';
     let activeTab = 'inputs';
     let dedCollapsed = true;
 
     const translations = {
         en: {
-            income: "Gross Total Income", deds: "Deductions & Exemptions", recommend: "Recommendation", save: "Saves", stdDed: "Standard Deduction", totalTaxable: "Net Taxable Income", slab: "Slab {r}", cess: "Education Cess (4%)", totalPayable: "Net Tax Payable", navInput: "Input Data", navCompare: "Compare", newTitle: "New Tax Regime", oldTitle: "Old Tax Regime", bestMsg: "{regime} is better", investDed: "Investment Deductions", zeroTax: "No Tax Payable"
+            income: "Gross Total Income (₹)", deds: "Deductions & Exemptions", recommend: "Recommendation", save: "Saves:", stdDed: "Standard Deduction", totalTaxable: "Net Taxable Income", slab: "Slab {r}", cess: "Education Cess (4%)", totalPayable: "Net Tax Payable", navInput: "Input Data", navCompare: "Compare", newTitle: "New Tax Regime", oldTitle: "Old Tax Regime", investDed: "Investments", zeroTax: "No Tax Payable", btn: "HINDI", newTaxCard: "New Regime Tax", legal: "Data Compliant with Budget 2025-26"
         },
         hi: {
-            income: "कुल वार्षिक आय", deds: "बचत और कटौतियां", recommend: "सुझाव", save: "बचत", stdDed: "मानक कटौती", totalTaxable: "कर योग्य आय", slab: "स्लैब {r}", cess: "शिक्षा सेस (4%)", totalPayable: "कुल देय टैक्स", navInput: "डेटा भरें", navCompare: "तुलना करें", newTitle: "नई टैक्स व्यवस्था", oldTitle: "पुरानी टैक्स व्यवस्था", bestMsg: "{regime} व्यवस्था बेहतर है", investDed: "निवेश में छूट", zeroTax: "कोई टैक्स नहीं"
+            income: "कुल वार्षिक आय (₹)", deds: "कटौती और छूट (Deductions)", recommend: "सर्वोत्तम विकल्प", save: "बचत:", stdDed: "मानक कटौती (Standard Deduction)", totalTaxable: "कुल कर योग्य आय", slab: "स्लैब {r}", cess: "शिक्षा उपकर (4%)", totalPayable: "कुल देय आयकर", navInput: "डेटा भरें", navCompare: "तुलना करें", newTitle: "नई टैक्स व्यवस्था", oldTitle: "पुरानी टैक्स व्यवस्था", investDed: "निवेश कटौती", zeroTax: "कोई टैक्स देय नहीं है", btn: "ENGLISH", newTaxCard: "नई व्यवस्था के अनुसार टैक्स", legal: "बजट 2025-26 के अनुसार डेटा"
         }
     };
 
@@ -232,7 +253,8 @@
         ]
     };
 
-    function format(v) { return "₹" + Math.round(v).toLocaleString('en-IN'); }
+    const currencyFormatter = new Intl.NumberFormat('en-IN', { maximumFractionDigits: 0 });
+    function format(v) { return "₹ " + currencyFormatter.format(Math.round(v)); }
 
     function runMath(gross, isNew, d) {
         const std = isNew ? 75000 : 50000;
@@ -249,7 +271,7 @@
                 tax += slabTax;
             }
             if (slabTax > 0 || (s.l === 0 && taxable > 0)) {
-                breakdown.push({ range: `${s.l/100000}L - ${s.h === Infinity ? '∞' : s.h/100000 + 'L'}`, rate: (s.r*100)+"%", tax: slabTax });
+                breakdown.push({ range: `${s.l/100000}L - ${s.h === Infinity ? ' ' : s.h/100000 + 'L'}`, rate: (s.r*100)+"%", tax: slabTax });
             }
         }
 
@@ -263,23 +285,23 @@
         const t = translations[currentLang];
         let html = `
             <tr><td class="label">${t.income}</td><td>${format(data.gross)}</td></tr>
-            <tr><td class="label">${t.stdDed}</td><td class="text-emerald-600">-${format(data.std)}</td></tr>
+            <tr><td class="label">${t.stdDed}</td><td class="text-emerald-700">-${format(data.std)}</td></tr>
         `;
         if (data.isOld) {
-            html += `<tr><td class="label">${t.investDed}</td><td class="text-emerald-600">-${format(data.deds)}</td></tr>`;
+            html += `<tr><td class="label">${t.investDed}</td><td class="text-emerald-700">-${format(data.deds)}</td></tr>`;
         }
-        html += `<tr class="total-row"><td class="label">${t.totalTaxable}</td><td class="text-indigo-600">${format(data.taxable)}</td></tr>`;
+        html += `<tr class="total-row"><td class="label high-contrast-text">${t.totalTaxable}</td><td class="text-indigo-700">${format(data.taxable)}</td></tr>`;
         
         if (data.total === 0 && data.taxable > 0) {
-            html += `<tr><td colspan="2" class="text-center py-4 text-xs font-bold text-slate-400 italic">${t.zeroTax}</td></tr>`;
+            html += `<tr><td colspan="2" class="text-center py-6 text-sm font-black text-slate-400 italic">${t.zeroTax}</td></tr>`;
         } else {
             data.breakdown.forEach(s => {
-                html += `<tr><td class="label indent">${t.slab.replace('{r}', s.range)} <span class="sub-label">(${s.rate})</span></td><td>${format(s.tax)}</td></tr>`;
+                html += `<tr><td class="label pl-4 text-sm">${t.slab.replace('{r}', s.range)} <span class="opacity-60">(${s.rate})</span></td><td>${format(s.tax)}</td></tr>`;
             });
             html += `<tr><td class="label">${t.cess}</td><td>${format(data.total - data.tax)}</td></tr>`;
         }
         
-        html += `<tr class="total-row" style="font-size: 1rem; border-top: 2px solid #334155;"><td class="label" style="color: #1e293b;">${t.totalPayable}</td><td style="color: #4f46e5;">${format(data.total)}</td></tr>`;
+        html += `<tr class="total-row" style="font-size: 1.25rem; border-top: 4px solid #0f172a;"><td class="label high-contrast-text">${t.totalPayable}</td><td class="text-indigo-700">${format(data.total)}</td></tr>`;
         return html;
     }
 
@@ -301,9 +323,10 @@
         document.getElementById('table-new').innerHTML = generateRows({...resNew, gross: income, isOld: false});
         document.getElementById('table-old').innerHTML = generateRows({...resOld, gross: income, isOld: true});
         
-        document.getElementById('banner-winner').className = winner === 'New' 
-            ? "bg-indigo-50 border border-indigo-100 p-5 rounded-[2rem] flex items-center gap-4"
-            : "bg-emerald-50 border border-emerald-100 p-5 rounded-[2rem] flex items-center gap-4";
+        const banner = document.getElementById('banner-winner');
+        banner.className = winner === 'New' 
+            ? "bg-indigo-700 p-6 rounded-[2.5rem] text-white flex items-center gap-5 shadow-lg"
+            : "bg-emerald-700 p-6 rounded-[2.5rem] text-white flex items-center gap-5 shadow-lg";
     }
 
     function switchTab(target) {
@@ -312,24 +335,30 @@
         document.getElementById('view-compare').classList.toggle('hidden', target !== 'compare');
         document.getElementById('nav-inputs').classList.toggle('active', target === 'inputs');
         document.getElementById('nav-compare').classList.toggle('active', target === 'compare');
-        if(target === 'compare') calculate();
+        
+        if(target === 'compare') {
+            calculate();
+            // Scroll to top when switching to comparison
+            document.querySelector('main').scrollTop = 0;
+        }
     }
 
     function toggleLang() {
         currentLang = currentLang === 'en' ? 'hi' : 'en';
-        document.getElementById('lang-toggle').innerText = currentLang === 'en' ? 'हिंदी' : 'ENG';
-        document.body.classList.toggle('lang-hindi', currentLang === 'hi');
+        document.getElementById('lang-toggle').innerText = translations[currentLang].btn;
+        document.body.className = currentLang === 'hi' ? 'lang-hindi' : '';
 
         const s = translations[currentLang];
         document.getElementById('lbl-income').innerText = s.income;
         document.getElementById('lbl-deductions').innerText = s.deds;
-        document.getElementById('lbl-new-tax-card').innerText = s.newTax;
+        document.getElementById('lbl-new-tax-card').innerText = s.newTaxCard;
         document.getElementById('lbl-recommend').innerText = s.recommend;
         document.getElementById('lbl-save').innerText = s.save;
         document.getElementById('nav-txt-input').innerText = s.navInput;
         document.getElementById('nav-txt-compare').innerText = s.navCompare;
         document.getElementById('lbl-title-new').innerText = s.newTitle;
         document.getElementById('lbl-title-old').innerText = s.oldTitle;
+        document.getElementById('lbl-legal').innerText = s.legal;
         calculate();
     }
 
@@ -337,7 +366,8 @@
         dedCollapsed = !dedCollapsed;
         const content = document.getElementById('deduction-content');
         const chevron = document.getElementById('chevron-icon');
-        content.classList.replace(dedCollapsed ? 'expanded' : 'collapsed', dedCollapsed ? 'collapsed' : 'expanded');
+        content.classList.toggle('collapsed', dedCollapsed);
+        content.classList.toggle('expanded', !dedCollapsed);
         chevron.style.transform = `rotate(${dedCollapsed ? 0 : 180}deg)`;
     }
 
@@ -350,12 +380,13 @@
         });
         setTimeout(() => {
             const loader = document.getElementById('skeleton-overlay');
-            loader.style.opacity = '0';
-            setTimeout(() => loader.style.display = 'none', 400);
-        }, 800);
+            if(loader) {
+                loader.style.opacity = '0';
+                setTimeout(() => loader.style.display = 'none', 400);
+            }
+        }, 600);
     };
 </script>
 
 </body>
 </html>
-
